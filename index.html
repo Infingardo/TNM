@@ -1,0 +1,2395 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TNM 9ª Ed. — Anatomia Patologica</title>
+<style>
+:root{
+  --bg:#f0f2f5;--panel:#ffffff;--border:#d4d9e2;--accent:#2563a8;--accent2:#1a7a6e;
+  --text:#1e2535;--muted:#6b7590;--badge:#e8ecf2;--ok:#2e7d32;--warn:#b35a00;
+  --stage-bg:#eef2f8;--code:#1a4f8a;--hover:#e4e9f2;--radius:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);
+  display:flex;height:100vh;overflow:hidden;font-size:14px;}
+
+/* SIDEBAR */
+#sidebar{width:240px;min-width:200px;background:var(--panel);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;}
+#sidebar-header{padding:14px 16px 10px;border-bottom:1px solid var(--border);}
+#sidebar-header h1{font-size:13px;font-weight:700;letter-spacing:.5px;color:var(--accent);text-transform:uppercase;}
+#sidebar-header small{color:var(--muted);font-size:11px;}
+#search-box{margin:10px;padding:7px 10px;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--text);font-size:13px;width:calc(100% - 20px);}
+#search-box:focus{outline:none;border-color:var(--accent);}
+#site-list{flex:1;overflow-y:auto;padding:4px 0;}
+.cat-label{padding:8px 16px 4px;font-size:10px;font-weight:700;letter-spacing:1px;
+  color:var(--muted);text-transform:uppercase;}
+.site-item{padding:7px 16px;cursor:pointer;border-left:3px solid transparent;
+  font-size:13px;transition:all .15s;line-height:1.3;}
+.site-item:hover{background:var(--hover);color:var(--text);}
+.site-item.active{background:var(--hover);border-left-color:var(--accent);color:var(--accent);}
+.site-item.hidden{display:none;}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+#topbar{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;
+  background:var(--panel);}
+#site-title{font-size:17px;font-weight:600;flex:1;}
+#site-icd{font-size:11px;color:var(--muted);margin-top:2px;}
+.tabs{display:flex;gap:2px;}
+.tab-btn{padding:7px 14px;border:1px solid var(--border);background:var(--bg);color:var(--muted);
+  border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;}
+.tab-btn:hover{background:var(--hover);color:var(--text);}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+#content{flex:1;overflow-y:auto;padding:20px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* LOOKUP TAB */
+.tnm-section{margin-bottom:24px;}
+.section-title{font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--accent2);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.tnm-item{display:flex;gap:10px;padding:7px 10px;border-radius:var(--radius);margin-bottom:3px;
+  background:var(--panel);border:1px solid var(--border);align-items:flex-start;}
+.tnm-code{font-family:'Consolas','Courier New',monospace;font-size:13px;font-weight:700;
+  color:var(--code);min-width:60px;padding-top:1px;}
+.tnm-desc{font-size:13px;color:var(--text);line-height:1.5;}
+.tnm-note{font-size:11px;color:var(--muted);margin-top:3px;}
+
+/* STAGING TAB */
+#staging-form{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;margin-bottom:18px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-group label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.6px;color:var(--muted);margin-bottom:6px;}
+.form-group select{width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--text);font-size:13px;cursor:pointer;}
+.form-group select:focus{outline:none;border-color:var(--accent);}
+.prefix-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;}
+.prefix-row label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--muted);}
+.prefix-btn{padding:5px 12px;border:1px solid var(--border);background:var(--bg);
+  color:var(--muted);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;}
+.prefix-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.variant-row{margin-bottom:14px;}
+.variant-row select{padding:6px 10px;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--text);font-size:13px;cursor:pointer;}
+#calc-btn{padding:9px 22px;background:var(--accent);border:none;border-radius:var(--radius);
+  color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;}
+#calc-btn:hover{background:#3a80d0;}
+#stage-result{background:var(--stage-bg);border:1px solid var(--accent);border-radius:var(--radius);
+  padding:18px;display:none;}
+#stage-value{font-size:32px;font-weight:800;color:var(--accent);letter-spacing:1px;}
+#stage-label{font-size:12px;color:var(--muted);margin-top:2px;}
+#stage-detail{margin-top:14px;font-size:13px;color:var(--text);line-height:1.7;}
+.stage-row{display:flex;gap:10px;padding:5px 8px;border-radius:4px;margin-bottom:2px;background:var(--panel);}
+.stage-code{font-family:'Consolas','Courier New',monospace;font-weight:700;color:var(--code);min-width:80px;}
+
+/* STAGING TABLE */
+.staging-table-wrap{margin-top:20px;}
+.staging-table{width:100%;border-collapse:collapse;font-size:13px;}
+.staging-table th{background:var(--badge);padding:8px 12px;text-align:left;font-size:11px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);}
+.staging-table td{padding:7px 12px;border-bottom:1px solid var(--border);}
+.staging-table tr:hover td{background:var(--hover);}
+.staging-table tr.highlighted td{background:rgba(78,144,224,0.15);border-left:3px solid var(--accent);}
+
+/* REFERTO TAB */
+#referto-form{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;margin-bottom:18px;}
+.ref-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+.ref-extras{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+input[type=text],input[type=number],textarea{width:100%;padding:7px 10px;background:var(--bg);
+  border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;}
+input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;border-color:var(--accent);}
+#gen-btn{padding:9px 22px;background:var(--ok);border:none;border-radius:var(--radius);
+  color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;}
+#referto-output{background:var(--stage-bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;display:none;margin-top:18px;font-family:'Consolas','Courier New',monospace;
+  font-size:13px;line-height:1.8;white-space:pre-wrap;color:var(--text);}
+#copy-btn{padding:7px 16px;background:var(--badge);border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--text);font-size:13px;cursor:pointer;margin-top:10px;display:none;}
+#copy-btn:hover{background:var(--hover);}
+
+/* NOTE BOX */
+.note-box{background:var(--badge);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 16px;font-size:12px;color:var(--muted);line-height:1.6;margin-top:16px;}
+.note-box strong{color:var(--warn);}
+
+/* SITE BADGES */
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;
+  letter-spacing:.4px;text-transform:uppercase;}
+.badge-uicc{background:#ddeeff;color:#1a4a80;border:1px solid #a0c0e8;}
+.badge-div{background:#fff3cd;color:#7a5000;border:1px solid #e0c060;}
+.badge-anat{background:#f0e8ff;color:#5a2080;border:1px solid #c0a0e0;}
+.badge-net{background:#e8f8e8;color:#1a6a1a;border:1px solid #80c080;}
+.pfx-grid{display:grid;grid-template-columns:auto 1fr 1fr 1fr 1.4fr;gap:10px;align-items:end;margin-bottom:14px;}
+.pfx-grid label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);display:block;margin-bottom:4px;}
+.pfx-grid select{padding:6px 8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-size:13px;font-weight:600;cursor:pointer;width:100%;}
+.pfx-divider{display:flex;align-items:flex-end;padding-bottom:8px;color:var(--muted);font-size:18px;font-weight:300;}
+
+/* VALIDATION ALERTS */
+.v-error{background:#fff0f0;border:1px solid #e88;border-radius:var(--radius);
+  padding:10px 14px;font-size:12px;color:#b00;margin-top:10px;line-height:1.6;}
+.v-warning{background:#fffbe6;border:1px solid #e0c040;border-radius:var(--radius);
+  padding:10px 14px;font-size:12px;color:#7a5800;margin-top:8px;line-height:1.6;}
+.v-incomplete{background:#f0f4ff;border:1px solid #a0b0e0;border-radius:var(--radius);
+  padding:10px 14px;font-size:12px;color:#2a4080;margin-top:8px;line-height:1.6;}
+.v-label{font-weight:700;margin-bottom:3px;}
+
+/* EMPTY STATE */
+#empty{text-align:center;padding:60px 20px;color:var(--muted);}
+#empty h2{font-size:18px;margin-bottom:8px;color:var(--text);}
+
+/* DISCLAIMER */
+#disclaimer{font-size:10px;color:var(--muted);padding:8px 16px;border-top:1px solid var(--border);
+  background:var(--panel);text-align:center;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#b0b8cc;border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div id="sidebar-header">
+    <h1>TNM 9ª Ed.</h1>
+    <small>UICC 2025 · mapping AJCC v9 per sede</small>
+  </div>
+  <input type="text" id="search-box" placeholder="🔍  Cerca sede…">
+  <div id="site-list"></div>
+</div>
+
+<div id="main">
+  <div id="topbar">
+    <div>
+      <div id="site-title">Seleziona una sede</div>
+      <div id="site-icd"></div>
+      <div id="site-badges" style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('lookup')">📋 Definizioni</button>
+      <button class="tab-btn" onclick="showTab('staging')">🎯 Stadiazione</button>
+      <button class="tab-btn" onclick="showTab('referto')">📄 Referto</button>
+      <button onclick="nuovoCaso()" style="margin-left:10px;padding:7px 14px;border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;" onmouseover="this.style.background='var(--hover)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--bg)';this.style.color='var(--muted)'">🆕 Nuovo caso</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <div id="empty">
+      <h2>TNM 9ª Edizione</h2>
+      <p>Seleziona una sede tumorale dal pannello di sinistra</p>
+    </div>
+
+    <!-- LOOKUP -->
+    <div class="tab-panel" id="tab-lookup">
+      <div id="lookup-content"></div>
+    </div>
+
+    <!-- STAGING -->
+    <div class="tab-panel" id="tab-staging">
+      <div id="staging-content">
+        <div id="staging-form">
+          <!-- Prefix grid: preset + T/N/M individual selects -->
+          <div class="pfx-grid">
+            <div>
+              <label>Preset prefisso</label>
+              <select id="pfx-preset" onchange="applyPreset('stg')">
+                <option value="p,p,c">pTNM — p/p/cM (tipico AP)</option>
+                <option value="p,p,p">pTNM — p/p/pM (pM1 provato)</option>
+                <option value="c,c,c">cTNM</option>
+                <option value="yp,yp,c">ypTNM (post-neoadiuvante path)</option>
+                <option value="yc,yc,c">ycTNM (post-neoadiuvante clin)</option>
+                <option value="r,r,c">rTNM (recidiva)</option>
+              </select>
+            </div>
+            <div>
+              <label>T —</label>
+              <select id="pfx-T" onchange="onPrefixChange('stg')">
+                <option value="p">p</option><option value="c">c</option>
+                <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
+              </select>
+            </div>
+            <div>
+              <label>N —</label>
+              <select id="pfx-N" onchange="onPrefixChange('stg')">
+                <option value="p">p</option><option value="c">c</option>
+                <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
+              </select>
+            </div>
+            <div>
+              <label>M —</label>
+              <select id="pfx-M" onchange="onPrefixChange('stg')">
+                <option value="c">c</option><option value="p">p</option>
+                <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
+              </select>
+            </div>
+            <div style="padding-bottom:2px">
+              <label style="font-size:10px;color:var(--muted)">Nota: M è spesso cM0 anche in contesto pT/pN</label>
+            </div>
+          </div>
+          <div id="variant-wrap" class="variant-row" style="display:none">
+            <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variante/Istotipo:</label>
+            <select id="variant-sel" onchange="updateDropdowns()"></select>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>T — Tumore primitivo</label>
+              <select id="sel-T" onchange="onTNMChange()"></select>
+            </div>
+            <div class="form-group">
+              <label>N — Linfonodi regionali</label>
+              <select id="sel-N" onchange="onTNMChange();document.getElementById('n-auto-badge')&&(document.getElementById('n-auto-badge').textContent='')"></select>
+            </div>
+            <div class="form-group">
+              <label>M — Metastasi a distanza</label>
+              <select id="sel-M" onchange="onTNMChange()"></select>
+            </div>
+          </div>
+          <div id="extra-selects"></div>
+          <div id="stg-ln-row" style="display:none;gap:14px;margin-bottom:14px">
+            <div class="form-group" style="display:inline-block;width:180px;margin-right:14px">
+              <label>LN esaminati (opz.)</label>
+              <input type="number" id="stg-ln-tot" placeholder="es. 24" min="0" onchange="onTNMChange();syncStgToRef()">
+            </div>
+            <div class="form-group" style="display:inline-block;width:180px">
+              <label>LN positivi (opz.)</label>
+              <input type="number" id="stg-ln-pos" placeholder="es. 3" min="0" onchange="onTNMChange();syncStgToRef();autoCalcN()">
+            </div>
+          </div>
+          <button id="calc-btn" onclick="computeStage()">Calcola Stadio</button>
+        </div>
+        <div id="stage-validation"></div>
+        <div id="stage-result">
+          <div id="stage-value">—</div>
+          <div id="stage-label">Stadio (TNM 9ª Ed.)</div>
+          <div id="stage-detail"></div>
+        </div>
+        <div class="staging-table-wrap">
+          <div class="section-title">Tabella di Stadiazione</div>
+          <table class="staging-table" id="staging-table">
+            <thead><tr><th>Stadio</th><th>T</th><th>N</th><th>M</th><th>Extra (obbligatori)</th><th>Note</th></tr></thead>
+            <tbody id="staging-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REFERTO -->
+    <div class="tab-panel" id="tab-referto">
+      <div id="referto-form">
+        <!-- Prefix grid -->
+        <div class="pfx-grid">
+          <div>
+            <label>Preset prefisso</label>
+            <select id="pfx-preset2" onchange="applyPreset('ref')">
+              <option value="p,p,c">pTNM — p/p/cM (tipico AP)</option>
+              <option value="p,p,p">pTNM — p/p/pM (pM1 provato)</option>
+              <option value="c,c,c">cTNM</option>
+              <option value="yp,yp,c">ypTNM (post-neoadiuvante path)</option>
+              <option value="yc,yc,c">ycTNM (post-neoadiuvante clin)</option>
+              <option value="r,r,c">rTNM (recidiva)</option>
+            </select>
+          </div>
+          <div>
+            <label>T —</label>
+            <select id="pfx-T2" onchange="onPrefixChange('ref')">
+              <option value="p">p</option><option value="c">c</option>
+              <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
+            </select>
+          </div>
+          <div>
+            <label>N —</label>
+            <select id="pfx-N2" onchange="onPrefixChange('ref')">
+              <option value="p">p</option><option value="c">c</option>
+              <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
+            </select>
+          </div>
+          <div>
+            <label>M —</label>
+            <select id="pfx-M2" onchange="onPrefixChange('ref')">
+              <option value="c">c</option><option value="p">p</option>
+              <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
+            </select>
+          </div>
+          <div style="padding-bottom:2px">
+            <label style="font-size:10px;color:var(--muted)">Nota: M è spesso cM0 anche in contesto pT/pN</label>
+          </div>
+        </div>
+        <div id="variant-wrap2" class="variant-row" style="display:none">
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variante/Istotipo:</label>
+          <select id="variant-sel2" onchange="updateDropdowns2()"></select>
+        </div>
+        <div class="ref-grid">
+          <div class="form-group">
+            <label>T</label>
+            <select id="ref-T"></select>
+          </div>
+          <div class="form-group">
+            <label>N</label>
+            <select id="ref-N"></select>
+          </div>
+          <div class="form-group">
+            <label>M</label>
+            <select id="ref-M"></select>
+          </div>
+        </div>
+        <div id="ref-extra-selects"></div>
+        <div class="ref-extras">
+          <div class="form-group">
+            <label>Linfonodi esaminati</label>
+            <input type="number" id="ref-ln-tot" placeholder="es. 24" min="0">
+          </div>
+          <div class="form-group">
+            <label>Linfonodi positivi</label>
+            <input type="number" id="ref-ln-pos" placeholder="es. 3" min="0">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+          <label>Note aggiuntive (opzionale)</label>
+          <textarea id="ref-notes" rows="2" placeholder="es. invasione linfovascolare, margini, regressione..."></textarea>
+        </div>
+        <!-- Fattori prognostici non-TNM -->
+        <div style="background:var(--badge);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px">
+            Fattori prognostici non-TNM <span style="font-weight:400;text-transform:none">(opzionale — solo i campi valorizzati compariranno nel referto)</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+            <div class="form-group">
+              <label>LVI — Invasione linfovascolare</label>
+              <select id="ref-lvi">
+                <option value="">— non indicato —</option>
+                <option value="LVI presente">Presente</option>
+                <option value="LVI non identificata nel campione">Non identificata nel campione</option>
+                <option value="LVI non valutabile">Non valutabile</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>PNI — Invasione perineurale</label>
+              <select id="ref-pni">
+                <option value="">— non indicato —</option>
+                <option value="PNI presente">Presente</option>
+                <option value="PNI non identificata nel campione">Non identificata nel campione</option>
+                <option value="PNI non valutabile">Non valutabile</option>
+              </select>
+            </div>
+            <div class="form-group" id="budding-field">
+              <label>Budding tumorale <span style="font-size:10px;color:var(--muted)">(ITBCC 2016)</span></label>
+              <select id="ref-budding">
+                <option value="">— non indicato —</option>
+                <option value="Budding Bd1 (basso, 0–4 buds/0.785mm²)">Bd1 — basso</option>
+                <option value="Budding Bd2 (intermedio, 5–9 buds/0.785mm²)">Bd2 — intermedio</option>
+                <option value="Budding Bd3 (alto, ≥10 buds/0.785mm²)">Bd3 — alto</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Margini di resezione</label>
+              <select id="ref-margins">
+                <option value="">— non indicato —</option>
+                <option value="R0 (margini liberi)">R0 — liberi</option>
+                <option value="R1 (margine microscopicamente coinvolto)">R1 — microscopico</option>
+                <option value="R2 (margine macroscopicamente coinvolto)">R2 — macroscopico</option>
+                <option value="RX (non valutabile)">RX — non valutabile</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Regressione post-neoadiuvante</label>
+              <select id="ref-regression">
+                <option value="">— non indicato —</option>
+                <option value="Ryan 0 — risposta completa (no tumore residuo)">Ryan 0 — completa</option>
+                <option value="Ryan 1 — risposta quasi completa (raro tumore residuo)">Ryan 1 — quasi completa</option>
+                <option value="Ryan 2 — risposta parziale (tumore residuo con fibrosi)">Ryan 2 — parziale</option>
+                <option value="Ryan 3 — risposta minima o assente (tumore esteso residuo)">Ryan 3 — minima/assente</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Perforazione</label>
+              <select id="ref-perforation">
+                <option value="">— non indicato —</option>
+                <option value="Perforazione assente">Assente</option>
+                <option value="Perforazione presente">Presente</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button id="gen-btn" onclick="generateReferto()">Genera Referto</button>
+      </div>
+      <div id="referto-output"></div>
+      <button id="copy-btn" onclick="copyReferto()">📋 Copia negli Appunti</button>
+    </div>
+  </div>
+
+  <div id="disclaimer">
+    ⚠️ Uso esclusivo anatomia patologica — Fonte primaria: TNM Classification of Malignant Tumours, 9ª Ed., UICC 2025 — Non sostituisce la valutazione clinico-patologica — UICC e AJCC divergono in alcune sedi (es. mammella Tis(LCIS), tiroide); verificare per sede.
+  </div>
+</div>
+
+<script>
+// ======================================================
+// PARENT CODE HIERARCHY
+// ======================================================
+const PARENTS={
+  // T hierarchy
+  T1:['T1','T1mi','T1a','T1b','T1c'],T2:['T2','T2a','T2b','T2c'],
+  T3:['T3','T3a','T3b','T3c'],T4:['T4','T4a','T4b','T4c','T4d'],
+  // Tis variants: all map to Tis parent for staging rule matching
+  Tis:['Tis','Tis (DCIS)','Tis (LCIS)','Tis (Paget)','Tis (LAMN)'],
+  // N hierarchy — N1mi and N1a(sn) intentionally EXCLUDED (autonomous staging semantics)
+  N1:['N1','N1a','N1b','N1c'],N2:['N2','N2a','N2b','N2c'],
+  N3:['N3','N3a','N3b','N3c'],M1:['M1','M1a','M1b','M1c','M1d'],
+  // NOTE: No prefixed duplicates (pT1, pN1 etc.) — codeMatch() calls stripPfx()
+  // before hierarchy lookup, so prefixed rules are handled transparently.
+};
+
+const STAGE_ORD={'0':0,'0a':0.1,'0is':0.2,
+  'I':1,'IA':1.1,'IB':1.2,'IC':1.3,'IS':1.5,
+  'II':2,'IIA':2.1,'IIB':2.2,'IIC':2.3,
+  'III':3,'IIIA':3.1,'IIIB':3.2,'IIIC':3.3,'IIID':3.4,
+  'IV':4,'IVA':4.1,'IVB':4.2,'IVC':4.3};
+
+// Strip TNM prefix explicitly — ordered longest-first to avoid partial matches
+// e.g. 'yp' must be stripped before 'y' or 'p' individually
+function stripPfx(c){
+  if(!c)return'';
+  return c.replace(/^(yp|yc|rp|p|c|r|y)/,'');
+}
+
+function codeMatch(ruleCode,sel){
+  if(ruleCode==='any')return true;
+  const rc=stripPfx(ruleCode),sc=stripPfx(sel);
+  if(rc===sc)return true;
+  const ch=PARENTS[rc];
+  if(ch&&ch.map(x=>stripPfx(x)).includes(sc))return true;
+  return false;
+}
+
+function ruleMatches(rule,T,N,M,extra){
+  const tOk=rule.T==='any'||[].concat(rule.T).some(c=>codeMatch(c,T));
+  const nOk=rule.N==='any'||[].concat(rule.N).some(c=>codeMatch(c,N));
+  const mOk=rule.M==='any'||[].concat(rule.M).some(c=>codeMatch(c,M));
+  let extraOk=true;
+  if(rule.extra){
+    // strict: if rule requires an extra field, the selected value MUST match
+    for(const k in rule.extra){
+      const selVal=(extra&&extra[k]!=null&&extra[k]!=='')?extra[k]:undefined;
+      if(![].concat(rule.extra[k]).includes(selVal))extraOk=false;
+    }
+  }
+  return tOk&&nOk&&mOk&&extraOk;
+}
+
+function computeBestStage(rules,T,N,M,extra){
+  const matches=rules.filter(r=>ruleMatches(r,T,N,M,extra));
+  if(!matches.length)return{stage:null,ambiguous:false,matchCount:0,allStages:[]};
+
+  const distinctStages=[...new Set(matches.map(r=>r.stage))];
+
+  // Dataset ambiguity: multiple DIFFERENT stages match the same input.
+  // Correct behavior for a medical tool: do NOT pick the highest — block assignment.
+  if(distinctStages.length>1){
+    return{stage:null,ambiguous:true,matchCount:matches.length,allStages:distinctStages};
+  }
+
+  // Single stage matched (possibly by multiple rules — that is normal and expected)
+  return{stage:distinctStages[0],ambiguous:false,matchCount:matches.length,allStages:distinctStages};
+}
+
+// ======================================================
+// TNM DATA
+// ======================================================
+const SITES=[
+
+// ── GI ──────────────────────────────────────────────
+{id:'colon_retto',name:'Colon e Retto',icd:'C18-C20',cat:'gi',
+note:'≥12 linfonodi per pN0 adeguato. TD (depositi tumorali) classificati come N1c se LN negativi. OGJ con epicentro >2 cm dal GEJ → staging gastrico.',
+T:[
+  {c:'TX',d:'Tumore primitivo non valutabile'},
+  {c:'T0',d:'Nessuna evidenza di tumore primitivo'},
+  {c:'Tis',d:'Carcinoma in situ: invasione della lamina propria (cellule confinate alla lamina propria mucosale, senza estensione attraverso la muscularis mucosae)'},
+  {c:'T1',d:'Tumore che invade la sottomucosa'},
+  {c:'T2',d:'Tumore che invade la muscularis propria'},
+  {c:'T3',d:'Tumore che invade la sottosierosa o i tessuti pericolici/perirettali non peritonealizzati'},
+  {c:'T4a',d:'Tumore che perfora il peritoneo viscerale'},
+  {c:'T4b',d:'Tumore che invade direttamente altri organi o strutture'},
+],
+N:[
+  {c:'NX',d:'Linfonodi regionali non valutabili'},
+  {c:'N0',d:'Nessuna metastasi nei linfonodi regionali'},
+  {c:'N1a',d:'Metastasi in 1 linfonodo regionale'},
+  {c:'N1b',d:'Metastasi in 2-3 linfonodi regionali'},
+  {c:'N1c',d:'Depositi tumorali (satelliti) nella sottosierosa o nei tessuti pericolici/perirettali non peritonealizzati senza metastasi nei linfonodi regionali'},
+  {c:'N2a',d:'Metastasi in 4-6 linfonodi regionali'},
+  {c:'N2b',d:'Metastasi in 7 o più linfonodi regionali'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1a',d:'Metastasi confinate a un singolo organo (fegato, polmone, ovaio, linfonodi non regionali), senza metastasi peritoneali'},
+  {c:'M1b',d:'Metastasi in più di un organo'},
+  {c:'M1c',d:'Metastasi al peritoneo, con o senza coinvolgimento di altri organi'},
+],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:['T1','T2'],N:'N0',M:'M0'},
+  {stage:'IIA',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIB',T:'T4a',N:'N0',M:'M0'},
+  {stage:'IIC',T:'T4b',N:'N0',M:'M0'},
+  {stage:'IIIA',T:['T1','T2'],N:'N1',M:'M0'},
+  {stage:'IIIA',T:'T1',N:'N2a',M:'M0'},
+  {stage:'IIIB',T:['T1','T2'],N:'N2b',M:'M0'},
+  {stage:'IIIB',T:['T2','T3'],N:'N2a',M:'M0'},
+  {stage:'IIIB',T:['T3','T4a'],N:'N1',M:'M0'},
+  {stage:'IIIC',T:['T3','T4a'],N:'N2b',M:'M0'},
+  {stage:'IIIC',T:'T4a',N:'N2a',M:'M0'},
+  {stage:'IIIC',T:'T4b',N:['N1','N2'],M:'M0'},
+  {stage:'IVA',T:'any',N:'any',M:'M1a'},
+  {stage:'IVB',T:'any',N:'any',M:'M1b'},
+  {stage:'IVC',T:'any',N:'any',M:'M1c'},
+]},
+
+{id:'stomaco',name:'Stomaco',icd:'C16',cat:'gi',
+note:'≥16 linfonodi per pN0 adeguato. Epicentro OGJ ≤2 cm dalla GEJ (Siewert I/II) → staging esofageo.',
+variants:[
+  {id:'clinical',label:'Stadio clinico (cTNM)'},
+  {id:'path',label:'Stadio patologico (pTNM)'},
+],
+T:[
+  {c:'TX',d:'Tumore primitivo non valutabile'},
+  {c:'T0',d:'Nessuna evidenza di tumore primitivo'},
+  {c:'Tis',d:'Carcinoma in situ: tumore intraepiteliale senza invasione della lamina propria, displasia di alto grado'},
+  {c:'T1a',d:'Tumore che invade la lamina propria o la muscularis mucosae'},
+  {c:'T1b',d:'Tumore che invade la sottomucosa'},
+  {c:'T2',d:'Tumore che invade la muscularis propria'},
+  {c:'T3',d:'Tumore che invade la sottosierosa'},
+  {c:'T4a',d:'Tumore che perfora la sierosa (peritoneo viscerale)'},
+  {c:'T4b',d:'Tumore che invade strutture adiacenti (milza, colon trasverso, fegato, diaframma, pancreas, parete addominale, surrene, rene, tenue, retroperitoneo)'},
+],
+N:[
+  {c:'NX',d:'Linfonodi regionali non valutabili'},
+  {c:'N0',d:'Nessuna metastasi nei linfonodi regionali'},
+  {c:'N1',d:'Metastasi in 1-2 linfonodi regionali'},
+  {c:'N2',d:'Metastasi in 3-6 linfonodi regionali'},
+  {c:'N3a',d:'Metastasi in 7-15 linfonodi regionali'},
+  {c:'N3b',d:'Metastasi in 16 o più linfonodi regionali'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza (include citologia peritoneale negativa)'},
+  {c:'M1',d:'Metastasi a distanza (include semina peritoneale, citologia positiva, metastasi omentali)'},
+],
+staging_variants:{
+  clinical:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'I',T:['T1','T2'],N:'N0',M:'M0'},
+    {stage:'IIA',T:['T1','T2'],N:['N1','N2','N3'],M:'M0'},
+    {stage:'IIB',T:['T3','T4a'],N:'N0',M:'M0'},
+    {stage:'III',T:['T3','T4a'],N:['N1','N2','N3'],M:'M0'},
+    {stage:'IVA',T:'T4b',N:'any',M:'M0'},
+    {stage:'IVB',T:'any',N:'any',M:'M1'},
+  ],
+  path:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'IA',T:'T1',N:'N0',M:'M0'},
+    {stage:'IB',T:'T1',N:'N1',M:'M0'},
+    {stage:'IB',T:'T2',N:'N0',M:'M0'},
+    {stage:'IIA',T:'T1',N:'N2',M:'M0'},
+    {stage:'IIA',T:'T2',N:'N1',M:'M0'},
+    {stage:'IIA',T:'T3',N:'N0',M:'M0'},
+    {stage:'IIB',T:'T1',N:'N3a',M:'M0'},
+    {stage:'IIB',T:'T2',N:'N2',M:'M0'},
+    {stage:'IIB',T:'T3',N:'N1',M:'M0'},
+    {stage:'IIB',T:'T4a',N:'N0',M:'M0'},
+    {stage:'IIIA',T:'T2',N:'N3a',M:'M0'},
+    {stage:'IIIA',T:'T3',N:'N2',M:'M0'},
+    {stage:'IIIA',T:'T4a',N:['N1','N2'],M:'M0'},
+    {stage:'IIIA',T:'T4b',N:'N0',M:'M0'},
+    {stage:'IIIB',T:['T1','T2'],N:'N3b',M:'M0'},
+    {stage:'IIIB',T:['T3','T4a'],N:'N3a',M:'M0'},
+    {stage:'IIIB',T:'T4b',N:['N1','N2'],M:'M0'},
+    {stage:'IIIC',T:['T3','T4a'],N:'N3b',M:'M0'},
+    {stage:'IIIC',T:'T4b',N:['N3a','N3b'],M:'M0'},
+    {stage:'IV',T:'any',N:'any',M:'M1'},
+  ]
+}},
+
+{id:'esofago',name:'Esofago / GEJ',icd:'C15,C16.0',cat:'gi',model_limited:true,badges:[{cls:'badge-anat',txt:'Prognostic groups parziali'}],
+note:'≥7 linfonodi per pN0 adeguato. GEJ con epicentro ≤2 cm → staging esofageo. Stage Group anatomico separato per SCC e Adeno (clinico e patologico). I Pathological Prognostic Groups con grado e sede non sono implementati nel motore di calcolo.',
+variants:[
+  {id:'scc_path',label:'SCC — pStage'},
+  {id:'scc_clin',label:'SCC — cStage'},
+  {id:'adeno_path',label:'Adeno — pStage'},
+  {id:'adeno_clin',label:'Adeno — cStage'},
+],
+T:[
+  {c:'TX',d:'Tumore primitivo non valutabile'},
+  {c:'T0',d:'Nessuna evidenza di tumore primitivo'},
+  {c:'Tis',d:'Carcinoma in situ / displasia di alto grado'},
+  {c:'T1a',d:'Tumore che invade la lamina propria o la muscularis mucosae'},
+  {c:'T1b',d:'Tumore che invade la sottomucosa'},
+  {c:'T2',d:'Tumore che invade la muscularis propria'},
+  {c:'T3',d:'Tumore che invade l\'avventizia (incluso il grasso periesofageo)'},
+  {c:'T4a',d:'Tumore che invade pleura, pericardio, vena azygos, diaframma o peritoneo'},
+  {c:'T4b',d:'Tumore che invade strutture adiacenti: aorta, corpo vertebrale o trachea'},
+],
+N:[
+  {c:'NX',d:'Linfonodi regionali non valutabili'},
+  {c:'N0',d:'Nessuna metastasi nei linfonodi regionali'},
+  {c:'N1',d:'Metastasi in 1-2 linfonodi regionali'},
+  {c:'N2',d:'Metastasi in 3-6 linfonodi regionali'},
+  {c:'N3',d:'Metastasi in 7 o più linfonodi regionali'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1',d:'Metastasi a distanza'},
+],
+staging_variants:{
+  scc_clin:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'I',T:'T1',N:['N0','N1'],M:'M0'},
+    {stage:'II',T:'T2',N:['N0','N1'],M:'M0'},
+    {stage:'II',T:'T3',N:'N0',M:'M0'},
+    {stage:'III',T:['T1','T2'],N:'N2',M:'M0'},
+    {stage:'III',T:'T3',N:['N1','N2'],M:'M0'},
+    {stage:'IVA',T:['T4a','T4b'],N:['N0','N1','N2'],M:'M0'},
+    {stage:'IVA',T:'any',N:'N3',M:'M0'},
+    {stage:'IVB',T:'any',N:'any',M:'M1'},
+  ],
+  scc_path:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'IA',T:'T1a',N:'N0',M:'M0'},
+    {stage:'IB',T:'T1b',N:'N0',M:'M0'},
+    {stage:'IIA',T:'T2',N:'N0',M:'M0'},
+    {stage:'IIB',T:'T1',N:'N1',M:'M0'},
+    {stage:'IIB',T:'T3',N:'N0',M:'M0'},
+    {stage:'IIIA',T:'T1',N:'N2',M:'M0'},
+    {stage:'IIIA',T:'T2',N:'N1',M:'M0'},
+    {stage:'IIIB',T:'T2',N:'N2',M:'M0'},
+    {stage:'IIIB',T:'T3',N:['N1','N2'],M:'M0'},
+    {stage:'IIIB',T:'T4a',N:['N0','N1'],M:'M0'},
+    {stage:'IVA',T:'T4a',N:'N2',M:'M0'},
+    {stage:'IVA',T:'T4b',N:'any',M:'M0'},
+    {stage:'IVA',T:'any',N:'N3',M:'M0'},
+    {stage:'IVB',T:'any',N:'any',M:'M1'},
+  ],
+  adeno_clin:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'I',T:'T1',N:'N0',M:'M0'},
+    {stage:'IIA',T:'T1',N:'N1',M:'M0'},
+    {stage:'IIB',T:'T2',N:'N0',M:'M0'},
+    {stage:'III',T:'T2',N:'N1',M:'M0'},
+    {stage:'III',T:['T3','T4a'],N:['N0','N1'],M:'M0'},
+    {stage:'IVA',T:['T1','T2','T3','T4a'],N:'N2',M:'M0'},
+    {stage:'IVA',T:'T4b',N:['N0','N1','N2'],M:'M0'},
+    {stage:'IVA',T:'any',N:'N3',M:'M0'},
+    {stage:'IVB',T:'any',N:'any',M:'M1'},
+  ],
+  adeno_path:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'IA',T:'T1a',N:'N0',M:'M0'},
+    {stage:'IB',T:'T1b',N:'N0',M:'M0'},
+    {stage:'IIA',T:'T2',N:'N0',M:'M0'},
+    {stage:'IIB',T:'T1',N:'N1',M:'M0'},
+    {stage:'IIB',T:'T3',N:'N0',M:'M0'},
+    {stage:'IIIA',T:'T1',N:'N2',M:'M0'},
+    {stage:'IIIA',T:'T2',N:'N1',M:'M0'},
+    {stage:'IIIB',T:'T2',N:'N2',M:'M0'},
+    {stage:'IIIB',T:'T3',N:['N1','N2'],M:'M0'},
+    {stage:'IIIB',T:'T4a',N:['N0','N1'],M:'M0'},
+    {stage:'IVA',T:'T4a',N:'N2',M:'M0'},
+    {stage:'IVA',T:'T4b',N:'any',M:'M0'},
+    {stage:'IVA',T:'any',N:'N3',M:'M0'},
+    {stage:'IVB',T:'any',N:'any',M:'M1'},
+  ]
+}},
+
+{id:'intestino_tenue',name:'Intestino Tenue',icd:'C17',cat:'gi',
+note:'≥6 linfonodi per pN0. Esclude l\'ampolla di Vater.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1a',d:'Invade la lamina propria o la muscularis mucosae'},
+  {c:'T1b',d:'Invade la sottomucosa'},
+  {c:'T2',d:'Invade la muscularis propria'},
+  {c:'T3',d:'Invade la sottosierosa o il tessuto perimuscolre non peritonealizzato (mesentere/retroperitoneo) senza perforazione della sierosa'},
+  {c:'T4',d:'Perfora il peritoneo viscerale o invade direttamente altri organi/strutture (pancreas per il duodeno)'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi in 1-2 linfonodi regionali'},
+  {c:'N2',d:'Metastasi in 3 o più linfonodi regionali'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:['T1','T2'],N:'N0',M:'M0'},
+  {stage:'IIA',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIB',T:'T4',N:'N0',M:'M0'},
+  {stage:'IIIA',T:'any',N:'N1',M:'M0'},
+  {stage:'IIIB',T:'any',N:'N2',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'appendice',name:'Appendice',icd:'C18.1',cat:'gi',
+note:'≥12 linfonodi per pN0. Comprende adenocarcinomi (mucinosi e non) e carcinomi neuroendocrini scarsamente differenziati. I NET ben differenziati hanno classificazione separata. I goblet cell adenocarcinomi seguono lo schema adenocarcinoma. M1a: solo mucina acellulare intraperitoneale; M1b: epitelio mucinoso intraperitoneale (il grado determina IVA vs IVB); M1c: metastasi non peritoneali.',
+extra:[{id:'G',label:'Grado istologico (rilevante per M1b)',options:['—','G1','G2','G3','GX']}],
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ: intraepiteliale o invasione della lamina propria'},
+  {c:'Tis (LAMN)',d:'LAMN confinata alla muscularis propria; mucina acellulare o epitelio mucinoso possono invadere la muscularis propria'},
+  {c:'T1',d:'Invade la sottomucosa'},
+  {c:'T2',d:'Invade la muscularis propria'},
+  {c:'T3',d:'Invade la sottosierosa o il mesoappendice'},
+  {c:'T4a',d:'Perfora il peritoneo viscerale (incluso tumore mucinoso peritoneale o mucina acellulare sulla sierosa)'},
+  {c:'T4b',d:'Invade direttamente altri organi o strutture'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1a',d:'Metastasi in 1 linfonodo regionale'},
+  {c:'N1b',d:'Metastasi in 2-3 linfonodi regionali'},
+  {c:'N1c',d:'Depositi tumorali (satelliti) nella sottosierosa o nei tessuti pericolici/perirettali non peritonealizzati, senza metastasi nei linfonodi regionali'},
+  {c:'N2',d:'Metastasi in 4 o più linfonodi regionali'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1a',d:'Solo mucina acellulare intraperitoneale'},
+  {c:'M1b',d:'Metastasi intraperitoneale con epitelio mucinoso (grado determina IVA vs IVB)'},
+  {c:'M1c',d:'Metastasi non peritoneali'},
+],
+staging:[
+  {stage:'0',T:['Tis','Tis (LAMN)'],N:'N0',M:'M0'},
+  {stage:'I',T:['T1','T2'],N:'N0',M:'M0'},
+  {stage:'IIA',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIB',T:'T4a',N:'N0',M:'M0'},
+  {stage:'IIC',T:'T4b',N:'N0',M:'M0'},
+  {stage:'IIIA',T:['T1','T2'],N:'N1',M:'M0'},
+  {stage:'IIIB',T:['T3','T4'],N:'N1',M:'M0'},
+  {stage:'IIIC',T:'any',N:'N2',M:'M0'},
+  // M1a = sempre IVA indipendentemente dal grado
+  {stage:'IVA',T:'any',N:'any',M:'M1a'},
+  // M1b: IVA se G1; IVB se G2/G3/GX
+  {stage:'IVA',T:'any',N:'any',M:'M1b',extra:{G:'G1'}},
+  {stage:'IVB',T:'any',N:'any',M:'M1b',extra:{G:'G2'}},
+  {stage:'IVB',T:'any',N:'any',M:'M1b',extra:{G:'G3'}},
+  {stage:'IVB',T:'any',N:'any',M:'M1b',extra:{G:'GX'}},
+  // M1b senza grado specificato = non determinabile (nessuna regola matcha)
+  {stage:'IVC',T:'any',N:'any',M:'M1c'},
+]},
+
+{id:'canale_anale',name:'Canale Anale',icd:'C21',cat:'gi',
+note:'≥12 linfonodi per pN peri-rettale/pelvico; ≥6 per pN inguinale. Classificazione AJCC 9ª versione. Include canale anale esteso alla cute perianale (entro 5 cm dal margine anale).',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ, HSIL, AIN II-III, ASIN-H'},
+  {c:'T1',d:'Tumore ≤2 cm nella dimensione maggiore'},
+  {c:'T2',d:'Tumore >2 cm e ≤5 cm nella dimensione maggiore'},
+  {c:'T3',d:'Tumore >5 cm nella dimensione maggiore'},
+  {c:'T4',d:'Tumore di qualsiasi dimensione che invade organi adiacenti (vagina, uretra, vescica). L\'invasione isolata della parete rettale, cute perianale, tessuto sottocutaneo o sfinteri NON è T4'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1a',d:'Metastasi nei linfonodi inguinali, mesorettali e/o iliaci interni'},
+  {c:'N1b',d:'Metastasi nei linfonodi iliaci esterni'},
+  {c:'N1c',d:'Metastasi nei linfonodi iliaci esterni E in inguinali/mesorettali/iliaci interni'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'IIA',T:'T2',N:'N0',M:'M0'},
+  {stage:'IIB',T:['T1','T2'],N:'N1',M:'M0'},
+  {stage:'IIIA',T:'T3',N:['N0','N1'],M:'M0'},
+  {stage:'IIIB',T:'T4',N:'N0',M:'M0'},
+  {stage:'IIIC',T:'T4',N:'N1',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'fegato_hcc',name:'Fegato (HCC)',icd:'C22.0',cat:'gi',
+note:'Solo per epatocarcinoma (HCC). CCA e HCC-CC misto hanno classificazione separata (Dotti biliari intraepatici). ≥3 linfonodi per pN0. Il BCLC (Barcelona Clinic Liver Cancer stage) è sistema prognostico parallelo frequentemente usato in clinica.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'T1a',d:'Tumore solitario ≤2 cm, con o senza invasione vascolare'},
+  {c:'T1b',d:'Tumore solitario >2 cm, senza invasione vascolare'},
+  {c:'T2',d:'Tumore solitario con invasione vascolare e >2 cm, OPPURE tumori multipli, nessuno >5 cm'},
+  {c:'T3',d:'Tumori multipli, almeno uno >5 cm'},
+  {c:'T4',d:'Tumore/i che coinvolge un ramo principale della vena porta o della vena epatica, O con invasione diretta di organi adiacenti (incluso diaframma) eccetto la colecisti, O con perforazione del peritoneo viscerale'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi linfonodale regionale'},
+  {c:'N1',d:'Metastasi nei linfonodi regionali (ilo epatico, arteria epatica propria, vena porta, diaframma inferiore, cava)'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'IA',T:'T1a',N:'N0',M:'M0'},
+  {stage:'IB',T:'T1b',N:'N0',M:'M0'},
+  {stage:'II',T:'T2',N:'N0',M:'M0'},
+  {stage:'IIIA',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIIB',T:'T4',N:'N0',M:'M0'},
+  {stage:'IVA',T:'any',N:'N1',M:'M0'},
+  {stage:'IVB',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'bile_intrahep',name:'Dotti biliari intraepatici (CCA)',icd:'C22.1',cat:'gi',
+note:'Include anche l\'HCC-CC misto. ≥6 linfonodi per pN0. Metastasi ai linfonodi celiaci e/o periaortici/cavali = M1.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ (tumore intraduttale)'},
+  {c:'T1a',d:'Tumore solitario ≤5 cm, senza invasione vascolare'},
+  {c:'T1b',d:'Tumore solitario >5 cm, senza invasione vascolare'},
+  {c:'T2',d:'Tumore solitario con invasione vascolare intraepatica O tumori multipli, con o senza invasione vascolare'},
+  {c:'T3',d:'Tumore che perfora il peritoneo viscerale'},
+  {c:'T4',d:'Tumore che invade strutture extraepatiche locali per invasione diretta dal fegato'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi nei linfonodi regionali'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza (inclusi linfonodi celiaci e periaortici/cavali)'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'IA',T:'T1a',N:'N0',M:'M0'},
+  {stage:'IB',T:'T1b',N:'N0',M:'M0'},
+  {stage:'II',T:'T2',N:'N0',M:'M0'},
+  {stage:'IIIA',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIIB',T:'T4',N:'N0',M:'M0'},
+  {stage:'IIIB',T:'any',N:'N1',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'colecisti',name:'Colecisti',icd:'C23.9,C24.4',cat:'gi',
+note:'Include il dotto cistico (C24.4). ≥6 linfonodi per pN0.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1a',d:'Tumore che invade la lamina propria'},
+  {c:'T1b',d:'Tumore che invade lo strato muscolare'},
+  {c:'T2a',d:'Tumore che invade il tessuto connettivo perimuscolare sul lato peritoneale, senza estensione alla sierosa'},
+  {c:'T2b',d:'Tumore che invade il tessuto connettivo perimuscolare sul lato epatico, senza estensione al fegato'},
+  {c:'T3',d:'Tumore che perfora la sierosa e/o invade direttamente il fegato e/o un altro organo adiacente (stomaco, duodeno, colon, pancreas, omento, dotti biliari extraepatici)'},
+  {c:'T4',d:'Tumore che invade la vena porta principale o l\'arteria epatica, O invade due o più organi/strutture extraepatiche'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi in 1-3 linfonodi regionali'},
+  {c:'N2',d:'Metastasi in 4 o più linfonodi regionali'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'IA',T:'T1a',N:'N0',M:'M0'},
+  {stage:'IB',T:'T1b',N:'N0',M:'M0'},
+  {stage:'IIA',T:'T2a',N:'N0',M:'M0'},
+  {stage:'IIB',T:'T2b',N:'N0',M:'M0'},
+  {stage:'IIIA',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIIB',T:['T1','T2','T3'],N:'N1',M:'M0'},
+  {stage:'IVA',T:'T4',N:['N0','N1'],M:'M0'},
+  {stage:'IVB',T:'any',N:'N2',M:'M0'},
+  {stage:'IVB',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'bile_perihilar',name:'Dotti biliari peribiliari (Klatskin)',icd:'C24.3',cat:'gi',
+note:'Colangiocarcinoma peribilare/ilo epatico (tumore di Klatskin). ≥15 linfonodi per pN0.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1',d:'Tumore confinato al dotto biliare, con estensione fino allo strato muscolare o al tessuto fibroso'},
+  {c:'T2a',d:'Tumore che invade il tessuto adiposo periducale'},
+  {c:'T2b',d:'Tumore che invade il parenchima epatico adiacente'},
+  {c:'T3',d:'Tumore che invade rami unilaterali della vena porta o dell\'arteria epatica'},
+  {c:'T4',d:'Tumore che invade la vena porta principale o i suoi rami bilateralmente, O l\'arteria epatica comune, O radici biliari secondarie unilaterali con coinvolgimento controlaterale della vena porta o dell\'arteria epatica'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi in 1-3 linfonodi regionali'},
+  {c:'N2',d:'Metastasi in 4 o più linfonodi regionali'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'II',T:['T2a','T2b'],N:'N0',M:'M0'},
+  {stage:'IIIA',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIIB',T:'T4',N:'N0',M:'M0'},
+  {stage:'IIIC',T:'any',N:'N1',M:'M0'},
+  {stage:'IVA',T:'any',N:'N2',M:'M0'},
+  {stage:'IVB',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'bile_distale',name:'Via biliare distale',icd:'C24.2',cat:'gi',
+note:'Include i dotti biliari extraepatici distali all\'inserzione del dotto cistico. ≥12 linfonodi per pN0.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1',d:'Tumore che invade la parete del dotto biliare in profondità <5 mm'},
+  {c:'T2',d:'Tumore che invade la parete del dotto biliare in profondità 5-12 mm'},
+  {c:'T3',d:'Tumore che invade la parete del dotto biliare in profondità >12 mm'},
+  {c:'T4',d:'Tumore che coinvolge l\'asse celiaco, l\'arteria mesenterica superiore e/o l\'arteria epatica comune'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi in 1-3 linfonodi regionali'},
+  {c:'N2',d:'Metastasi in 4 o più linfonodi regionali'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'IIA',T:'T1',N:'N1',M:'M0'},
+  {stage:'IIA',T:'T2',N:'N0',M:'M0'},
+  {stage:'IIB',T:'T2',N:'N1',M:'M0'},
+  {stage:'IIB',T:'T3',N:['N0','N1'],M:'M0'},
+  {stage:'IIIA',T:['T1','T2','T3'],N:'N2',M:'M0'},
+  {stage:'IIIB',T:'T4',N:'any',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'ampolla',name:'Ampolla di Vater',icd:'C24.1',cat:'gi',
+note:'≥12 linfonodi per pN0. I linfonodi splenici e della coda pancreatica sono distanti (M1).',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1a',d:'Tumore limitato all\'ampolla di Vater o allo sfintere di Oddi'},
+  {c:'T1b',d:'Tumore che invade oltre lo sfintere di Oddi (invasione perisfinterica) e/o nella sottomucosa duodenale'},
+  {c:'T2',d:'Tumore che invade la muscularis propria del duodeno'},
+  {c:'T3a',d:'Tumore che invade il pancreas ≤5 mm'},
+  {c:'T3b',d:'Tumore che invade il pancreas >5 mm O si estende nel tessuto peripancreatico o nella sierosa duodenale, senza coinvolgimento dell\'asse celiaco o AMS'},
+  {c:'T4',d:'Tumore con coinvolgimento vascolare dell\'AMS, asse celiaco o arteria epatica comune'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi in 1-3 linfonodi regionali'},
+  {c:'N2',d:'Metastasi in 4 o più linfonodi regionali'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'IA',T:'T1a',N:'N0',M:'M0'},
+  {stage:'IB',T:['T1b','T2'],N:'N0',M:'M0'},
+  {stage:'IIA',T:'T3a',N:'N0',M:'M0'},
+  {stage:'IIB',T:'T3b',N:'N0',M:'M0'},
+  {stage:'IIIA',T:['T1a','T1b','T2','T3'],N:'N1',M:'M0'},
+  {stage:'IIIB',T:'any',N:'N2',M:'M0'},
+  {stage:'IIIB',T:'T4',N:'any',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'pancreas',name:'Pancreas (Adenocarcinoma)',icd:'C25',cat:'gi',
+note:'≥12 linfonodi per pN0. Esclude i NET ben differenziati (classificazione separata). T4 è irresecabile per definizione anatomica (coinvolgimento celiaco/AMS/arteria epatica comune).',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ (include PanIN-III)'},
+  {c:'T1a',d:'Tumore ≤0.5 cm'},
+  {c:'T1b',d:'Tumore >0.5 cm e ≤1 cm'},
+  {c:'T1c',d:'Tumore >1 cm e ≤2 cm'},
+  {c:'T2',d:'Tumore >2 cm e ≤4 cm'},
+  {c:'T3',d:'Tumore >4 cm'},
+  {c:'T4',d:'Tumore che coinvolge l\'asse celiaco, l\'arteria mesenterica superiore e/o l\'arteria epatica comune (irresecabile per definizione)'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi in 1-3 linfonodi regionali'},
+  {c:'N2',d:'Metastasi in 4 o più linfonodi regionali'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'IA',T:'T1',N:'N0',M:'M0'},
+  {stage:'IB',T:'T2',N:'N0',M:'M0'},
+  {stage:'IIA',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIB',T:['T1','T2','T3'],N:'N1',M:'M0'},
+  {stage:'III',T:['T1','T2','T3'],N:'N2',M:'M0'},
+  {stage:'III',T:'T4',N:'any',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'net_stomaco',name:'NET GI — Stomaco',icd:'C16',cat:'gi_net',badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+note:'Solo NET ben differenziati (G1-G3). NEC (small cell, large cell) → staging come carcinoma gastrico. Grading WHO: G1 (<2 mitosi/2mm², Ki67 <3%), G2 (2-20 mitosi/2mm², Ki67 3-20%), G3 (>20 mitosi/2mm², Ki67 >20%). Grado determinato dal parametro più alto tra mitosi e Ki67.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'T1',d:'Tumore che invade la mucosa o la sottomucosa e ≤1 cm nella dimensione maggiore'},
+  {c:'T2',d:'Tumore che invade la muscularis propria O >1 cm nella dimensione maggiore'},
+  {c:'T3',d:'Tumore che invade la sottosierosa'},
+  {c:'T4',d:'Tumore che perfora il peritoneo viscerale o invade altri organi/strutture adiacenti'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi nei linfonodi regionali'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1',d:'Metastasi a distanza'},
+  {c:'M1a',d:'Solo metastasi epatiche'},
+  {c:'M1b',d:'Solo metastasi extraepatiche'},
+  {c:'M1c',d:'Metastasi epatiche ed extraepatiche'},
+],
+staging:[
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'II',T:['T2','T3'],N:'N0',M:'M0'},
+  {stage:'III',T:'T4',N:'N0',M:'M0'},
+  {stage:'III',T:'any',N:'N1',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'net_coloretto',name:'NET GI — Colon-Retto',icd:'C18-C20',cat:'gi_net',badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+note:'Solo NET ben differenziati (G1-G3). Grading WHO identico agli altri NET GI.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'T1a',d:'Tumore <1 cm nella dimensione maggiore'},
+  {c:'T1b',d:'Tumore 1-2 cm nella dimensione maggiore'},
+  {c:'T2',d:'Tumore che invade la muscularis propria O >2 cm nella dimensione maggiore'},
+  {c:'T3',d:'Tumore che invade la sottosierosa o i tessuti pericolici/perirettali non peritonealizzati'},
+  {c:'T4',d:'Tumore che perfora il peritoneo viscerale o invade altri organi'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi nei linfonodi regionali'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1a',d:'Solo metastasi epatiche'},
+  {c:'M1b',d:'Solo metastasi extraepatiche'},
+  {c:'M1c',d:'Metastasi epatiche ed extraepatiche'},
+],
+staging:[
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'IIA',T:'T2',N:'N0',M:'M0'},
+  {stage:'IIB',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIIA',T:'T4',N:'N0',M:'M0'},
+  {stage:'IIIB',T:'any',N:'N1',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'net_pancreas',name:'NET GI — Pancreas',icd:'C25',cat:'gi_net',badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+note:'Solo NET ben differenziati pancreatici (funzionanti e non). NEC pancreatici → staging come adenocarcinoma pancreatico.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'T1',d:'Tumore limitato al pancreas, ≤2 cm'},
+  {c:'T2',d:'Tumore limitato al pancreas, >2 cm e <4 cm'},
+  {c:'T3',d:'Tumore limitato al pancreas, >4 cm, O che invade il duodeno o il dotto biliare'},
+  {c:'T4',d:'Tumore che invade organi adiacenti (stomaco, milza, colon, surrene) o la parete di grandi vasi (asse celiaco, AMS)'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi nei linfonodi regionali'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1a',d:'Solo metastasi epatiche'},
+  {c:'M1b',d:'Solo metastasi extraepatiche'},
+  {c:'M1c',d:'Metastasi epatiche ed extraepatiche'},
+],
+staging:[
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'II',T:['T2','T3'],N:'N0',M:'M0'},
+  {stage:'III',T:'T4',N:'N0',M:'M0'},
+  {stage:'III',T:'any',N:'N1',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+// ── TESTA E COLLO ──────────────────────────────────
+{id:'tiroide',name:'Tiroide',icd:'C73.9',cat:'hn',badges:[{cls:'badge-div',txt:'UICC≠AJCC (alcuni istotipi)'}],
+note:'Staging separato per: PTC/FTC <55 anni (solo Stadio I-II), PTC/FTC ≥55 anni, carcinoma midollare, carcinoma anaplastico. ≥6 linfonodi per pN0 (neck dissection selettiva).',
+variants:[
+  {id:'diff_young',label:'PTC/FTC/PDTC/HCC < 55 anni'},
+  {id:'diff_old',label:'PTC/FTC/PDTC/HCC ≥ 55 anni'},
+  {id:'medullary',label:'Carcinoma midollare (MTC)'},
+  {id:'anaplastic',label:'Carcinoma anaplastico (ATC)'},
+],
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'T1a',d:'Tumore ≤1 cm, limitato alla tiroide'},
+  {c:'T1b',d:'Tumore >1 cm e ≤2 cm, limitato alla tiroide'},
+  {c:'T2',d:'Tumore >2 cm e ≤4 cm, limitato alla tiroide'},
+  {c:'T3a',d:'Tumore >4 cm, limitato alla tiroide'},
+  {c:'T3b',d:'Tumore di qualsiasi dimensione con estensione extratiroidea grossolana che invade i muscoli strap (sternoioideo, sternotiroideo, tireoioideo o omoioideo) o la paratiroide'},
+  {c:'T4a',d:'Tumore che si estende oltre la capsula tiroidea e invade: tessuto sottocutaneo, laringe, trachea, esofago, nervo ricorrente larngeo, o muscolo SCM'},
+  {c:'T4b',d:'Tumore che invade la fascia prevertebrale, i vasi mediastinici o ingloba l\'arteria carotide'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1a',d:'Metastasi nel livello VI (pretracheale, paratracheale e prelaringeo/Delfino) o nel mediastino superiore'},
+  {c:'N1b',d:'Metastasi negli altri linfonodi cervicali unilaterali, bilaterali o controlaterali (livelli I, II, III, IV o V) o retrofaringei'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging_variants:{
+  diff_young:[
+    {stage:'I',T:'any',N:'any',M:'M0'},
+    {stage:'II',T:'any',N:'any',M:'M1'},
+  ],
+  diff_old:[
+    {stage:'I',T:['T1a','T1b','T2'],N:'N0',M:'M0'},
+    {stage:'II',T:'T3',N:'N0',M:'M0'},
+    {stage:'II',T:['T1','T2','T3'],N:'N1',M:'M0'},
+    {stage:'III',T:'T4a',N:'any',M:'M0'},
+    {stage:'IVA',T:'T4b',N:'any',M:'M0'},
+    {stage:'IVB',T:'any',N:'any',M:'M1'},
+  ],
+  medullary:[
+    {stage:'I',T:['T1a','T1b'],N:'N0',M:'M0'},
+    {stage:'II',T:['T2','T3'],N:'N0',M:'M0'},
+    {stage:'III',T:['T1','T2','T3'],N:'N1a',M:'M0'},
+    {stage:'IVA',T:['T1','T2','T3'],N:'N1b',M:'M0'},
+    {stage:'IVA',T:'T4a',N:'any',M:'M0'},
+    {stage:'IVB',T:'T4b',N:'any',M:'M0'},
+    {stage:'IVC',T:'any',N:'any',M:'M1'},
+  ],
+  anaplastic:[
+    {stage:'IVA',T:['T1','T2','T3a'],N:'N0',M:'M0'},
+    {stage:'IVB',T:['T1','T2','T3a'],N:'N1',M:'M0'},
+    {stage:'IVB',T:['T3b','T4a','T4b'],N:['N0','N1'],M:'M0'},
+    {stage:'IVC',T:'any',N:'any',M:'M1'},
+  ]
+}},
+
+{id:'gh_salivari',name:'Ghiandole salivari',icd:'C07-C08',cat:'hn',
+note:'Ghiandole salivari maggiori. Le ghiandole salivari minori sono classificate con le sedi anatomiche di origine. ≥6 linfonodi per pN0.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1',d:'Tumore ≤2 cm nella dimensione maggiore, senza estensione extraparenchimale'},
+  {c:'T2',d:'Tumore >2 cm e ≤4 cm nella dimensione maggiore, senza estensione extraparenchimale'},
+  {c:'T3',d:'Tumore con estensione extraparenchimale senza coinvolgimento del nervo facciale VII, e/o tumore >4 cm nella dimensione maggiore'},
+  {c:'T4a',d:'Tumore che invade cute, mandibola, canale uditivo e/o nervo facciale'},
+  {c:'T4b',d:'Tumore che invade la base cranica e/o le placche pterigoidee e/o ingloba l\'arteria carotide'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi in un singolo linfonodo omolaterale ≤3 cm, senza estensione extranodale (ENE-)'},
+  {c:'N2a',d:'Metastasi in un singolo linfonodo omolaterale >3 cm e ≤6 cm, ENE-'},
+  {c:'N2b',d:'Metastasi in più linfonodi omolaterali ≤6 cm, ENE-'},
+  {c:'N2c',d:'Metastasi in linfonodi bilaterali o controlaterali ≤6 cm, ENE-'},
+  {c:'N3a',d:'Metastasi in un linfonodo >6 cm, ENE-'},
+  {c:'N3b',d:'Metastasi in qualsiasi linfonodo con estensione extranodale clinica (ENE+)'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'II',T:'T2',N:'N0',M:'M0'},
+  {stage:'IIIA',T:['T3','T4'],N:'N0',M:'M0'},
+  {stage:'IIIA',T:['T1','T2'],N:'N1',M:'M0'},
+  {stage:'IIIB',T:['T1','T2'],N:'N2',M:'M0'},
+  {stage:'IIIB',T:['T3','T4'],N:['N1','N2'],M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+// ── MAMMELLA ──────────────────────────────────────
+{id:'mammella',name:'Mammella',icd:'C50',cat:'breast',badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'}],
+note:'≥6 linfonodi per pN0 (livello I). pN dimensionale basato sul componente invasivo (non in situ). ITC (<0.2 mm o <200 cellule) = N0(i+). Per il report includere il modificatore sn (sentinel node). AJCC esclude Tis(LCIS) dalla classificazione.',
+T:[
+  {c:'TX',d:'Tumore primitivo non valutabile'},
+  {c:'T0',d:'Nessuna evidenza di tumore primitivo'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'Tis (DCIS)',d:'Carcinoma duttale in situ'},
+  {c:'Tis (LCIS)',d:'Carcinoma lobulare in situ (UICC include; AJCC esclude)'},
+  {c:'Tis (Paget)',d:'Malattia di Paget del capezzolo non associata a carcinoma invasivo o in situ nel parenchima mammario sottostante'},
+  {c:'T1mi',d:'Microinvasione ≤0.1 cm nella dimensione maggiore'},
+  {c:'T1a',d:'Tumore >0.1 cm e ≤0.5 cm'},
+  {c:'T1b',d:'Tumore >0.5 cm e ≤1 cm'},
+  {c:'T1c',d:'Tumore >1 cm e ≤2 cm'},
+  {c:'T2',d:'Tumore >2 cm e ≤5 cm'},
+  {c:'T3',d:'Tumore >5 cm'},
+  {c:'T4a',d:'Estensione alla parete toracica (esclusa invasione isolata della muscolatura pettorale)'},
+  {c:'T4b',d:'Ulcerazione, noduli cutanei satelliti omolaterali, edema cutaneo (incluso peau d\'orange)'},
+  {c:'T4c',d:'T4a + T4b'},
+  {c:'T4d',d:'Carcinoma infiammatorio'},
+],
+N:[
+  {c:'NX',d:'Linfonodi regionali non valutabili (es. già rimossi)'},
+  {c:'N0',d:'Nessuna metastasi nei linfonodi regionali'},
+  {c:'N1mi',d:'Micrometastasi (>0.2 mm e/o >200 cellule ma ≤2 mm)'},
+  {c:'N1a',d:'Metastasi in 1-3 linfonodi ascellari omolaterali, almeno uno >2 mm'},
+  {c:'N1b',d:'Metastasi in linfonodi mammari interni non clinicamente rilevati (solo biopsia del sentinella)'},
+  {c:'N1c',d:'Metastasi in 1-3 linfonodi ascellari E in linfonodi mammari interni non clinicamente rilevati'},
+  {c:'N2a',d:'Metastasi in 4-9 linfonodi ascellari omolaterali (almeno uno >2 mm)'},
+  {c:'N2b',d:'Metastasi clinicamente rilevate in linfonodi mammari interni omolaterali, in assenza di metastasi ascellari'},
+  {c:'N3a',d:'Metastasi in ≥10 linfonodi ascellari omolaterali (almeno uno >2 mm) O in linfonodi infraclavicolari/livello III'},
+  {c:'N3b',d:'Metastasi clinicamente rilevate in linfonodi mammari interni omolaterali in presenza di linfonodi ascellari positivi, O metastasi in >3 linfonodi ascellari e nei linfonodi mammari interni (alla biopsia del sentinella)'},
+  {c:'N3c',d:'Metastasi in linfonodi sopraclaveari omolaterali'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  // Stadio 0: tutte le varianti Tis. AJCC esclude Tis(LCIS); UICC la include.
+  {stage:'0',T:['Tis','Tis (DCIS)','Tis (LCIS)','Tis (Paget)'],N:'N0',M:'M0'},
+  {stage:'IA',T:'T1',N:'N0',M:'M0'},
+  {stage:'IB',T:['T0','T1'],N:'N1mi',M:'M0'},
+  {stage:'IIA',T:['T0','T1'],N:'N1',M:'M0'},
+  {stage:'IIA',T:'T2',N:'N0',M:'M0'},
+  {stage:'IIB',T:'T2',N:'N1',M:'M0'},
+  {stage:'IIB',T:'T3',N:'N0',M:'M0'},
+  {stage:'IIIA',T:['T0','T1','T2'],N:'N2',M:'M0'},
+  {stage:'IIIA',T:'T3',N:['N1','N2'],M:'M0'},
+  {stage:'IIIB',T:'T4',N:['N0','N1','N2'],M:'M0'},
+  {stage:'IIIC',T:'any',N:'N3',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+// ── UROLOGICO ─────────────────────────────────────
+{id:'prostata',name:'Prostata',icd:'C61.9',cat:'uro',model_limited:true,badges:[{cls:'badge-anat',txt:'Anatomico'}],
+note:'⚠ Raggruppamento anatomico (T/N/M) — il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason score), non implementati in questo motore. Esclusi i carcinomi uroteliali della prostata (staging ureterale). Nessun pT1. Suffix MRI: (mr); PSMA-PET: (PET) da indicare in referto.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'T1a',d:'Riscontro istologico incidentale nel ≤5% del tessuto resecato (TURP)'},
+  {c:'T1b',d:'Riscontro istologico incidentale in >5% del tessuto resecato'},
+  {c:'T1c',d:'Tumore identificato mediante biopsia ad ago (es. per PSA elevato)'},
+  {c:'T2a',d:'Tumore che interessa la metà o meno di un lobo'},
+  {c:'T2b',d:'Tumore che interessa più della metà di un lobo, ma non entrambi i lobi'},
+  {c:'T2c',d:'Tumore che interessa entrambi i lobi'},
+  {c:'T3a',d:'Estensione extraprostatica (unilaterale o bilaterale), incluso il coinvolgimento microscopico del collo vescicale'},
+  {c:'T3b',d:'Tumore che invade le vescichette seminali'},
+  {c:'T4',d:'Tumore fisso o che invade strutture adiacenti diverse dalle vescichette seminali: sfintere esterno, retto, muscoli elevatori e/o parete pelvica'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi nei linfonodi regionali (pelvi vera, sotto la biforcazione delle iliache comuni)'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1a',d:'Metastasi in linfonodi non regionali'},
+  {c:'M1b',d:'Metastasi ossee'},
+  {c:'M1c',d:'Metastasi in altri siti'},
+],
+variants:[
+  {id:'clinical',label:'Stadio clinico'},
+  {id:'path',label:'Stadio patologico'},
+],
+staging_variants:{
+  clinical:[
+    {stage:'I',T:['T1','T2a'],N:'N0',M:'M0'},
+    {stage:'II',T:['T2b','T2c'],N:'N0',M:'M0'},
+    {stage:'III',T:['T3','T4'],N:'N0',M:'M0'},
+    {stage:'IV',T:'any',N:'N1',M:'M0'},
+    {stage:'IV',T:'any',N:'any',M:'M1'},
+  ],
+  path:[
+    {stage:'II',T:'T2',N:'N0',M:'M0'},
+    {stage:'III',T:['T3','T4'],N:'N0',M:'M0'},
+    {stage:'IV',T:'any',N:'N1',M:'M0'},
+    {stage:'IV',T:'any',N:'any',M:'M1'},
+  ]
+}},
+
+{id:'vescica',name:'Vescica',icd:'C67',cat:'uro',
+note:'Esclude papilloma e PUNLMP. Suffisso (m): tumori multipli; suffisso (is): CIS associato. Staging corrisponde sia a c che pTNM.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Ta',d:'Carcinoma papillare non invasivo'},
+  {c:'Tis',d:'Carcinoma in situ: "flat tumour"'},
+  {c:'T1',d:'Tumore che invade il tessuto connettivo sottoepiteliale'},
+  {c:'T2a',d:'Tumore che invade la muscularis propria superficiale (metà interna)'},
+  {c:'T2b',d:'Tumore che invade la muscularis propria profonda (metà esterna)'},
+  {c:'T3a',d:'Invasione microscopica del tessuto perivescicale'},
+  {c:'T3b',d:'Invasione macroscopica del tessuto perivescicale (massa extravescicale)'},
+  {c:'T4a',d:'Tumore che invade stroma prostatico, vescichette seminali, utero o vagina'},
+  {c:'T4b',d:'Tumore che invade la parete pelvica o la parete addominale'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi in un singolo linfonodo nella vera pelvi (ipogastrico, otturatore, iliaco esterno o presacrale)'},
+  {c:'N2',d:'Metastasi in più linfonodi regionali nella vera pelvi'},
+  {c:'N3',d:'Metastasi in un linfonodo iliaco comune'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1a',d:'Linfonodi non regionali'},
+  {c:'M1b',d:'Altre metastasi a distanza'},
+],
+staging:[
+  {stage:'0a',T:'Ta',N:'N0',M:'M0'},
+  {stage:'0is',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'II',T:['T2a','T2b'],N:'N0',M:'M0'},
+  {stage:'IIIA',T:['T3a','T3b','T4a'],N:'N0',M:'M0'},
+  {stage:'IIIA',T:['T1','T2','T3','T4a'],N:'N1',M:'M0'},
+  {stage:'IIIB',T:['T1','T2','T3','T4a'],N:['N2','N3'],M:'M0'},
+  {stage:'IVA',T:'T4b',N:'any',M:'M0'},
+  {stage:'IVA',T:'any',N:'any',M:'M1a'},
+  {stage:'IVB',T:'any',N:'any',M:'M1b'},
+]},
+
+{id:'rene',name:'Rene (RCC)',icd:'C64',cat:'uro',
+note:'Solo per carcinoma a cellule renali. Il nefroblastoma è classificato nel capitolo pediatrico.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'T1a',d:'Tumore ≤4 cm, limitato al rene'},
+  {c:'T1b',d:'Tumore >4 cm e ≤7 cm, limitato al rene'},
+  {c:'T2a',d:'Tumore >7 cm e ≤10 cm, limitato al rene'},
+  {c:'T2b',d:'Tumore >10 cm, limitato al rene'},
+  {c:'T3a',d:'Tumore che si estende nella vena renale o nei suoi rami segmentari, O invade il sistema pielocaliceale, O invade il grasso perirenale e/o del seno renale, senza superare la fascia di Gerota'},
+  {c:'T3b',d:'Tumore che si estende nella vena cava inferiore sotto il diaframma'},
+  {c:'T3c',d:'Tumore che si estende nella vena cava inferiore sopra il diaframma O invade la parete della VCI'},
+  {c:'T4',d:'Tumore che invade oltre la fascia di Gerota (inclusa estensione contigua al surrene omolaterale)'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi nei linfonodi regionali (ilo renale, para-aortici addominali, paracavali)'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+staging:[
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'II',T:'T2',N:'N0',M:'M0'},
+  {stage:'III',T:'T3',N:'N0',M:'M0'},
+  {stage:'III',T:['T1','T2','T3'],N:'N1',M:'M0'},
+  {stage:'IV',T:'T4',N:'any',M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'testicolo',name:'Testicolo',icd:'C62',cat:'uro',badges:[{cls:'badge-uicc',txt:'Richiede marcatori S'}],
+note:'Solo tumori a cellule germinali. Lo staging richiede l\'orchidectomia radicale (eccetto pTis e pT4). La classificazione S (marcatori sierici) si basa sui valori nadir post-orchidectomia. S: AFP (emivita 7gg), hCG (emivita 3gg), LDH. Includere sempre S nel referto.',
+T:[
+  {c:'TX',d:'Non valutabile (in assenza di orchidectomia radicale)'},
+  {c:'T0',d:'Nessun tumore (cicatrice istologica nel testicolo)'},
+  {c:'Tis',d:'Neoplasia intratubulare a cellule germinali (carcinoma in situ)'},
+  {c:'T1',d:'Tumore limitato al testicolo (inclusa la rete testis) senza invasione vascolare/linfatica, senza invasione dell\'epididimo; può invadere la tunica albuginea ma non la tunica vaginalis'},
+  {c:'T2',d:'Tumore limitato al testicolo con invasione vascolare/linfatica, O invasione del tessuto molle ilare o dell\'epididimo, O estensione attraverso la tunica albuginea con coinvolgimento della tunica vaginalis'},
+  {c:'T3',d:'Tumore che invade il funicolo spermatico con o senza invasione vascolare/linfatica'},
+  {c:'T4',d:'Tumore che invade lo scroto con o senza invasione vascolare/linfatica'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi con massa linfonodale ≤2 cm O linfonodi multipli, nessuno >2 cm'},
+  {c:'N2',d:'Metastasi con massa linfonodale >2 cm e ≤5 cm, O >5 linfonodi positivi (nessuno >5 cm), O estensione extranodale'},
+  {c:'N3',d:'Metastasi con massa linfonodale >5 cm'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1a',d:'Metastasi in linfonodi non regionali o polmonari'},
+  {c:'M1b',d:'Metastasi a distanza diverse dai linfonodi non regionali e dal polmone'},
+],
+extra:[{id:'S',label:'Marcatori sierici (S) — nadir post-orchidectomia',options:['SX','S0','S1','S2','S3']}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0',extra:{S:'S0'}},
+  // Stage I = SX (marcatori non disponibili/non eseguiti)
+  {stage:'I',T:'any',N:'N0',M:'M0',extra:{S:'SX'}},
+  // Stage IA/IB = S0 (marcatori nella norma post-orchidectomia)
+  {stage:'IA',T:'T1',N:'N0',M:'M0',extra:{S:'S0'}},
+  {stage:'IB',T:['T2','T3','T4'],N:'N0',M:'M0',extra:{S:'S0'}},
+  // Stage IS = persistenza dei marcatori (S1/S2/S3) senza malattia linfonodale/metastatica
+  {stage:'IS',T:'any',N:'N0',M:'M0',extra:{S:'S1'}},
+  {stage:'IS',T:'any',N:'N0',M:'M0',extra:{S:'S2'}},
+  {stage:'IS',T:'any',N:'N0',M:'M0',extra:{S:'S3'}},
+  // Stage II = N+ M0 SX
+  {stage:'II',T:'any',N:['N1','N2','N3'],M:'M0',extra:{S:'SX'}},
+  // Stage IIA = N1 S0 o S1
+  {stage:'IIA',T:'any',N:'N1',M:'M0',extra:{S:'S0'}},
+  {stage:'IIA',T:'any',N:'N1',M:'M0',extra:{S:'S1'}},
+  // Stage IIB = N2 S0 o S1
+  {stage:'IIB',T:'any',N:'N2',M:'M0',extra:{S:'S0'}},
+  {stage:'IIB',T:'any',N:'N2',M:'M0',extra:{S:'S1'}},
+  // Stage IIC = N3 S0 o S1
+  {stage:'IIC',T:'any',N:'N3',M:'M0',extra:{S:'S0'}},
+  {stage:'IIC',T:'any',N:'N3',M:'M0',extra:{S:'S1'}},
+  // Stage III = M1a SX
+  {stage:'III',T:'any',N:'any',M:'M1a',extra:{S:'SX'}},
+  // Stage IIIA = M1a S0 o S1
+  {stage:'IIIA',T:'any',N:'any',M:'M1a',extra:{S:'S0'}},
+  {stage:'IIIA',T:'any',N:'any',M:'M1a',extra:{S:'S1'}},
+  // Stage IIIB = N+ M0 S2  O  M1a S2
+  {stage:'IIIB',T:'any',N:['N1','N2','N3'],M:'M0',extra:{S:'S2'}},
+  {stage:'IIIB',T:'any',N:'any',M:'M1a',extra:{S:'S2'}},
+  // Stage IIIC = N+ M0 S3  O  M1a S3  O  M1b qualsiasi S
+  {stage:'IIIC',T:'any',N:['N1','N2','N3'],M:'M0',extra:{S:'S3'}},
+  {stage:'IIIC',T:'any',N:'any',M:'M1a',extra:{S:'S3'}},
+  {stage:'IIIC',T:'any',N:'any',M:'M1b'},
+]},
+
+// ── CUTE / MELANOMA ──────────────────────────────
+{id:'melanoma',name:'Melanoma cutaneo',icd:'C44',cat:'skin',
+note:'Il T clinico viene classificato dopo escissione (vedi pT). Spessore misurato in mm, arrotondato al decimo più vicino. Suffissi LDH: (0)=LDH normale; (1)=LDH elevata; nessun suffisso se LDH non registrata.',
+variants:[
+  {id:'clinical',label:'Stadio clinico (cTNM)'},
+  {id:'path',label:'Stadio patologico (pTNM)'},
+],
+T:[
+  {c:'TX',d:'Non valutabile (biopsia a raschiamento, curettage che non consentono la valutazione dello spessore)'},
+  {c:'T0',d:'Nessun tumore primitivo o melanoma regredito'},
+  {c:'Tis',d:'Melanoma in situ (livello di Clark I)'},
+  {c:'T1a',d:'Spessore <0.8 mm, senza ulcerazione'},
+  {c:'T1b',d:'Spessore <0.8 mm con ulcerazione, O spessore 0.8-1 mm con o senza ulcerazione'},
+  {c:'T2a',d:'Spessore >1 mm e ≤2 mm, senza ulcerazione'},
+  {c:'T2b',d:'Spessore >1 mm e ≤2 mm, con ulcerazione'},
+  {c:'T3a',d:'Spessore >2 mm e ≤4 mm, senza ulcerazione'},
+  {c:'T3b',d:'Spessore >2 mm e ≤4 mm, con ulcerazione'},
+  {c:'T4a',d:'Spessore >4 mm, senza ulcerazione'},
+  {c:'T4b',d:'Spessore >4 mm, con ulcerazione'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi linfonodale regionale'},
+  {c:'N1a',d:'Solo micrometastasi (clinicamente occulta) in un linfonodo regionale'},
+  {c:'N1b',d:'Macrometastasi (clinicamente apparente) in un linfonodo regionale'},
+  {c:'N1c',d:'Metastasi in transito/satellite senza metastasi linfonodali regionali'},
+  {c:'N2a',d:'Micrometastasi in 2-3 linfonodi regionali'},
+  {c:'N2b',d:'Macrometastasi in 2-3 linfonodi regionali (almeno uno clinicamente rilevato)'},
+  {c:'N2c',d:'Metastasi in transito/satellite con un solo linfonodo regionale positivo (micro o macro)'},
+  {c:'N3a',d:'Metastasi in ≥4 linfonodi regionali (solo micrometastasi)'},
+  {c:'N3b',d:'Metastasi in ≥4 linfonodi regionali (almeno uno clinicamente rilevato), O 2+ linfonodi aggrovigliati'},
+  {c:'N3c',d:'Metastasi in transito/satellite con 2+ metastasi linfonodali regionali (micro o macro) O 2+ linfonodi aggrovigliati'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1a',d:'Metastasi in cute, tessuto sottocutaneo o linfonodi oltre i regionali (LDH: suffisso (0) o (1))'},
+  {c:'M1b',d:'Metastasi polmonari (con o senza metastasi M1a) (LDH: suffisso (0) o (1))'},
+  {c:'M1c',d:'Metastasi in altri siti non-SNC (con o senza M1a/b) (LDH: suffisso (0) o (1))'},
+  {c:'M1d',d:'Metastasi nel sistema nervoso centrale (con o senza M1a/b/c) (LDH: suffisso (0) o (1))'},
+],
+staging_variants:{
+  clinical:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'IA',T:'T1a',N:'N0',M:'M0'},
+    {stage:'IB',T:'T1b',N:'N0',M:'M0'},
+    {stage:'IB',T:'T2a',N:'N0',M:'M0'},
+    {stage:'IIA',T:'T2b',N:'N0',M:'M0'},
+    {stage:'IIA',T:'T3a',N:'N0',M:'M0'},
+    {stage:'IIB',T:'T3b',N:'N0',M:'M0'},
+    {stage:'IIB',T:'T4a',N:'N0',M:'M0'},
+    {stage:'IIC',T:'T4b',N:'N0',M:'M0'},
+    {stage:'III',T:'any',N:['N1','N2','N3'],M:'M0'},
+    {stage:'IV',T:'any',N:'any',M:'M1'},
+  ],
+  path:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'IA',T:'T1a',N:'N0',M:'M0'},
+    {stage:'IA',T:'T1b',N:'N0',M:'M0'},
+    {stage:'IB',T:'T2a',N:'N0',M:'M0'},
+    {stage:'IIA',T:'T2b',N:'N0',M:'M0'},
+    {stage:'IIA',T:'T3a',N:'N0',M:'M0'},
+    {stage:'IIB',T:'T3b',N:'N0',M:'M0'},
+    {stage:'IIB',T:'T4a',N:'N0',M:'M0'},
+    {stage:'IIC',T:'T4b',N:'N0',M:'M0'},
+    {stage:'IIIA',T:['T1a','T1b','T2a'],N:['N1a','N2a'],M:'M0'},
+    {stage:'IIIB',T:['T1a','T1b','T2a'],N:['N1b','N1c','N2b'],M:'M0'},
+    {stage:'IIIB',T:['T2b','T3a'],N:['N1','N2a','N2b'],M:'M0'},
+    {stage:'IIIC',T:['T1a','T1b','T2a','T2b','T3a'],N:['N2c','N3'],M:'M0'},
+    {stage:'IIIC',T:['T3b','T4a'],N:['N1','N2','N3'],M:'M0'},
+    {stage:'IIIC',T:'T4b',N:['N1','N2'],M:'M0'},
+    {stage:'IIID',T:'T4b',N:'N3',M:'M0'},
+    {stage:'IV',T:'any',N:'any',M:'M1'},
+  ]
+}},
+
+{id:'carcinoma_cute',name:'Carcinoma della cute (SCC/BCC)',icd:'C44',cat:'skin',
+note:'Esclude: palpebra, testa-collo (hanno staging separato), perianale, vulva, pene e carcinoma di Merkel. La invasione perineurale (PNI) e la deep invasion (>6 mm o oltre il grasso sottocutaneo) innalzano a T3. ≥6 linfonodi per pN0.',
+T:[
+  {c:'TX',d:'Non identificabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1',d:'Tumore ≤2 cm nella dimensione maggiore'},
+  {c:'T2',d:'Tumore >2 cm e ≤4 cm nella dimensione maggiore'},
+  {c:'T3',d:'Tumore >4 cm O erosione ossea minore O invasione perineurale O invasione profonda (>grasso sottocutaneo o >6 mm)'},
+  {c:'T4a',d:'Invasione grossolana della corteccia ossea/midollo'},
+  {c:'T4b',d:'Invasione dello scheletro assiale con coinvolgimento del forame O invasione dello spazio epidurale'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1',d:'Metastasi in un singolo linfonodo ≤3 cm nella dimensione maggiore'},
+  {c:'N2',d:'Metastasi in un singolo linfonodo omolaterale >3 cm e ≤6 cm, O in più linfonodi omolaterali ≤6 cm'},
+  {c:'N3',d:'Metastasi in un linfonodo >6 cm nella dimensione maggiore'},
+],
+M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza (i linfonodi controlaterali in tumori non-HN sono M1)'}],
+staging:[
+  {stage:'0',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'II',T:'T2',N:'N0',M:'M0'},
+  {stage:'III',T:'T3',N:'N0',M:'M0'},
+  {stage:'III',T:['T1','T2','T3'],N:'N1',M:'M0'},
+  {stage:'IVA',T:['T1','T2','T3'],N:['N2','N3'],M:'M0'},
+  {stage:'IVA',T:'T4',N:'any',M:'M0'},
+  {stage:'IVB',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'merkel',name:'Carcinoma di Merkel',icd:'C44',cat:'skin',
+note:'≥6 linfonodi per pN0. Metastasi in transito: tumore discontinuo dalla lesione primaria, tra questa e i linfonodi regionali di drenaggio o distale ad essa. pN1a(sn) = micrometastasi al sentinella.',
+T:[
+  {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1',d:'Tumore ≤2 cm nella dimensione maggiore'},
+  {c:'T2',d:'Tumore >2 cm e ≤5 cm nella dimensione maggiore'},
+  {c:'T3',d:'Tumore >5 cm nella dimensione maggiore'},
+  {c:'T4',d:'Tumore che invade strutture extradermica profonde (cartilagine, muscolo scheletrico, fascia o osso)'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
+  {c:'N1a(sn)',d:'Micrometastasi rilevata alla biopsia del linfonodo sentinella (pN1a(sn))'},
+  {c:'N1a',d:'Micrometastasi rilevata alla dissezione linfonodale'},
+  {c:'N1b',d:'Macrometastasi (clinicamente apparente)'},
+  {c:'N2',d:'Metastasi in transito senza metastasi linfonodali regionali'},
+  {c:'N3',d:'Metastasi in transito con metastasi linfonodali regionali'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1a',d:'Metastasi in cute, tessuto sottocutaneo o linfonodi non regionali'},
+  {c:'M1b',d:'Metastasi polmonari'},
+  {c:'M1c',d:'Metastasi in altri siti'},
+],
+variants:[
+  {id:'clinical',label:'Stadio clinico'},
+  {id:'path',label:'Stadio patologico'},
+],
+staging_variants:{
+  clinical:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'I',T:'T1',N:'N0',M:'M0'},
+    {stage:'IIA',T:['T2','T3'],N:'N0',M:'M0'},
+    {stage:'IIB',T:'T4',N:'N0',M:'M0'},
+    {stage:'III',T:'any',N:['N1','N2','N3'],M:'M0'},
+    {stage:'IV',T:'any',N:'any',M:'M1'},
+  ],
+  path:[
+    {stage:'0',T:'Tis',N:'N0',M:'M0'},
+    {stage:'I',T:'T1',N:'N0',M:'M0'},
+    {stage:'IIA',T:['T2','T3'],N:'N0',M:'M0'},
+    {stage:'IIB',T:'T4',N:'N0',M:'M0'},
+    {stage:'IIIA',T:'T0',N:'N1b',M:'M0'},
+    {stage:'IIIA',T:['T1','T2','T3','T4'],N:['N1a','N1a(sn)'],M:'M0'},
+    {stage:'IIIB',T:['T1','T2','T3','T4'],N:['N1b','N2','N3'],M:'M0'},
+    {stage:'IV',T:'any',N:'any',M:'M1'},
+  ]
+}},
+
+]; // end SITES
+
+// ======================================================
+// CATEGORIES
+// ======================================================
+const CATS={
+  gi:{label:'Apparato digerente',order:0},
+  gi_net:{label:'NET Gastrointestinali',order:1},
+  hn:{label:'Testa e Collo',order:2},
+  breast:{label:'Mammella',order:3},
+  uro:{label:'Urologico',order:4},
+  skin:{label:'Cute / Melanoma',order:5},
+};
+
+// ======================================================
+// PREFIX MANAGEMENT
+// ======================================================
+function applyPreset(ctx){
+  const sel=document.getElementById(ctx==='stg'?'pfx-preset':'pfx-preset2');
+  if(!sel||!sel.value)return;
+  const [t,n,m]=sel.value.split(',');
+  if(ctx==='stg'){
+    document.getElementById('pfx-T').value=t;
+    document.getElementById('pfx-N').value=n;
+    document.getElementById('pfx-M').value=m;
+    syncStgToRef();
+    document.getElementById('stg-ln-row').style.display=(n==='p'||n==='yp'||n==='r')?'flex':'none';
+  }else{
+    // Referto preset: affects referto tab only — no pushback to staging
+    document.getElementById('pfx-T2').value=t;
+    document.getElementById('pfx-N2').value=n;
+    document.getElementById('pfx-M2').value=m;
+  }
+}
+
+function getPfx(ctx){
+  // Returns {T,N,M} prefix strings
+  const sfx=ctx==='stg'?'':2;
+  return{
+    T:document.getElementById('pfx-T'+sfx)?.value||'p',
+    N:document.getElementById('pfx-N'+sfx)?.value||'p',
+    M:document.getElementById('pfx-M'+sfx)?.value||'c',
+  };
+}
+
+// ======================================================
+// CENTRALIZED VALIDATION
+// ======================================================
+// Sites where N1c = tumor deposits WITHOUT nodal metastasis (TD semantics).
+// In these sites N1c is definitionally incompatible with positive nodes.
+// In other sites (es. canale anale: N1c = iliaci esterni + altri gruppi) N1c presupposes nodes.
+const N1C_TD_SITES=['colon_retto','appendice'];
+
+function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
+  const errors=[];
+  const incomplete=[];
+  const warnings=[];
+
+  const nCode=stripPfx(N);
+  const mCode=stripPfx(M);
+  const nPos=parseInt(lnPos)||0;
+  const nTot=parseInt(lnTot)||0;
+  const pfx=pfxObj||{T:'p',N:'p',M:'c'};
+  const isPathN=(pfx.N==='p'||pfx.N==='yp'||pfx.N==='r');
+
+  // ── 1. Incoerenze logiche T/N/M ──────────────────────
+  if(nCode==='N0'&&nPos>0){
+    errors.push('N0 è incompatibile con '+nPos+' linfonodi positivi dichiarati.');
+  }
+  // N1c + LN positivi: solo nelle sedi dove N1c = TD (non in canale anale ecc.)
+  if(N1C_TD_SITES.includes(site.id)&&nCode==='N1c'&&nPos>0){
+    errors.push('N1c in questa sede ('+site.name+') indica depositi tumorali senza metastasi linfonodali; incompatibile con '+nPos+' linfonodi positivi dichiarati. Rivalutare la categoria N.');
+  }
+  if(nTot>0&&nPos>nTot){
+    errors.push('Il numero di linfonodi positivi ('+nPos+') supera il totale esaminato ('+nTot+'). Dati incongruenti.');
+  }
+  // pM0 non esiste: M0 è per definizione clinico (assenza di metastasi provate)
+  if(mCode==='M0'&&pfx.M==='p'){
+    errors.push('pM0 non è una categoria valida: M0 è clinico per definizione (assenza di metastasi a distanza dimostrate). Usare cM0.');
+  }
+
+  // ── 2. Coerenza variante / prefisso ──────────────────
+  if(variant){
+    const isClinVar=/clin|clinical|clin_|_clin/.test(variant)||variant.endsWith('clin');
+    const isPathVar=/path/.test(variant);
+    if(isClinVar&&(pfx.T==='p'||pfx.N==='p')){
+      warnings.push('Variante di staging clinica selezionata con prefissi patologici ('+pfx.T+'T/'+pfx.N+'N). Valutare coerenza.');
+    }
+    if(isPathVar&&(pfx.T==='c'||pfx.N==='c')){
+      warnings.push('Variante di staging patologica selezionata con prefissi clinici ('+pfx.T+'T/'+pfx.N+'N). Valutare coerenza.');
+    }
+  }
+
+  // ── 3. Avvertenze pN senza conteggio ─────────────────
+  if(nCode!=='NX'&&nCode!=='N0'&&nTot===0&&isPathN){
+    warnings.push('Categoria pN selezionata senza numero di linfonodi esaminati documentato.');
+  }
+  // pN0 adeguatezza: solo se prefisso N è patologico (p/yp/r)
+  const minLN=PN0_MIN[site.id];
+  if(minLN&&isPathN&&nCode.startsWith('N0')&&nTot>0&&nTot<minLN){
+    warnings.push('pN0 con campionamento potenzialmente inadeguato: '+nTot+' linfonodi esaminati (minimo raccomandato per questa sede: '+minLN+'). Riportare il numero; la categoria rimane pN0 con riserva.');
+  }
+
+  // Canale anale: dual threshold — cannot be auto-resolved without knowing dissection territory
+  if(site.id==='canale_anale'&&isPathN&&nCode.startsWith('N0')&&nTot>0){
+    if(nTot<12){
+      warnings.push('Canale anale pN0: il minimo raccomandato è ≥12 LN per la dissezione perirettale/pelvica e ≥6 LN per la dissezione inguinale. Con '+nTot+' LN esaminati verificare il territorio di dissezione.');
+    }
+  }
+  if(site.id==='prostata'){
+    warnings.push('Prostata: lo stadio mostrato è il raggruppamento anatomico (T/N/M). Il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason). Per la documentazione clinica includere entrambi.');
+  }
+
+  // ── 5. Dati mancanti obbligatori ─────────────────────
+  if(site.id==='appendice'&&mCode.startsWith('M1b')&&(!extra.G||extra.G==='—')){
+    incomplete.push('M1b appendice: il grado istologico è determinante per IVA (G1) vs IVB (G2/G3/GX). Selezionare il grado.');
+  }
+
+  // ── 6. Warning specifici per sede ───────────────────
+  if(site.id==='testicolo'&&extra.S==='SX'){
+    warnings.push('S=SX: marcatori sierici non disponibili/non eseguiti. Stadio assegnato come Stage I generico (senza sottostadio IA/IB/IS). Per l\'assegnazione formale registrare il nadir post-orchidectomia di AFP, hCG e LDH.');
+  }
+  if(site.id==='appendice'&&mCode.startsWith('M1a')&&extra.G&&extra.G!=='—'){
+    warnings.push('Per M1a (solo mucina acellulare) il grado non influenza lo stadio (sempre IVA). Il campo grado è rilevante solo per M1b.');
+  }
+  if(site.id==='esofago'){
+    warnings.push('Esofago: i gruppi prognostici con grado (Pathological Prognostic Groups) non sono implementati in questo motore. Lo staging mostrato è lo Stage Group anatomico senza correzione per grado e sede anatomica del tumore.');
+  }
+
+  // ── 7. Tis(LCIS) mammella ────────────────────────────
+  if(site.id==='mammella'&&stripPfx(T)==='Tis (LCIS)'){
+    warnings.push('Tis(LCIS) — divergenza UICC/AJCC: UICC TNM 9ª ed. include questa categoria nello Stadio 0; AJCC 8ª/9ª ed. la esclude. Staging mostrato: UICC. Non classificabile formalmente secondo AJCC.');
+  }
+
+  // ── 8. Prefisso ibrido — 3 livelli di severità ───────
+  const isHybrid=(pfx.T!==pfx.N)||(pfx.M!==pfx.T&&pfx.M!==pfx.N);
+  // Physiological hybrids: common in AP, no warning
+  const isPhysioHybrid=
+    (pfx.T==='p'  &&pfx.N==='p'  &&pfx.M==='c')||  // pTNM tipico AP
+    (pfx.T==='yp' &&pfx.N==='yp' &&pfx.M==='c')||  // ypTNM post-neoadiuvante
+    (pfx.T==='r'  &&pfx.N==='r'  &&pfx.M==='c')||  // rTNM recidiva
+    (pfx.T==='p'  &&pfx.N==='p'  &&pfx.M==='p')||  // pTNM con pM1 provato
+    (pfx.T==='c'  &&pfx.N==='c'  &&pfx.M==='c');   // cTNM puro
+  // Unusual but defensible (eg rT + cM, or yp+p mismatch within same phase)
+  const isUnusualHybrid=isHybrid&&!isPhysioHybrid&&
+    !((pfx.T===pfx.N)&&(pfx.T==='c'||pfx.T==='p'||pfx.T==='yp'||pfx.T==='r'));
+  // Chimeric: hard mix across clinical/pathological planes with no clinical justification
+  // r+c is excluded: rT+cM is legitimate (anatomical restaging after recurrence)
+  const isClinPath=
+    (pfx.T==='c'&&pfx.N==='p')||   // cT + pN: impossible (c and p mutually exclusive on same axis)
+    (pfx.T==='p'&&pfx.N==='c')||   // pT + cN: idem
+    (pfx.T==='yc'&&pfx.N==='p')||  // ycT + pN
+    (pfx.T==='yp'&&pfx.N==='c');   // ypT + cN
+
+  if(isClinPath){
+    errors.push('Prefissi T/N su piani metodologici diversi ('+pfx.T+'T · '+pfx.N+'N): combinazione clinico/patologica chimera. Non assegnabile formalmente.');
+  }else if(isUnusualHybrid){
+    warnings.push('Prefissi disomogenei inusuali ('+pfx.T+'T · '+pfx.N+'N · '+pfx.M+'M). Verificare che la combinazione sia metodologicamente giustificata.');
+  }
+
+  return{errors,incomplete,warnings,isHybrid:isHybrid&&!isPhysioHybrid};
+}
+function renderValidation(v){
+  let html='';
+  if(v.isHybrid){
+    html+=`<div style="display:inline-block;background:#e8f0ff;border:1px solid #9ab;border-radius:4px;padding:3px 10px;font-size:11px;font-weight:700;color:#334;margin-bottom:8px;letter-spacing:.3px">⚡ STAGING IBRIDO</div>`;
+  }
+  if(v.errors.length){
+    html+=`<div class="v-error"><div class="v-label">⛔ Combinazione incoerente</div>${v.errors.map(e=>'• '+e).join('<br>')}</div>`;
+  }
+  if(v.incomplete.length){
+    html+=`<div class="v-incomplete"><div class="v-label">⚠ Dato mancante / staging non assegnabile</div>${v.incomplete.map(e=>'• '+e).join('<br>')}</div>`;
+  }
+  if(v.warnings.length){
+    html+=`<div class="v-warning"><div class="v-label">📋 Note cliniche</div>${v.warnings.map(e=>'• '+e).join('<br>')}</div>`;
+  }
+  return html;
+}
+
+// ======================================================
+// STATE
+// ======================================================
+let currentSite=null,currentVariant=null,currentVariant2=null;
+
+// ======================================================
+// INIT
+// ======================================================
+function init(){
+  buildSiteList();
+  document.getElementById('search-box').addEventListener('input',filterSites);
+}
+
+function buildSiteList(){
+  const list=document.getElementById('site-list');
+  list.innerHTML='';
+  const grouped={};
+  SITES.forEach(s=>{
+    if(!grouped[s.cat])grouped[s.cat]=[];
+    grouped[s.cat].push(s);
+  });
+  const orderedCats=Object.keys(CATS).sort((a,b)=>CATS[a].order-CATS[b].order);
+  orderedCats.forEach(cat=>{
+    if(!grouped[cat])return;
+    const lbl=document.createElement('div');
+    lbl.className='cat-label';lbl.textContent=CATS[cat].label;
+    list.appendChild(lbl);
+    grouped[cat].forEach(s=>{
+      const el=document.createElement('div');
+      el.className='site-item';el.textContent=s.name;
+      el.dataset.id=s.id;
+      el.addEventListener('click',()=>selectSite(s.id));
+      list.appendChild(el);
+    });
+  });
+}
+
+function filterSites(){
+  const q=document.getElementById('search-box').value.toLowerCase();
+  // First pass: show/hide items
+  document.querySelectorAll('.site-item').forEach(el=>{
+    el.classList.toggle('hidden',!!(q&&!el.textContent.toLowerCase().includes(q)));
+  });
+  // Second pass: hide category labels if all items below are hidden
+  document.querySelectorAll('.cat-label').forEach(lbl=>{
+    let sib=lbl.nextElementSibling;
+    let anyVisible=false;
+    while(sib&&sib.classList.contains('site-item')){
+      if(!sib.classList.contains('hidden'))anyVisible=true;
+      sib=sib.nextElementSibling;
+    }
+    lbl.style.display=anyVisible?'':'none';
+  });
+}
+
+function selectSite(id){
+  currentSite=SITES.find(s=>s.id===id);
+  document.querySelectorAll('.site-item').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
+  document.getElementById('site-title').textContent=currentSite.name;
+  document.getElementById('site-icd').textContent='ICD-O-4: '+currentSite.icd;
+  renderSiteBadges(currentSite);
+  document.getElementById('empty').style.display='none';
+  const activeTab=document.querySelector('.tab-btn.active');
+  const tabId=activeTab?(activeTab.getAttribute('onclick').match(/'(\w+)'/)?.[1]||'lookup'):'lookup';
+  renderLookup();
+  renderStaging();
+  renderReferto();
+  showTab(tabId);
+}
+
+function showTab(id){
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.toggle('active',b.getAttribute('onclick')===`showTab('${id}')`);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p=>{
+    p.style.display='none';
+    p.classList.remove('active');
+  });
+  const target=document.getElementById('tab-'+id);
+  target.style.display='block';
+  target.classList.add('active');
+  document.getElementById('empty').style.display='none';
+}
+
+// ======================================================
+// LOOKUP
+// ======================================================
+function renderLookup(){
+  const s=currentSite;if(!s)return;
+  let html='';
+  // T
+  html+='<div class="tnm-section"><div class="section-title">T — Tumore Primitivo</div>';
+  s.T.forEach(t=>{
+    html+=`<div class="tnm-item"><div class="tnm-code">${t.c}</div><div class="tnm-desc">${t.d}</div></div>`;
+  });
+  html+='</div>';
+  // N
+  html+='<div class="tnm-section"><div class="section-title">N — Linfonodi Regionali</div>';
+  s.N.forEach(n=>{
+    html+=`<div class="tnm-item"><div class="tnm-code">${n.c}</div><div class="tnm-desc">${n.d}</div></div>`;
+  });
+  html+='</div>';
+  // M
+  html+='<div class="tnm-section"><div class="section-title">M — Metastasi a Distanza</div>';
+  s.M.forEach(m=>{
+    html+=`<div class="tnm-item"><div class="tnm-code">${m.c}</div><div class="tnm-desc">${m.d}</div></div>`;
+  });
+  html+='</div>';
+  // Notes
+  if(s.note){
+    html+=`<div class="note-box"><strong>⚠ Note cliniche:</strong> ${s.note}</div>`;
+  }
+  document.getElementById('lookup-content').innerHTML=html;
+}
+
+// ======================================================
+// STAGING
+// ======================================================
+// ── Tab sync ──────────────────────────────────────────
+// Keeps variant and prefixes in sync between Staging and Referto tabs.
+function syncStgToRef(){
+  // Sync variant
+  const sv=document.getElementById('variant-sel');
+  const rv=document.getElementById('variant-sel2');
+  if(sv&&rv&&sv.value)rv.value=sv.value;
+  // Sync prefixes
+  const pfxMap={T:'pfx-T2',N:'pfx-N2',M:'pfx-M2'};
+  for(const k in pfxMap){
+    const src=document.getElementById('pfx-'+k);
+    const dst=document.getElementById(pfxMap[k]);
+    if(src&&dst)dst.value=src.value;
+  }
+  // Sync preset label
+  const pp=document.getElementById('pfx-preset');
+  const pp2=document.getElementById('pfx-preset2');
+  if(pp&&pp2)pp2.value=pp.value;
+  // Sync T/N/M values — staging is source of truth
+  const tnmMap={T:['sel-T','ref-T'],N:['sel-N','ref-N'],M:['sel-M','ref-M']};
+  for(const k in tnmMap){
+    const src=document.getElementById(tnmMap[k][0]);
+    const dst=document.getElementById(tnmMap[k][1]);
+    if(src&&dst&&src.value)dst.value=src.value;
+  }
+  // Sync LN fields
+  const lnTot=document.getElementById('stg-ln-tot');
+  const lnPos=document.getElementById('stg-ln-pos');
+  const rTot=document.getElementById('ref-ln-tot');
+  const rPos=document.getElementById('ref-ln-pos');
+  if(lnTot&&rTot)rTot.value=lnTot.value;
+  if(lnPos&&rPos)rPos.value=lnPos.value;
+  // Sync extra fields
+  syncExtraStgToRef();
+}
+function syncRefToStg(){
+  const rv=document.getElementById('variant-sel2');
+  const sv=document.getElementById('variant-sel');
+  if(rv&&sv&&rv.value)sv.value=rv.value;
+  const map={T2:'pfx-T',N2:'pfx-N',M2:'pfx-M'};
+  for(const k in map){
+    const src=document.getElementById('pfx-'+k);
+    const dst=document.getElementById(map[k]);
+    if(src&&dst)dst.value=src.value;
+  }
+  const pp2=document.getElementById('pfx-preset2');
+  const pp=document.getElementById('pfx-preset');
+  if(pp2&&pp)pp.value=pp2.value;
+}
+// ======================================================
+// AUTO-CALCOLO N DA NUMERO DI LINFONODI POSITIVI
+// ======================================================
+// Regole numeriche per le sedi dove N dipende dal conteggio.
+// Restituisce il codice N suggerito oppure null se non applicabile.
+// NON copre categorie morfologiche (N1c, N1mi, N1a(sn)) che richiedono
+// informazioni istologiche non riducibili a un numero.
+const N_AUTO_RULES={
+  colon_retto:(n)=>n===0?'N0':n===1?'N1a':n<=3?'N1b':n<=6?'N2a':'N2b',
+  // N1c (TD) richiede valutazione morfologica — non auto-calcolabile
+  appendice:(n)=>n===0?'N0':n===1?'N1a':n<=3?'N1b':'N2',
+  stomaco:(n)=>n===0?'N0':n<=2?'N1':n<=6?'N2':n<=15?'N3a':'N3b',
+  esofago:(n)=>n===0?'N0':n<=2?'N1':n<=6?'N2':'N3',
+  intestino_tenue:(n)=>n===0?'N0':n<=2?'N1':'N2',
+  pancreas:(n)=>n===0?'N0':n<=3?'N1':'N2',
+  ampolla:(n)=>n===0?'N0':n<=3?'N1':'N2',
+  colecisti:(n)=>n===0?'N0':n<=3?'N1':'N2',
+  bile_perihilar:(n)=>n===0?'N0':n<=3?'N1':'N2',
+  bile_distale:(n)=>n===0?'N0':n<=3?'N1':'N2',
+  bile_intrahep:(n)=>n===0?'N0':'N1',
+  fegato_hcc:(n)=>n===0?'N0':'N1',
+  rene:(n)=>n===0?'N0':'N1',
+  prostata:(n)=>n===0?'N0':'N1',
+  // Mammella: N0(0), N1a(1-3), N2a(4-9), N3a(≥10)
+  // N1mi richiede dimensione della metastasi — non auto da solo
+  // N2b/N3b/N3c richiedono info cliniche sui linfonodi mammari interni
+  mammella:(n)=>n===0?'N0':n<=3?'N1a':n<=9?'N2a':'N3a',
+  merkel:(n)=>n===0?'N0':'N1',
+  carcinoma_cute:(n)=>n===0?'N0':'N1',  // N1/N2/N3 dipendono da dimensione nodo
+  net_stomaco:(n)=>n===0?'N0':'N1',
+  net_coloretto:(n)=>n===0?'N0':'N1',
+  net_pancreas:(n)=>n===0?'N0':'N1',
+};
+
+function autoCalcN(){
+  const s=currentSite;if(!s)return;
+  const rule=N_AUTO_RULES[s.id];if(!rule)return;
+
+  const nPos=parseInt(document.getElementById('stg-ln-pos')?.value)||0;
+  const lnTotEl=document.getElementById('stg-ln-tot');
+  const nTot=parseInt(lnTotEl?.value)||0;
+
+  // Non auto-calcolare se il campo LN+ è vuoto
+  const posEl=document.getElementById('stg-ln-pos');
+  if(!posEl||posEl.value===''||posEl.value===null)return;
+
+  const suggested=rule(nPos);
+
+  const selN=document.getElementById('sel-N');
+  if(!selN)return;
+
+  // Set value only if option exists in the current site's N dropdown
+  const opts=Array.from(selN.options).map(o=>o.value);
+  if(opts.includes(suggested)){
+    selN.value=suggested;
+    // Visual feedback: highlight the N select briefly
+    selN.style.borderColor='var(--accent2)';
+    setTimeout(()=>selN.style.borderColor='',1200);
+    // Show badge
+    let badge=document.getElementById('n-auto-badge');
+    if(!badge){
+      badge=document.createElement('span');
+      badge.id='n-auto-badge';
+      badge.style.cssText='font-size:10px;font-weight:700;color:var(--accent2);margin-left:8px;letter-spacing:.3px';
+      selN.parentNode.appendChild(badge);
+    }
+    badge.textContent='⟵ suggerito da LN+: '+nPos;
+    // Propagate
+    onTNMChange();
+    syncStgToRef();
+  }
+}
+function onPrefixChange(ctx){
+  if(ctx==='stg'){
+    const n=document.getElementById('pfx-N').value;
+    document.getElementById('stg-ln-row').style.display=
+      (n==='p'||n==='yp'||n==='r')?'flex':'none';
+    // Staging is source of truth → push to referto
+    syncStgToRef();
+  }
+  // Referto prefix change: local only, no pushback to staging
+  onTNMChange();
+}
+
+// Sync extra field values between tabs (by extra field id)
+function syncExtraStgToRef(){
+  const s=currentSite;if(!s||!s.extra)return;
+  s.extra.forEach(e=>{
+    const src=document.getElementById('sel-extra-'+e.id);
+    const dst=document.getElementById('ref-extra-'+e.id);
+    if(src&&dst)dst.value=src.value;
+  });
+}
+function syncExtraRefToStg(){
+  const s=currentSite;if(!s||!s.extra)return;
+  s.extra.forEach(e=>{
+    const src=document.getElementById('ref-extra-'+e.id);
+    const dst=document.getElementById('sel-extra-'+e.id);
+    if(src&&dst)dst.value=src.value;
+  });
+}
+
+// Render site badges in topbar
+function renderSiteBadges(s){
+  const el=document.getElementById('site-badges');
+  if(!el)return;
+  let html='';
+  if(s.model_limited){
+    html+=`<span class="badge badge-anat" title="Staging anatomico non prognostico completo">⚠ Modello ridotto</span>`;
+  }
+  if(s.badges){
+    s.badges.forEach(b=>{
+      html+=`<span class="badge ${b.cls}">${b.txt}</span>`;
+    });
+  }
+  el.innerHTML=html;
+}
+function getVariants(s){
+  return s.variants||null;
+}
+function getStagingRules(s,variant){
+  if(s.staging)return s.staging;
+  if(s.staging_variants&&variant)return s.staging_variants[variant]||[];
+  if(s.staging_variants){const keys=Object.keys(s.staging_variants);return s.staging_variants[keys[0]]||[];}
+  return[];
+}
+
+function renderStaging(){
+  const s=currentSite;if(!s)return;
+  const vw=document.getElementById('variant-wrap');
+  const vs=document.getElementById('variant-sel');
+  const vars=getVariants(s);
+  if(vars){
+    vs.innerHTML=vars.map(v=>`<option value="${v.id}">${v.label}</option>`).join('');
+    currentVariant=vars[0].id;
+    vw.style.display='block';
+  }else{currentVariant=null;vw.style.display='none';}
+  updateDropdowns();
+}
+
+function updateDropdowns(){
+  const s=currentSite;if(!s)return;
+  const vs=document.getElementById('variant-sel');
+  if(vs.options.length)currentVariant=vs.value;
+  populateSelect('sel-T',s.T,'T');
+  populateSelect('sel-N',s.N,'N');
+  populateSelect('sel-M',s.M,'M');
+  const ex=document.getElementById('extra-selects');
+  ex.innerHTML='';
+  if(s.extra){
+    s.extra.forEach(e=>{
+      ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>
+        <select id="sel-extra-${e.id}" onchange="onTNMChange();syncExtraStgToRef()">${e.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+    });
+  }
+  renderStagingTable();
+  document.getElementById('stage-result').style.display='none';
+  document.getElementById('stage-validation').innerHTML='';
+  // Show LN fields only when N prefix is pathological
+  const pfxN=document.getElementById('pfx-N')?.value||'p';
+  document.getElementById('stg-ln-row').style.display=(pfxN==='p'||pfxN==='yp'||pfxN==='r')?'flex':'none';
+  syncStgToRef();
+}
+
+function updateDropdowns2(){
+  const s=currentSite;if(!s)return;
+  const vs=document.getElementById('variant-sel2');
+  if(vs.options.length)currentVariant2=vs.value;
+  populateSelect('ref-T',s.T,'T');
+  populateSelect('ref-N',s.N,'N');
+  populateSelect('ref-M',s.M,'M');
+  const ex=document.getElementById('ref-extra-selects');
+  ex.innerHTML='';
+  if(s.extra){
+    s.extra.forEach(e=>{
+      ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>
+        <select id="ref-extra-${e.id}">${e.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+    });
+  }
+  // No syncRefToStg here — referto is NOT the source of truth
+}
+
+function renderReferto(){
+  const s=currentSite;if(!s)return;
+  const vw=document.getElementById('variant-wrap2');
+  const vs=document.getElementById('variant-sel2');
+  const vars=getVariants(s);
+  if(vars){
+    vs.innerHTML=vars.map(v=>`<option value="${v.id}">${v.label}</option>`).join('');
+    currentVariant2=vars[0].id;
+    vs.onchange=updateDropdowns2;
+    vw.style.display='block';
+  }else{currentVariant2=null;vw.style.display='none';}
+  updateDropdowns2();
+  // Show budding field only for relevant sites
+  const BUDDING_SITES_UI=['colon_retto','appendice','intestino_tenue','stomaco','esofago'];
+  const bf=document.getElementById('budding-field');
+  if(bf)bf.style.display=BUDDING_SITES_UI.includes(s.id)?'':'none';
+  document.getElementById('referto-output').style.display='none';
+  document.getElementById('copy-btn').style.display='none';
+}
+
+function populateSelect(id,arr,type){
+  const sel=document.getElementById(id);if(!sel)return;
+  sel.innerHTML=arr.map(x=>`<option value="${x.c}">${x.c} — ${x.d.substring(0,65)}${x.d.length>65?'…':''}</option>`).join('');
+}
+
+function nuovoCaso(){
+  // Reset T/N/M selects to first option
+  ['sel-T','sel-N','sel-M','ref-T','ref-N','ref-M'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.selectedIndex=0;
+  });
+  // Reset LN fields
+  ['stg-ln-tot','stg-ln-pos','ref-ln-tot','ref-ln-pos'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.value='';
+  });
+  // Reset notes
+  const notes=document.getElementById('ref-notes');
+  if(notes)notes.value='';
+  // Reset prognostic factor selects
+  ['ref-lvi','ref-pni','ref-budding','ref-margins','ref-regression','ref-perforation'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.selectedIndex=0;
+  });
+  // Reset extra fields (site-specific: appendice grade, testis S)
+  if(currentSite&&currentSite.extra){
+    currentSite.extra.forEach(e=>{
+      ['sel-extra-','ref-extra-'].forEach(pfx=>{
+        const el=document.getElementById(pfx+e.id);
+        if(el)el.selectedIndex=0;
+      });
+    });
+  }
+  // Reset variant to first option
+  ['variant-sel','variant-sel2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.options.length){el.selectedIndex=0;}
+  });
+  // Reset prefixes to p/p/c default
+  ['pfx-preset','pfx-preset2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.selectedIndex=0;
+  });
+  ['pfx-T','pfx-T2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='p';});
+  ['pfx-N','pfx-N2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='p';});
+  ['pfx-M','pfx-M2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='c';});
+  const badge=document.getElementById('n-auto-badge');
+  if(badge)badge.textContent='';
+  // Hide results and output
+  document.getElementById('stage-result').style.display='none';
+  document.getElementById('stage-validation').innerHTML='';
+  const ro=document.getElementById('referto-output');
+  if(ro)ro.style.display='none';
+  const cb=document.getElementById('copy-btn');
+  if(cb)cb.style.display='none';
+  // Show staging tab
+  showTab('lookup');
+}
+function onTNMChange(){
+  document.getElementById('stage-result').style.display='none';
+  document.getElementById('stage-validation').innerHTML='';
+  syncStgToRef();
+}
+
+function computeStage(){
+  const s=currentSite;if(!s)return;
+  const T=document.getElementById('sel-T').value;
+  const N=document.getElementById('sel-N').value;
+  const M=document.getElementById('sel-M').value;
+  const variant=currentVariant;
+  const rules=getStagingRules(s,variant);
+  const extra={};
+  if(s.extra){s.extra.forEach(e=>{const el=document.getElementById('sel-extra-'+e.id);if(el)extra[e.id]=el.value;});}
+  const pfx=getPfx('stg');
+  const lnTot=document.getElementById('stg-ln-tot')?.value||0;
+  const lnPos=document.getElementById('stg-ln-pos')?.value||0;
+
+  // Validate with actual LN data if provided
+  const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
+
+  // Compute stage (blocked by hard errors OR dataset ambiguity)
+  const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:computeBestStage(rules,T,N,M,extra);
+
+  // Ambiguity is an error, not a warning — dataset bug, staging not assignable
+  if(result.ambiguous){
+    v.errors.push('Ambiguità dataset: stadi '+result.allStages.join(' / ')+' compatibili simultaneamente — staging non assegnabile. Segnalare il bug.');
+  }
+
+  document.getElementById('stage-validation').innerHTML=renderValidation(v);
+
+  const stageHeader=currentSite?.model_limited?'Raggruppamento anatomico TNM':'Stadio';
+
+  let stageLabel,stageQuality='';
+  if(v.errors.length){
+    stageLabel=result.ambiguous
+      ?'⛔ Ambiguità: '+result.allStages.join(' / ')+' — non assegnabile'
+      :'⛔ Combinazione incoerente';
+  }else if(!result.stage&&v.incomplete.length){
+    stageLabel='Parametri incompleti — staging non assegnabile';
+  }else if(!result.stage){
+    stageLabel='Non determinabile (caso fuori modello)';
+  }else{
+    stageLabel=stageHeader+' '+result.stage;
+    stageQuality=v.warnings.length?' (con riserva)':' (assegnato)';
+  }
+
+  const res=document.getElementById('stage-result');
+  res.style.display='block';
+  document.getElementById('stage-value').textContent=stageLabel;
+  document.getElementById('stage-label').textContent='TNM 9ª Ed. · UICC 2025'+stageQuality;
+
+  const td=s.T.find(x=>x.c===T)||{d:''};
+  const nd=s.N.find(x=>x.c===N)||{d:''};
+  const md=s.M.find(x=>x.c===M)||{d:''};
+  let detail=`<div class="stage-row"><span class="stage-code">${pfx.T}${T}</span><span>${td.d}</span></div>`;
+  detail+=`<div class="stage-row"><span class="stage-code">${pfx.N}${N}</span><span>${nd.d}</span></div>`;
+  detail+=`<div class="stage-row"><span class="stage-code">${pfx.M}${M}</span><span>${md.d}</span></div>`;
+  if(Object.keys(extra).length){
+    for(const k in extra){if(extra[k]&&extra[k]!=='—')detail+=`<div class="stage-row"><span class="stage-code">${k}: ${extra[k]}</span></div>`;}
+  }
+  document.getElementById('stage-detail').innerHTML=detail;
+
+  document.querySelectorAll('#staging-tbody tr').forEach(tr=>{
+    tr.classList.toggle('highlighted',tr.dataset.stage===result.stage);
+  });
+  syncStgToRef();
+}
+
+function renderStagingTable(){
+  const s=currentSite;if(!s)return;
+  const variant=currentVariant;
+  const rules=getStagingRules(s,variant);
+  const tbody=document.getElementById('staging-tbody');
+  tbody.innerHTML=rules.map(r=>{
+    const T=[].concat(r.T).join(', ');
+    const N=[].concat(r.N).join(', ');
+    const M=[].concat(r.M).join(', ');
+    // Show extra constraints in dedicated column
+    const extraStr=r.extra?Object.entries(r.extra).map(([k,v])=>`${k}=${[].concat(v).join('/')}`).join(' '):'';
+    const note=r.note||'';
+    return`<tr data-stage="${r.stage}">
+      <td><strong>${r.stage}</strong></td>
+      <td style="font-family:monospace;font-size:12px">${T}</td>
+      <td style="font-family:monospace;font-size:12px">${N}</td>
+      <td style="font-family:monospace;font-size:12px">${M}</td>
+      <td style="color:var(--accent);font-size:11px;font-weight:600">${extraStr}</td>
+      <td style="color:var(--muted);font-size:12px">${note}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ======================================================
+// REFERTO
+// ======================================================
+// Minimum node counts for pN0 adequacy per site (applies only when pfx.N is pathological).
+// canale_anale is intentionally ABSENT: requires dual threshold (≥12 perirettale/pelvico,
+// ≥6 inguinale) that cannot be correctly resolved without knowing the dissection territory.
+// A site-specific warning handles it instead.
+const PN0_MIN={
+  colon_retto:12, stomaco:16, esofago:7, intestino_tenue:6,
+  appendice:12, fegato_hcc:3, bile_intrahep:6,
+  colecisti:6, bile_perihilar:15, bile_distale:12, ampolla:12,
+  pancreas:12, mammella:6, tiroide:6, gh_salivari:6,
+  melanoma:6, merkel:6,
+};
+
+
+function generateReferto(){
+  const s=currentSite;if(!s)return;
+  const T=document.getElementById('ref-T').value;
+  const N=document.getElementById('ref-N').value;
+  const M=document.getElementById('ref-M').value;
+  const lnTot=document.getElementById('ref-ln-tot').value;
+  const lnPos=document.getElementById('ref-ln-pos').value;
+  const notes=document.getElementById('ref-notes').value.trim();
+  const variant=currentVariant2;
+  const rules=getStagingRules(s,variant);
+  const extra={};
+  if(s.extra){s.extra.forEach(e=>{const el=document.getElementById('ref-extra-'+e.id);if(el)extra[e.id]=el.value;});}
+
+  // Centralized validation (full: includes LN numerics + variant/prefix coherence)
+  const pfx=getPfx('ref');
+  const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
+  const result=v.errors.length?{stage:null,ambiguous:false}:computeBestStage(rules,T,N,M,extra);
+  if(result.ambiguous){
+    v.errors.push('Ambiguità dataset: stadi '+result.allStages.join(' / ')+' compatibili simultaneamente — staging non assegnabile. Segnalare il bug.');
+  }
+  const stage=result.stage;
+
+  const td=s.T.find(x=>x.c===T)||{d:'—'};
+  const nd=s.N.find(x=>x.c===N)||{d:'—'};
+  const md=s.M.find(x=>x.c===M)||{d:'—'};
+  // pfx already computed above in validateCase block
+
+  let txt=`CLASSIFICAZIONE TNM — 9ª EDIZIONE\n`;
+  txt+=`Riferimento: UICC TNM Classification of Malignant Tumours, 9ª ed. (2025); mapping AJCC v9 per sede dove applicabile\n`;
+  txt+=`Sede: ${s.name} (ICD-O-4: ${s.icd})\n`;
+  if(variant){
+    const varLabel=getVariants(s)?.find(vv=>vv.id===variant)?.label||variant;
+    txt+=`Variante/istotipo: ${varLabel}\n`;
+  }
+  // Show active prefixes
+  txt+=`Prefissi: ${pfx.T}T · ${pfx.N}N · ${pfx.M}M\n`;
+  txt+=`\n`;
+
+  // Declare LN counts here — used in both compact line and detailed N line below
+  const nTotN=parseInt(lnTot)||0;
+  const nPosN=parseInt(lnPos)||0;
+
+  // Compact summary line (LIS-ready format)
+  const nRatio=(nTotN>0&&nPosN>=0)?` (${nPosN}/${nTotN})`:'';
+  const compactStage=stage?` → ${stageHeader} ${stage}`:'';
+  txt+=`━━ ${pfx.T}${T} ${pfx.N}${N}${nRatio} ${pfx.M}${M}${compactStage}\n\n`;
+  txt+=`${pfx.T}${T} — ${td.d}\n`;
+
+  let nLine=`${pfx.N}${N} — ${nd.d}`;
+  if(nTotN>0||nPosN>0){
+    const ratio=nTotN>0?` (${nPosN>0?nPosN:'—'}/${nTotN})`:'';
+    nLine=`${pfx.N}${N}${ratio} — ${nd.d}`;
+    if(nTotN>0)nLine+=`\n         (LN positivi: ${nPosN} su ${nTotN} esaminati)`;
+  }
+  txt+=nLine+'\n';
+  txt+=`${pfx.M}${M} — ${md.d}\n`;
+
+  // Show extra determinants used
+  const extraKeys=Object.keys(extra).filter(k=>extra[k]&&extra[k]!=='—');
+  if(extraKeys.length){
+    txt+=`Extra determinanti: ${extraKeys.map(k=>k+'='+extra[k]).join(', ')}\n`;
+  }
+
+  // Stage header: anatomical grouping label for model_limited sites
+  const stageHeader=s.model_limited?'RAGGRUPPAMENTO ANATOMICO TNM':'STADIO';
+  const stageFootnote=s.id==='prostata'?
+    '\n⚠ ATTENZIONE: questo NON corrisponde al Prognostic Stage Group. Per la prostata il gruppo prognostico formale richiede PSA (ng/mL) e Grade Group (Gleason score). Integrare con questi dati prima di qualsiasi uso clinico.'
+    :'';
+
+  // 4-state stage quality
+  let stageQualityLabel;
+  if(v.errors.length){
+    stageQualityLabel='NON ASSEGNABILE — combinazione incoerente (vedi avvertenze)';
+  }else if(!stage&&v.incomplete.length){
+    stageQualityLabel='NON ASSEGNABILE — parametri incompleti (vedi avvertenze)';
+  }else if(!stage){
+    stageQualityLabel='NON DETERMINABILE — caso fuori modello o classificazione non applicabile';
+  }else if(v.warnings.length){
+    stageQualityLabel=stage+' (assegnato con riserva — vedi avvertenze)';
+  }else{
+    stageQualityLabel=stage+' (assegnato)';
+  }
+  txt+=`\n${stageHeader}: ${stageQualityLabel}${stageFootnote}\n`;
+
+  // Validation block
+  const allV=[
+    ...v.errors.map(e=>'⛔ INCOERENZA: '+e),
+    ...v.incomplete.map(e=>'⚠ INCOMPLETO: '+e),
+    ...v.warnings.map(e=>'📋 NOTA: '+e),
+  ];
+  if(allV.length) txt+='\n'+allV.join('\n')+'\n';
+
+  if(notes)txt+=`\nNote: ${notes}`;
+
+  // Fattori prognostici non-TNM — solo quelli valorizzati
+  const BUDDING_SITES=['colon_retto','appendice','intestino_tenue','stomaco','esofago'];
+  const showBudding=BUDDING_SITES.includes(s.id);
+  const pfactors=[
+    document.getElementById('ref-lvi')?.value,
+    document.getElementById('ref-pni')?.value,
+    showBudding?document.getElementById('ref-budding')?.value:null,
+    document.getElementById('ref-margins')?.value,
+    document.getElementById('ref-regression')?.value,
+    document.getElementById('ref-perforation')?.value,
+  ].filter(Boolean);
+  if(pfactors.length){
+    txt+=`\nFattori prognostici aggiuntivi:\n`;
+    pfactors.forEach(v=>txt+=`- ${v}\n`);
+  }
+  txt+=`\n\n[Stadio preliminare — Verificare sempre con la fonte primaria: TNM Classification of Malignant Tumours, 9ª Ed., UICC 2025]`;
+
+  const out=document.getElementById('referto-output');
+  out.textContent=txt;
+  out.style.display='block';
+  document.getElementById('copy-btn').style.display='inline-block';
+}
+
+function copyReferto(){
+  const txt=document.getElementById('referto-output').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.textContent='✅ Copiato!';
+    setTimeout(()=>{btn.textContent='📋 Copia negli Appunti';},2000);
+  });
+}
+
+init();
+</script>
+</body>
+</html>
