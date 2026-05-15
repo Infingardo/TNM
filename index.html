@@ -68,12 +68,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .form-group select{width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);
   border-radius:var(--radius);color:var(--text);font-size:13px;cursor:pointer;}
 .form-group select:focus{outline:none;border-color:var(--accent);}
-.prefix-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;}
-.prefix-row label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
-  color:var(--muted);}
-.prefix-btn{padding:5px 12px;border:1px solid var(--border);background:var(--bg);
-  color:var(--muted);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;}
-.prefix-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 .variant-row{margin-bottom:14px;}
 .variant-row select{padding:6px 10px;background:var(--bg);border:1px solid var(--border);
   border-radius:var(--radius);color:var(--text);font-size:13px;cursor:pointer;}
@@ -126,11 +120,6 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
 .badge-div{background:#fff3cd;color:#7a5000;border:1px solid #e0c060;}
 .badge-anat{background:#f0e8ff;color:#5a2080;border:1px solid #c0a0e0;}
 .badge-net{background:#e8f8e8;color:#1a6a1a;border:1px solid #80c080;}
-.pfx-grid{display:grid;grid-template-columns:auto 1fr 1fr 1fr 1.4fr;gap:10px;align-items:end;margin-bottom:14px;}
-.pfx-grid label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);display:block;margin-bottom:4px;}
-.pfx-grid select{padding:6px 8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
-  color:var(--text);font-size:13px;font-weight:600;cursor:pointer;width:100%;}
-.pfx-divider{display:flex;align-items:flex-end;padding-bottom:8px;color:var(--muted);font-size:18px;font-weight:300;}
 
 /* VALIDATION ALERTS */
 .v-error{background:#fff0f0;border:1px solid #e88;border-radius:var(--radius);
@@ -196,44 +185,6 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
     <div class="tab-panel" id="tab-staging">
       <div id="staging-content">
         <div id="staging-form">
-          <!-- Prefix grid: preset + T/N/M individual selects -->
-          <div class="pfx-grid">
-            <div>
-              <label>Preset prefisso</label>
-              <select id="pfx-preset" onchange="applyPreset('stg')">
-                <option value="p,p,c">pTNM — p/p/cM (tipico AP)</option>
-                <option value="p,p,p">pTNM — p/p/pM (pM1 provato)</option>
-                <option value="c,c,c">cTNM</option>
-                <option value="yp,yp,c">ypTNM (post-neoadiuvante path)</option>
-                <option value="yc,yc,c">ycTNM (post-neoadiuvante clin)</option>
-                <option value="r,r,c">rTNM (recidiva)</option>
-              </select>
-            </div>
-            <div>
-              <label>T —</label>
-              <select id="pfx-T" onchange="onPrefixChange('stg')">
-                <option value="p">p</option><option value="c">c</option>
-                <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
-              </select>
-            </div>
-            <div>
-              <label>N —</label>
-              <select id="pfx-N" onchange="onPrefixChange('stg')">
-                <option value="p">p</option><option value="c">c</option>
-                <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
-              </select>
-            </div>
-            <div>
-              <label>M —</label>
-              <select id="pfx-M" onchange="onPrefixChange('stg')">
-                <option value="c">c</option><option value="p">p</option>
-                <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
-              </select>
-            </div>
-            <div style="padding-bottom:2px">
-              <label style="font-size:10px;color:var(--muted)">Nota: M è spesso cM0 anche in contesto pT/pN</label>
-            </div>
-          </div>
           <div id="variant-wrap" class="variant-row" style="display:none">
             <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variante/Istotipo:</label>
             <select id="variant-sel" onchange="updateDropdowns()"></select>
@@ -253,7 +204,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
             </div>
           </div>
           <div id="extra-selects"></div>
-          <div id="stg-ln-row" style="display:none;gap:14px;margin-bottom:14px">
+          <div id="stg-ln-row" style="display:flex;gap:14px;margin-bottom:14px">
             <div class="form-group" style="display:inline-block;width:180px;margin-right:14px">
               <label>LN esaminati (opz.)</label>
               <input type="number" id="stg-ln-tot" placeholder="es. 24" min="0" onchange="onTNMChange();syncStgToRef()">
@@ -284,44 +235,6 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
     <!-- REFERTO -->
     <div class="tab-panel" id="tab-referto">
       <div id="referto-form">
-        <!-- Prefix grid -->
-        <div class="pfx-grid">
-          <div>
-            <label>Preset prefisso</label>
-            <select id="pfx-preset2" onchange="applyPreset('ref')">
-              <option value="p,p,c">pTNM — p/p/cM (tipico AP)</option>
-              <option value="p,p,p">pTNM — p/p/pM (pM1 provato)</option>
-              <option value="c,c,c">cTNM</option>
-              <option value="yp,yp,c">ypTNM (post-neoadiuvante path)</option>
-              <option value="yc,yc,c">ycTNM (post-neoadiuvante clin)</option>
-              <option value="r,r,c">rTNM (recidiva)</option>
-            </select>
-          </div>
-          <div>
-            <label>T —</label>
-            <select id="pfx-T2" onchange="onPrefixChange('ref')">
-              <option value="p">p</option><option value="c">c</option>
-              <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
-            </select>
-          </div>
-          <div>
-            <label>N —</label>
-            <select id="pfx-N2" onchange="onPrefixChange('ref')">
-              <option value="p">p</option><option value="c">c</option>
-              <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
-            </select>
-          </div>
-          <div>
-            <label>M —</label>
-            <select id="pfx-M2" onchange="onPrefixChange('ref')">
-              <option value="c">c</option><option value="p">p</option>
-              <option value="yp">yp</option><option value="yc">yc</option><option value="r">r</option>
-            </select>
-          </div>
-          <div style="padding-bottom:2px">
-            <label style="font-size:10px;color:var(--muted)">Nota: M è spesso cM0 anche in contesto pT/pN</label>
-          </div>
-        </div>
         <div id="variant-wrap2" class="variant-row" style="display:none">
           <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variante/Istotipo:</label>
           <select id="variant-sel2" onchange="updateDropdowns2()"></select>
@@ -435,16 +348,11 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
 // PARENT CODE HIERARCHY
 // ======================================================
 const PARENTS={
-  // T hierarchy
   T1:['T1','T1mi','T1a','T1b','T1c'],T2:['T2','T2a','T2b','T2c'],
   T3:['T3','T3a','T3b','T3c'],T4:['T4','T4a','T4b','T4c','T4d'],
-  // Tis variants: all map to Tis parent for staging rule matching
   Tis:['Tis','Tis (DCIS)','Tis (LCIS)','Tis (Paget)','Tis (LAMN)'],
-  // N hierarchy — N1mi and N1a(sn) intentionally EXCLUDED (autonomous staging semantics)
   N1:['N1','N1a','N1b','N1c'],N2:['N2','N2a','N2b','N2c'],
   N3:['N3','N3a','N3b','N3c'],M1:['M1','M1a','M1b','M1c','M1d'],
-  // NOTE: No prefixed duplicates (pT1, pN1 etc.) — codeMatch() calls stripPfx()
-  // before hierarchy lookup, so prefixed rules are handled transparently.
 };
 
 const STAGE_ORD={'0':0,'0a':0.1,'0is':0.2,
@@ -453,8 +361,6 @@ const STAGE_ORD={'0':0,'0a':0.1,'0is':0.2,
   'III':3,'IIIA':3.1,'IIIB':3.2,'IIIC':3.3,'IIID':3.4,
   'IV':4,'IVA':4.1,'IVB':4.2,'IVC':4.3};
 
-// Strip TNM prefix explicitly — ordered longest-first to avoid partial matches
-// e.g. 'yp' must be stripped before 'y' or 'p' individually
 function stripPfx(c){
   if(!c)return'';
   return c.replace(/^(yp|yc|rp|p|c|r|y)/,'');
@@ -475,7 +381,6 @@ function ruleMatches(rule,T,N,M,extra){
   const mOk=rule.M==='any'||[].concat(rule.M).some(c=>codeMatch(c,M));
   let extraOk=true;
   if(rule.extra){
-    // strict: if rule requires an extra field, the selected value MUST match
     for(const k in rule.extra){
       const selVal=(extra&&extra[k]!=null&&extra[k]!=='')?extra[k]:undefined;
       if(![].concat(rule.extra[k]).includes(selVal))extraOk=false;
@@ -487,16 +392,10 @@ function ruleMatches(rule,T,N,M,extra){
 function computeBestStage(rules,T,N,M,extra){
   const matches=rules.filter(r=>ruleMatches(r,T,N,M,extra));
   if(!matches.length)return{stage:null,ambiguous:false,matchCount:0,allStages:[]};
-
   const distinctStages=[...new Set(matches.map(r=>r.stage))];
-
-  // Dataset ambiguity: multiple DIFFERENT stages match the same input.
-  // Correct behavior for a medical tool: do NOT pick the highest — block assignment.
   if(distinctStages.length>1){
     return{stage:null,ambiguous:true,matchCount:matches.length,allStages:distinctStages};
   }
-
-  // Single stage matched (possibly by multiple rules — that is normal and expected)
   return{stage:distinctStages[0],ambiguous:false,matchCount:matches.length,allStages:distinctStages};
 }
 
@@ -505,7 +404,6 @@ function computeBestStage(rules,T,N,M,extra){
 // ======================================================
 const SITES=[
 
-// ── GI ──────────────────────────────────────────────
 {id:'colon_retto',name:'Colon e Retto',icd:'C18-C20',cat:'gi',
 note:'≥12 linfonodi per pN0 adeguato. TD (depositi tumorali) classificati come N1c se LN negativi. OGJ con epicentro >2 cm dal GEJ → staging gastrico.',
 T:[
@@ -714,7 +612,7 @@ T:[
   {c:'T1a',d:'Invade la lamina propria o la muscularis mucosae'},
   {c:'T1b',d:'Invade la sottomucosa'},
   {c:'T2',d:'Invade la muscularis propria'},
-  {c:'T3',d:'Invade la sottosierosa o il tessuto perimuscolre non peritonealizzato (mesentere/retroperitoneo) senza perforazione della sierosa'},
+  {c:'T3',d:'Invade la sottosierosa o il tessuto perimuscolare non peritonealizzato (mesentere/retroperitoneo) senza perforazione della sierosa'},
   {c:'T4',d:'Perfora il peritoneo viscerale o invade direttamente altri organi/strutture (pancreas per il duodeno)'},
 ],
 N:[
@@ -768,14 +666,11 @@ staging:[
   {stage:'IIIA',T:['T1','T2'],N:'N1',M:'M0'},
   {stage:'IIIB',T:['T3','T4'],N:'N1',M:'M0'},
   {stage:'IIIC',T:'any',N:'N2',M:'M0'},
-  // M1a = sempre IVA indipendentemente dal grado
   {stage:'IVA',T:'any',N:'any',M:'M1a'},
-  // M1b: IVA se G1; IVB se G2/G3/GX
   {stage:'IVA',T:'any',N:'any',M:'M1b',extra:{G:'G1'}},
   {stage:'IVB',T:'any',N:'any',M:'M1b',extra:{G:'G2'}},
   {stage:'IVB',T:'any',N:'any',M:'M1b',extra:{G:'G3'}},
   {stage:'IVB',T:'any',N:'any',M:'M1b',extra:{G:'GX'}},
-  // M1b senza grado specificato = non determinabile (nessuna regola matcha)
   {stage:'IVC',T:'any',N:'any',M:'M1c'},
 ]},
 
@@ -1089,7 +984,6 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-// ── TESTA E COLLO ──────────────────────────────────
 {id:'tiroide',name:'Tiroide',icd:'C73.9',cat:'hn',badges:[{cls:'badge-div',txt:'UICC≠AJCC (alcuni istotipi)'}],
 note:'Staging separato per: PTC/FTC <55 anni (solo Stadio I-II), PTC/FTC ≥55 anni, carcinoma midollare, carcinoma anaplastico. ≥6 linfonodi per pN0 (neck dissection selettiva).',
 variants:[
@@ -1105,7 +999,7 @@ T:[
   {c:'T2',d:'Tumore >2 cm e ≤4 cm, limitato alla tiroide'},
   {c:'T3a',d:'Tumore >4 cm, limitato alla tiroide'},
   {c:'T3b',d:'Tumore di qualsiasi dimensione con estensione extratiroidea grossolana che invade i muscoli strap (sternoioideo, sternotiroideo, tireoioideo o omoioideo) o la paratiroide'},
-  {c:'T4a',d:'Tumore che si estende oltre la capsula tiroidea e invade: tessuto sottocutaneo, laringe, trachea, esofago, nervo ricorrente larngeo, o muscolo SCM'},
+  {c:'T4a',d:'Tumore che si estende oltre la capsula tiroidea e invade: tessuto sottocutaneo, laringe, trachea, esofago, nervo ricorrente laringeo, o muscolo SCM'},
   {c:'T4b',d:'Tumore che invade la fascia prevertebrale, i vasi mediastinici o ingloba l\'arteria carotide'},
 ],
 N:[
@@ -1176,7 +1070,6 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-// ── MAMMELLA ──────────────────────────────────────
 {id:'mammella',name:'Mammella',icd:'C50',cat:'breast',badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'}],
 note:'≥6 linfonodi per pN0 (livello I). pN dimensionale basato sul componente invasivo (non in situ). ITC (<0.2 mm o <200 cellule) = N0(i+). Per il report includere il modificatore sn (sentinel node). AJCC esclude Tis(LCIS) dalla classificazione.',
 T:[
@@ -1212,7 +1105,6 @@ N:[
 ],
 M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
 staging:[
-  // Stadio 0: tutte le varianti Tis. AJCC esclude Tis(LCIS); UICC la include.
   {stage:'0',T:['Tis','Tis (DCIS)','Tis (LCIS)','Tis (Paget)'],N:'N0',M:'M0'},
   {stage:'IA',T:'T1',N:'N0',M:'M0'},
   {stage:'IB',T:['T0','T1'],N:'N1mi',M:'M0'},
@@ -1227,7 +1119,6 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-// ── UROLOGICO ─────────────────────────────────────
 {id:'prostata',name:'Prostata',icd:'C61.9',cat:'uro',model_limited:true,badges:[{cls:'badge-anat',txt:'Anatomico'}],
 note:'⚠ Raggruppamento anatomico (T/N/M) — il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason score), non implementati in questo motore. Esclusi i carcinomi uroteliali della prostata (staging ureterale). Nessun pT1. Suffix MRI: (mr); PSMA-PET: (PET) da indicare in referto.',
 T:[
@@ -1362,41 +1253,29 @@ M:[
 extra:[{id:'S',label:'Marcatori sierici (S) — nadir post-orchidectomia',options:['SX','S0','S1','S2','S3']}],
 staging:[
   {stage:'0',T:'Tis',N:'N0',M:'M0',extra:{S:'S0'}},
-  // Stage I = SX (marcatori non disponibili/non eseguiti)
   {stage:'I',T:'any',N:'N0',M:'M0',extra:{S:'SX'}},
-  // Stage IA/IB = S0 (marcatori nella norma post-orchidectomia)
   {stage:'IA',T:'T1',N:'N0',M:'M0',extra:{S:'S0'}},
   {stage:'IB',T:['T2','T3','T4'],N:'N0',M:'M0',extra:{S:'S0'}},
-  // Stage IS = persistenza dei marcatori (S1/S2/S3) senza malattia linfonodale/metastatica
   {stage:'IS',T:'any',N:'N0',M:'M0',extra:{S:'S1'}},
   {stage:'IS',T:'any',N:'N0',M:'M0',extra:{S:'S2'}},
   {stage:'IS',T:'any',N:'N0',M:'M0',extra:{S:'S3'}},
-  // Stage II = N+ M0 SX
   {stage:'II',T:'any',N:['N1','N2','N3'],M:'M0',extra:{S:'SX'}},
-  // Stage IIA = N1 S0 o S1
   {stage:'IIA',T:'any',N:'N1',M:'M0',extra:{S:'S0'}},
   {stage:'IIA',T:'any',N:'N1',M:'M0',extra:{S:'S1'}},
-  // Stage IIB = N2 S0 o S1
   {stage:'IIB',T:'any',N:'N2',M:'M0',extra:{S:'S0'}},
   {stage:'IIB',T:'any',N:'N2',M:'M0',extra:{S:'S1'}},
-  // Stage IIC = N3 S0 o S1
   {stage:'IIC',T:'any',N:'N3',M:'M0',extra:{S:'S0'}},
   {stage:'IIC',T:'any',N:'N3',M:'M0',extra:{S:'S1'}},
-  // Stage III = M1a SX
   {stage:'III',T:'any',N:'any',M:'M1a',extra:{S:'SX'}},
-  // Stage IIIA = M1a S0 o S1
   {stage:'IIIA',T:'any',N:'any',M:'M1a',extra:{S:'S0'}},
   {stage:'IIIA',T:'any',N:'any',M:'M1a',extra:{S:'S1'}},
-  // Stage IIIB = N+ M0 S2  O  M1a S2
   {stage:'IIIB',T:'any',N:['N1','N2','N3'],M:'M0',extra:{S:'S2'}},
   {stage:'IIIB',T:'any',N:'any',M:'M1a',extra:{S:'S2'}},
-  // Stage IIIC = N+ M0 S3  O  M1a S3  O  M1b qualsiasi S
   {stage:'IIIC',T:'any',N:['N1','N2','N3'],M:'M0',extra:{S:'S3'}},
   {stage:'IIIC',T:'any',N:'any',M:'M1a',extra:{S:'S3'}},
   {stage:'IIIC',T:'any',N:'any',M:'M1b'},
 ]},
 
-// ── CUTE / MELANOMA ──────────────────────────────
 {id:'melanoma',name:'Melanoma cutaneo',icd:'C44',cat:'skin',
 note:'Il T clinico viene classificato dopo escissione (vedi pT). Spessore misurato in mm, arrotondato al decimo più vicino. Suffissi LDH: (0)=LDH normale; (1)=LDH elevata; nessun suffisso se LDH non registrata.',
 variants:[
@@ -1563,42 +1442,15 @@ const CATS={
 };
 
 // ======================================================
-// PREFIX MANAGEMENT
+// PREFISSO FISSO — sempre p/p/c (standard AP)
 // ======================================================
-function applyPreset(ctx){
-  const sel=document.getElementById(ctx==='stg'?'pfx-preset':'pfx-preset2');
-  if(!sel||!sel.value)return;
-  const [t,n,m]=sel.value.split(',');
-  if(ctx==='stg'){
-    document.getElementById('pfx-T').value=t;
-    document.getElementById('pfx-N').value=n;
-    document.getElementById('pfx-M').value=m;
-    syncStgToRef();
-    document.getElementById('stg-ln-row').style.display=(n==='p'||n==='yp'||n==='r')?'flex':'none';
-  }else{
-    // Referto preset: affects referto tab only — no pushback to staging
-    document.getElementById('pfx-T2').value=t;
-    document.getElementById('pfx-N2').value=n;
-    document.getElementById('pfx-M2').value=m;
-  }
-}
-
-function getPfx(ctx){
-  // Returns {T,N,M} prefix strings
-  const sfx=ctx==='stg'?'':2;
-  return{
-    T:document.getElementById('pfx-T'+sfx)?.value||'p',
-    N:document.getElementById('pfx-N'+sfx)?.value||'p',
-    M:document.getElementById('pfx-M'+sfx)?.value||'c',
-  };
-}
+function getPfx(ctx){ return {T:'p', N:'p', M:'c'}; }
+function applyPreset(ctx){}
+function onPrefixChange(ctx){ onTNMChange(); }
 
 // ======================================================
 // CENTRALIZED VALIDATION
 // ======================================================
-// Sites where N1c = tumor deposits WITHOUT nodal metastasis (TD semantics).
-// In these sites N1c is definitionally incompatible with positive nodes.
-// In other sites (es. canale anale: N1c = iliaci esterni + altri gruppi) N1c presupposes nodes.
 const N1C_TD_SITES=['colon_retto','appendice'];
 
 function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
@@ -1610,63 +1462,37 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
   const mCode=stripPfx(M);
   const nPos=parseInt(lnPos)||0;
   const nTot=parseInt(lnTot)||0;
-  const pfx=pfxObj||{T:'p',N:'p',M:'c'};
-  const isPathN=(pfx.N==='p'||pfx.N==='yp'||pfx.N==='r');
 
-  // ── 1. Incoerenze logiche T/N/M ──────────────────────
+  // N0 + linfonodi positivi dichiarati
   if(nCode==='N0'&&nPos>0){
     errors.push('N0 è incompatibile con '+nPos+' linfonodi positivi dichiarati.');
   }
-  // N1c + LN positivi: solo nelle sedi dove N1c = TD (non in canale anale ecc.)
+  // N1c + LN positivi nelle sedi TD
   if(N1C_TD_SITES.includes(site.id)&&nCode==='N1c'&&nPos>0){
     errors.push('N1c in questa sede ('+site.name+') indica depositi tumorali senza metastasi linfonodali; incompatibile con '+nPos+' linfonodi positivi dichiarati. Rivalutare la categoria N.');
   }
   if(nTot>0&&nPos>nTot){
     errors.push('Il numero di linfonodi positivi ('+nPos+') supera il totale esaminato ('+nTot+'). Dati incongruenti.');
   }
-  // pM0 non esiste: M0 è per definizione clinico (assenza di metastasi provate)
-  if(mCode==='M0'&&pfx.M==='p'){
-    errors.push('pM0 non è una categoria valida: M0 è clinico per definizione (assenza di metastasi a distanza dimostrate). Usare cM0.');
-  }
 
-  // ── 2. Coerenza variante / prefisso ──────────────────
-  if(variant){
-    const isClinVar=/clin|clinical|clin_|_clin/.test(variant)||variant.endsWith('clin');
-    const isPathVar=/path/.test(variant);
-    if(isClinVar&&(pfx.T==='p'||pfx.N==='p')){
-      warnings.push('Variante di staging clinica selezionata con prefissi patologici ('+pfx.T+'T/'+pfx.N+'N). Valutare coerenza.');
-    }
-    if(isPathVar&&(pfx.T==='c'||pfx.N==='c')){
-      warnings.push('Variante di staging patologica selezionata con prefissi clinici ('+pfx.T+'T/'+pfx.N+'N). Valutare coerenza.');
-    }
-  }
-
-  // ── 3. Avvertenze pN senza conteggio ─────────────────
-  if(nCode!=='NX'&&nCode!=='N0'&&nTot===0&&isPathN){
+  // pN senza conteggio
+  if(nCode!=='NX'&&nCode!=='N0'&&nTot===0){
     warnings.push('Categoria pN selezionata senza numero di linfonodi esaminati documentato.');
   }
-  // pN0 adeguatezza: solo se prefisso N è patologico (p/yp/r)
+  // pN0 adeguatezza
   const minLN=PN0_MIN[site.id];
-  if(minLN&&isPathN&&nCode.startsWith('N0')&&nTot>0&&nTot<minLN){
+  if(minLN&&nCode.startsWith('N0')&&nTot>0&&nTot<minLN){
     warnings.push('pN0 con campionamento potenzialmente inadeguato: '+nTot+' linfonodi esaminati (minimo raccomandato per questa sede: '+minLN+'). Riportare il numero; la categoria rimane pN0 con riserva.');
   }
-
-  // Canale anale: dual threshold — cannot be auto-resolved without knowing dissection territory
-  if(site.id==='canale_anale'&&isPathN&&nCode.startsWith('N0')&&nTot>0){
-    if(nTot<12){
-      warnings.push('Canale anale pN0: il minimo raccomandato è ≥12 LN per la dissezione perirettale/pelvica e ≥6 LN per la dissezione inguinale. Con '+nTot+' LN esaminati verificare il territorio di dissezione.');
-    }
+  if(site.id==='canale_anale'&&nCode.startsWith('N0')&&nTot>0&&nTot<12){
+    warnings.push('Canale anale pN0: il minimo raccomandato è ≥12 LN per la dissezione perirettale/pelvica e ≥6 LN per la dissezione inguinale. Con '+nTot+' LN esaminati verificare il territorio di dissezione.');
   }
   if(site.id==='prostata'){
     warnings.push('Prostata: lo stadio mostrato è il raggruppamento anatomico (T/N/M). Il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason). Per la documentazione clinica includere entrambi.');
   }
-
-  // ── 5. Dati mancanti obbligatori ─────────────────────
   if(site.id==='appendice'&&mCode.startsWith('M1b')&&(!extra.G||extra.G==='—')){
     incomplete.push('M1b appendice: il grado istologico è determinante per IVA (G1) vs IVB (G2/G3/GX). Selezionare il grado.');
   }
-
-  // ── 6. Warning specifici per sede ───────────────────
   if(site.id==='testicolo'&&extra.S==='SX'){
     warnings.push('S=SX: marcatori sierici non disponibili/non eseguiti. Stadio assegnato come Stage I generico (senza sottostadio IA/IB/IS). Per l\'assegnazione formale registrare il nadir post-orchidectomia di AFP, hCG e LDH.');
   }
@@ -1676,45 +1502,15 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
   if(site.id==='esofago'){
     warnings.push('Esofago: i gruppi prognostici con grado (Pathological Prognostic Groups) non sono implementati in questo motore. Lo staging mostrato è lo Stage Group anatomico senza correzione per grado e sede anatomica del tumore.');
   }
-
-  // ── 7. Tis(LCIS) mammella ────────────────────────────
   if(site.id==='mammella'&&stripPfx(T)==='Tis (LCIS)'){
     warnings.push('Tis(LCIS) — divergenza UICC/AJCC: UICC TNM 9ª ed. include questa categoria nello Stadio 0; AJCC 8ª/9ª ed. la esclude. Staging mostrato: UICC. Non classificabile formalmente secondo AJCC.');
   }
 
-  // ── 8. Prefisso ibrido — 3 livelli di severità ───────
-  const isHybrid=(pfx.T!==pfx.N)||(pfx.M!==pfx.T&&pfx.M!==pfx.N);
-  // Physiological hybrids: common in AP, no warning
-  const isPhysioHybrid=
-    (pfx.T==='p'  &&pfx.N==='p'  &&pfx.M==='c')||  // pTNM tipico AP
-    (pfx.T==='yp' &&pfx.N==='yp' &&pfx.M==='c')||  // ypTNM post-neoadiuvante
-    (pfx.T==='r'  &&pfx.N==='r'  &&pfx.M==='c')||  // rTNM recidiva
-    (pfx.T==='p'  &&pfx.N==='p'  &&pfx.M==='p')||  // pTNM con pM1 provato
-    (pfx.T==='c'  &&pfx.N==='c'  &&pfx.M==='c');   // cTNM puro
-  // Unusual but defensible (eg rT + cM, or yp+p mismatch within same phase)
-  const isUnusualHybrid=isHybrid&&!isPhysioHybrid&&
-    !((pfx.T===pfx.N)&&(pfx.T==='c'||pfx.T==='p'||pfx.T==='yp'||pfx.T==='r'));
-  // Chimeric: hard mix across clinical/pathological planes with no clinical justification
-  // r+c is excluded: rT+cM is legitimate (anatomical restaging after recurrence)
-  const isClinPath=
-    (pfx.T==='c'&&pfx.N==='p')||   // cT + pN: impossible (c and p mutually exclusive on same axis)
-    (pfx.T==='p'&&pfx.N==='c')||   // pT + cN: idem
-    (pfx.T==='yc'&&pfx.N==='p')||  // ycT + pN
-    (pfx.T==='yp'&&pfx.N==='c');   // ypT + cN
-
-  if(isClinPath){
-    errors.push('Prefissi T/N su piani metodologici diversi ('+pfx.T+'T · '+pfx.N+'N): combinazione clinico/patologica chimera. Non assegnabile formalmente.');
-  }else if(isUnusualHybrid){
-    warnings.push('Prefissi disomogenei inusuali ('+pfx.T+'T · '+pfx.N+'N · '+pfx.M+'M). Verificare che la combinazione sia metodologicamente giustificata.');
-  }
-
-  return{errors,incomplete,warnings,isHybrid:isHybrid&&!isPhysioHybrid};
+  return{errors,incomplete,warnings,isHybrid:false};
 }
+
 function renderValidation(v){
   let html='';
-  if(v.isHybrid){
-    html+=`<div style="display:inline-block;background:#e8f0ff;border:1px solid #9ab;border-radius:4px;padding:3px 10px;font-size:11px;font-weight:700;color:#334;margin-bottom:8px;letter-spacing:.3px">⚡ STAGING IBRIDO</div>`;
-  }
   if(v.errors.length){
     html+=`<div class="v-error"><div class="v-label">⛔ Combinazione incoerente</div>${v.errors.map(e=>'• '+e).join('<br>')}</div>`;
   }
@@ -1766,11 +1562,9 @@ function buildSiteList(){
 
 function filterSites(){
   const q=document.getElementById('search-box').value.toLowerCase();
-  // First pass: show/hide items
   document.querySelectorAll('.site-item').forEach(el=>{
     el.classList.toggle('hidden',!!(q&&!el.textContent.toLowerCase().includes(q)));
   });
-  // Second pass: hide category labels if all items below are hidden
   document.querySelectorAll('.cat-label').forEach(lbl=>{
     let sib=lbl.nextElementSibling;
     let anyVisible=false;
@@ -1817,25 +1611,21 @@ function showTab(id){
 function renderLookup(){
   const s=currentSite;if(!s)return;
   let html='';
-  // T
   html+='<div class="tnm-section"><div class="section-title">T — Tumore Primitivo</div>';
   s.T.forEach(t=>{
     html+=`<div class="tnm-item"><div class="tnm-code">${t.c}</div><div class="tnm-desc">${t.d}</div></div>`;
   });
   html+='</div>';
-  // N
   html+='<div class="tnm-section"><div class="section-title">N — Linfonodi Regionali</div>';
   s.N.forEach(n=>{
     html+=`<div class="tnm-item"><div class="tnm-code">${n.c}</div><div class="tnm-desc">${n.d}</div></div>`;
   });
   html+='</div>';
-  // M
   html+='<div class="tnm-section"><div class="section-title">M — Metastasi a Distanza</div>';
   s.M.forEach(m=>{
     html+=`<div class="tnm-item"><div class="tnm-code">${m.c}</div><div class="tnm-desc">${m.d}</div></div>`;
   });
   html+='</div>';
-  // Notes
   if(s.note){
     html+=`<div class="note-box"><strong>⚠ Note cliniche:</strong> ${s.note}</div>`;
   }
@@ -1845,65 +1635,39 @@ function renderLookup(){
 // ======================================================
 // STAGING
 // ======================================================
-// ── Tab sync ──────────────────────────────────────────
-// Keeps variant and prefixes in sync between Staging and Referto tabs.
 function syncStgToRef(){
-  // Sync variant
   const sv=document.getElementById('variant-sel');
   const rv=document.getElementById('variant-sel2');
   if(sv&&rv&&sv.value)rv.value=sv.value;
-  // Sync prefixes
-  const pfxMap={T:'pfx-T2',N:'pfx-N2',M:'pfx-M2'};
-  for(const k in pfxMap){
-    const src=document.getElementById('pfx-'+k);
-    const dst=document.getElementById(pfxMap[k]);
-    if(src&&dst)dst.value=src.value;
-  }
-  // Sync preset label
-  const pp=document.getElementById('pfx-preset');
-  const pp2=document.getElementById('pfx-preset2');
-  if(pp&&pp2)pp2.value=pp.value;
-  // Sync T/N/M values — staging is source of truth
   const tnmMap={T:['sel-T','ref-T'],N:['sel-N','ref-N'],M:['sel-M','ref-M']};
   for(const k in tnmMap){
     const src=document.getElementById(tnmMap[k][0]);
     const dst=document.getElementById(tnmMap[k][1]);
     if(src&&dst&&src.value)dst.value=src.value;
   }
-  // Sync LN fields
   const lnTot=document.getElementById('stg-ln-tot');
   const lnPos=document.getElementById('stg-ln-pos');
   const rTot=document.getElementById('ref-ln-tot');
   const rPos=document.getElementById('ref-ln-pos');
   if(lnTot&&rTot)rTot.value=lnTot.value;
   if(lnPos&&rPos)rPos.value=lnPos.value;
-  // Sync extra fields
   syncExtraStgToRef();
 }
-function syncRefToStg(){
-  const rv=document.getElementById('variant-sel2');
-  const sv=document.getElementById('variant-sel');
-  if(rv&&sv&&rv.value)sv.value=rv.value;
-  const map={T2:'pfx-T',N2:'pfx-N',M2:'pfx-M'};
-  for(const k in map){
-    const src=document.getElementById('pfx-'+k);
-    const dst=document.getElementById(map[k]);
+
+function syncExtraStgToRef(){
+  const s=currentSite;if(!s||!s.extra)return;
+  s.extra.forEach(e=>{
+    const src=document.getElementById('sel-extra-'+e.id);
+    const dst=document.getElementById('ref-extra-'+e.id);
     if(src&&dst)dst.value=src.value;
-  }
-  const pp2=document.getElementById('pfx-preset2');
-  const pp=document.getElementById('pfx-preset');
-  if(pp2&&pp)pp.value=pp2.value;
+  });
 }
+
 // ======================================================
 // AUTO-CALCOLO N DA NUMERO DI LINFONODI POSITIVI
 // ======================================================
-// Regole numeriche per le sedi dove N dipende dal conteggio.
-// Restituisce il codice N suggerito oppure null se non applicabile.
-// NON copre categorie morfologiche (N1c, N1mi, N1a(sn)) che richiedono
-// informazioni istologiche non riducibili a un numero.
 const N_AUTO_RULES={
   colon_retto:(n)=>n===0?'N0':n===1?'N1a':n<=3?'N1b':n<=6?'N2a':'N2b',
-  // N1c (TD) richiede valutazione morfologica — non auto-calcolabile
   appendice:(n)=>n===0?'N0':n===1?'N1a':n<=3?'N1b':'N2',
   stomaco:(n)=>n===0?'N0':n<=2?'N1':n<=6?'N2':n<=15?'N3a':'N3b',
   esofago:(n)=>n===0?'N0':n<=2?'N1':n<=6?'N2':'N3',
@@ -1917,12 +1681,9 @@ const N_AUTO_RULES={
   fegato_hcc:(n)=>n===0?'N0':'N1',
   rene:(n)=>n===0?'N0':'N1',
   prostata:(n)=>n===0?'N0':'N1',
-  // Mammella: N0(0), N1a(1-3), N2a(4-9), N3a(≥10)
-  // N1mi richiede dimensione della metastasi — non auto da solo
-  // N2b/N3b/N3c richiedono info cliniche sui linfonodi mammari interni
   mammella:(n)=>n===0?'N0':n<=3?'N1a':n<=9?'N2a':'N3a',
   merkel:(n)=>n===0?'N0':'N1',
-  carcinoma_cute:(n)=>n===0?'N0':'N1',  // N1/N2/N3 dipendono da dimensione nodo
+  carcinoma_cute:(n)=>n===0?'N0':'N1',
   net_stomaco:(n)=>n===0?'N0':'N1',
   net_coloretto:(n)=>n===0?'N0':'N1',
   net_pancreas:(n)=>n===0?'N0':'N1',
@@ -1931,28 +1692,17 @@ const N_AUTO_RULES={
 function autoCalcN(){
   const s=currentSite;if(!s)return;
   const rule=N_AUTO_RULES[s.id];if(!rule)return;
-
-  const nPos=parseInt(document.getElementById('stg-ln-pos')?.value)||0;
-  const lnTotEl=document.getElementById('stg-ln-tot');
-  const nTot=parseInt(lnTotEl?.value)||0;
-
-  // Non auto-calcolare se il campo LN+ è vuoto
   const posEl=document.getElementById('stg-ln-pos');
   if(!posEl||posEl.value===''||posEl.value===null)return;
-
+  const nPos=parseInt(posEl.value)||0;
   const suggested=rule(nPos);
-
   const selN=document.getElementById('sel-N');
   if(!selN)return;
-
-  // Set value only if option exists in the current site's N dropdown
   const opts=Array.from(selN.options).map(o=>o.value);
   if(opts.includes(suggested)){
     selN.value=suggested;
-    // Visual feedback: highlight the N select briefly
     selN.style.borderColor='var(--accent2)';
     setTimeout(()=>selN.style.borderColor='',1200);
-    // Show badge
     let badge=document.getElementById('n-auto-badge');
     if(!badge){
       badge=document.createElement('span');
@@ -1961,42 +1711,11 @@ function autoCalcN(){
       selN.parentNode.appendChild(badge);
     }
     badge.textContent='⟵ suggerito da LN+: '+nPos;
-    // Propagate
     onTNMChange();
     syncStgToRef();
   }
 }
-function onPrefixChange(ctx){
-  if(ctx==='stg'){
-    const n=document.getElementById('pfx-N').value;
-    document.getElementById('stg-ln-row').style.display=
-      (n==='p'||n==='yp'||n==='r')?'flex':'none';
-    // Staging is source of truth → push to referto
-    syncStgToRef();
-  }
-  // Referto prefix change: local only, no pushback to staging
-  onTNMChange();
-}
 
-// Sync extra field values between tabs (by extra field id)
-function syncExtraStgToRef(){
-  const s=currentSite;if(!s||!s.extra)return;
-  s.extra.forEach(e=>{
-    const src=document.getElementById('sel-extra-'+e.id);
-    const dst=document.getElementById('ref-extra-'+e.id);
-    if(src&&dst)dst.value=src.value;
-  });
-}
-function syncExtraRefToStg(){
-  const s=currentSite;if(!s||!s.extra)return;
-  s.extra.forEach(e=>{
-    const src=document.getElementById('ref-extra-'+e.id);
-    const dst=document.getElementById('sel-extra-'+e.id);
-    if(src&&dst)dst.value=src.value;
-  });
-}
-
-// Render site badges in topbar
 function renderSiteBadges(s){
   const el=document.getElementById('site-badges');
   if(!el)return;
@@ -2011,9 +1730,9 @@ function renderSiteBadges(s){
   }
   el.innerHTML=html;
 }
-function getVariants(s){
-  return s.variants||null;
-}
+
+function getVariants(s){ return s.variants||null; }
+
 function getStagingRules(s,variant){
   if(s.staging)return s.staging;
   if(s.staging_variants&&variant)return s.staging_variants[variant]||[];
@@ -2052,9 +1771,6 @@ function updateDropdowns(){
   renderStagingTable();
   document.getElementById('stage-result').style.display='none';
   document.getElementById('stage-validation').innerHTML='';
-  // Show LN fields only when N prefix is pathological
-  const pfxN=document.getElementById('pfx-N')?.value||'p';
-  document.getElementById('stg-ln-row').style.display=(pfxN==='p'||pfxN==='yp'||pfxN==='r')?'flex':'none';
   syncStgToRef();
 }
 
@@ -2073,7 +1789,6 @@ function updateDropdowns2(){
         <select id="ref-extra-${e.id}">${e.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
     });
   }
-  // No syncRefToStg here — referto is NOT the source of truth
 }
 
 function renderReferto(){
@@ -2088,7 +1803,6 @@ function renderReferto(){
     vw.style.display='block';
   }else{currentVariant2=null;vw.style.display='none';}
   updateDropdowns2();
-  // Show budding field only for relevant sites
   const BUDDING_SITES_UI=['colon_retto','appendice','intestino_tenue','stomaco','esofago'];
   const bf=document.getElementById('budding-field');
   if(bf)bf.style.display=BUDDING_SITES_UI.includes(s.id)?'':'none';
@@ -2102,25 +1816,20 @@ function populateSelect(id,arr,type){
 }
 
 function nuovoCaso(){
-  // Reset T/N/M selects to first option
   ['sel-T','sel-N','sel-M','ref-T','ref-N','ref-M'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.selectedIndex=0;
   });
-  // Reset LN fields
   ['stg-ln-tot','stg-ln-pos','ref-ln-tot','ref-ln-pos'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.value='';
   });
-  // Reset notes
   const notes=document.getElementById('ref-notes');
   if(notes)notes.value='';
-  // Reset prognostic factor selects
   ['ref-lvi','ref-pni','ref-budding','ref-margins','ref-regression','ref-perforation'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.selectedIndex=0;
   });
-  // Reset extra fields (site-specific: appendice grade, testis S)
   if(currentSite&&currentSite.extra){
     currentSite.extra.forEach(e=>{
       ['sel-extra-','ref-extra-'].forEach(pfx=>{
@@ -2129,31 +1838,21 @@ function nuovoCaso(){
       });
     });
   }
-  // Reset variant to first option
   ['variant-sel','variant-sel2'].forEach(id=>{
     const el=document.getElementById(id);
     if(el&&el.options.length){el.selectedIndex=0;}
   });
-  // Reset prefixes to p/p/c default
-  ['pfx-preset','pfx-preset2'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.selectedIndex=0;
-  });
-  ['pfx-T','pfx-T2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='p';});
-  ['pfx-N','pfx-N2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='p';});
-  ['pfx-M','pfx-M2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='c';});
   const badge=document.getElementById('n-auto-badge');
   if(badge)badge.textContent='';
-  // Hide results and output
   document.getElementById('stage-result').style.display='none';
   document.getElementById('stage-validation').innerHTML='';
   const ro=document.getElementById('referto-output');
   if(ro)ro.style.display='none';
   const cb=document.getElementById('copy-btn');
   if(cb)cb.style.display='none';
-  // Show staging tab
   showTab('lookup');
 }
+
 function onTNMChange(){
   document.getElementById('stage-result').style.display='none';
   document.getElementById('stage-validation').innerHTML='';
@@ -2173,13 +1872,9 @@ function computeStage(){
   const lnTot=document.getElementById('stg-ln-tot')?.value||0;
   const lnPos=document.getElementById('stg-ln-pos')?.value||0;
 
-  // Validate with actual LN data if provided
   const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
-
-  // Compute stage (blocked by hard errors OR dataset ambiguity)
   const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:computeBestStage(rules,T,N,M,extra);
 
-  // Ambiguity is an error, not a warning — dataset bug, staging not assignable
   if(result.ambiguous){
     v.errors.push('Ambiguità dataset: stadi '+result.allStages.join(' / ')+' compatibili simultaneamente — staging non assegnabile. Segnalare il bug.');
   }
@@ -2187,7 +1882,6 @@ function computeStage(){
   document.getElementById('stage-validation').innerHTML=renderValidation(v);
 
   const stageHeader=currentSite?.model_limited?'Raggruppamento anatomico TNM':'Stadio';
-
   let stageLabel,stageQuality='';
   if(v.errors.length){
     stageLabel=result.ambiguous
@@ -2233,7 +1927,6 @@ function renderStagingTable(){
     const T=[].concat(r.T).join(', ');
     const N=[].concat(r.N).join(', ');
     const M=[].concat(r.M).join(', ');
-    // Show extra constraints in dedicated column
     const extraStr=r.extra?Object.entries(r.extra).map(([k,v])=>`${k}=${[].concat(v).join('/')}`).join(' '):'';
     const note=r.note||'';
     return`<tr data-stage="${r.stage}">
@@ -2250,10 +1943,6 @@ function renderStagingTable(){
 // ======================================================
 // REFERTO
 // ======================================================
-// Minimum node counts for pN0 adequacy per site (applies only when pfx.N is pathological).
-// canale_anale is intentionally ABSENT: requires dual threshold (≥12 perirettale/pelvico,
-// ≥6 inguinale) that cannot be correctly resolved without knowing the dissection territory.
-// A site-specific warning handles it instead.
 const PN0_MIN={
   colon_retto:12, stomaco:16, esofago:7, intestino_tenue:6,
   appendice:12, fegato_hcc:3, bile_intrahep:6,
@@ -2261,7 +1950,6 @@ const PN0_MIN={
   pancreas:12, mammella:6, tiroide:6, gh_salivari:6,
   melanoma:6, merkel:6,
 };
-
 
 function generateReferto(){
   const s=currentSite;if(!s)return;
@@ -2276,7 +1964,6 @@ function generateReferto(){
   const extra={};
   if(s.extra){s.extra.forEach(e=>{const el=document.getElementById('ref-extra-'+e.id);if(el)extra[e.id]=el.value;});}
 
-  // Centralized validation (full: includes LN numerics + variant/prefix coherence)
   const pfx=getPfx('ref');
   const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
   const result=v.errors.length?{stage:null,ambiguous:false}:computeBestStage(rules,T,N,M,extra);
@@ -2288,7 +1975,6 @@ function generateReferto(){
   const td=s.T.find(x=>x.c===T)||{d:'—'};
   const nd=s.N.find(x=>x.c===N)||{d:'—'};
   const md=s.M.find(x=>x.c===M)||{d:'—'};
-  // pfx already computed above in validateCase block
 
   let txt=`CLASSIFICAZIONE TNM — 9ª EDIZIONE\n`;
   txt+=`Riferimento: UICC TNM Classification of Malignant Tumours, 9ª ed. (2025); mapping AJCC v9 per sede dove applicabile\n`;
@@ -2297,16 +1983,13 @@ function generateReferto(){
     const varLabel=getVariants(s)?.find(vv=>vv.id===variant)?.label||variant;
     txt+=`Variante/istotipo: ${varLabel}\n`;
   }
-  // Show active prefixes
-  txt+=`Prefissi: ${pfx.T}T · ${pfx.N}N · ${pfx.M}M\n`;
   txt+=`\n`;
 
-  // Declare LN counts here — used in both compact line and detailed N line below
   const nTotN=parseInt(lnTot)||0;
   const nPosN=parseInt(lnPos)||0;
 
-  // Compact summary line (LIS-ready format)
   const nRatio=(nTotN>0&&nPosN>=0)?` (${nPosN}/${nTotN})`:'';
+  const stageHeader=s.model_limited?'RAGGRUPPAMENTO ANATOMICO TNM':'STADIO';
   const compactStage=stage?` → ${stageHeader} ${stage}`:'';
   txt+=`━━ ${pfx.T}${T} ${pfx.N}${N}${nRatio} ${pfx.M}${M}${compactStage}\n\n`;
   txt+=`${pfx.T}${T} — ${td.d}\n`;
@@ -2320,19 +2003,15 @@ function generateReferto(){
   txt+=nLine+'\n';
   txt+=`${pfx.M}${M} — ${md.d}\n`;
 
-  // Show extra determinants used
   const extraKeys=Object.keys(extra).filter(k=>extra[k]&&extra[k]!=='—');
   if(extraKeys.length){
     txt+=`Extra determinanti: ${extraKeys.map(k=>k+'='+extra[k]).join(', ')}\n`;
   }
 
-  // Stage header: anatomical grouping label for model_limited sites
-  const stageHeader=s.model_limited?'RAGGRUPPAMENTO ANATOMICO TNM':'STADIO';
   const stageFootnote=s.id==='prostata'?
     '\n⚠ ATTENZIONE: questo NON corrisponde al Prognostic Stage Group. Per la prostata il gruppo prognostico formale richiede PSA (ng/mL) e Grade Group (Gleason score). Integrare con questi dati prima di qualsiasi uso clinico.'
     :'';
 
-  // 4-state stage quality
   let stageQualityLabel;
   if(v.errors.length){
     stageQualityLabel='NON ASSEGNABILE — combinazione incoerente (vedi avvertenze)';
@@ -2347,7 +2026,6 @@ function generateReferto(){
   }
   txt+=`\n${stageHeader}: ${stageQualityLabel}${stageFootnote}\n`;
 
-  // Validation block
   const allV=[
     ...v.errors.map(e=>'⛔ INCOERENZA: '+e),
     ...v.incomplete.map(e=>'⚠ INCOMPLETO: '+e),
@@ -2357,7 +2035,6 @@ function generateReferto(){
 
   if(notes)txt+=`\nNote: ${notes}`;
 
-  // Fattori prognostici non-TNM — solo quelli valorizzati
   const BUDDING_SITES=['colon_retto','appendice','intestino_tenue','stomaco','esofago'];
   const showBudding=BUDDING_SITES.includes(s.id);
   const pfactors=[
