@@ -189,6 +189,16 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
             <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variante/Istotipo:</label>
             <select id="variant-sel" onchange="updateDropdowns()"></select>
           </div>
+          <div id="stg-ln-row" style="display:flex;gap:14px;margin-bottom:14px">
+            <div class="form-group" style="display:inline-block;width:180px;margin-right:14px">
+              <label>LN esaminati</label>
+              <input type="number" id="stg-ln-tot" placeholder="es. 24" min="0" oninput="onTNMChange();syncStgToRef()">
+            </div>
+            <div class="form-group" style="display:inline-block;width:180px">
+              <label>LN positivi → auto-calcola N ↓</label>
+              <input type="number" id="stg-ln-pos" placeholder="es. 3" min="0" oninput="onTNMChange();syncStgToRef();autoCalcN()">
+            </div>
+          </div>
           <div class="form-grid">
             <div class="form-group">
               <label>T — Tumore primitivo</label>
@@ -204,16 +214,6 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
             </div>
           </div>
           <div id="extra-selects"></div>
-          <div id="stg-ln-row" style="display:flex;gap:14px;margin-bottom:14px">
-            <div class="form-group" style="display:inline-block;width:180px;margin-right:14px">
-              <label>LN esaminati (opz.)</label>
-              <input type="number" id="stg-ln-tot" placeholder="es. 24" min="0" onchange="onTNMChange();syncStgToRef()">
-            </div>
-            <div class="form-group" style="display:inline-block;width:180px">
-              <label>LN positivi (opz.)</label>
-              <input type="number" id="stg-ln-pos" placeholder="es. 3" min="0" onchange="onTNMChange();syncStgToRef();autoCalcN()">
-            </div>
-          </div>
           <button id="calc-btn" onclick="computeStage()">Calcola Stadio</button>
         </div>
         <div id="stage-validation"></div>
@@ -1474,6 +1474,17 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
   if(nTot>0&&nPos>nTot){
     errors.push('Il numero di linfonodi positivi ('+nPos+') supera il totale esaminato ('+nTot+'). Dati incongruenti.');
   }
+  const lnPosProvided=(lnPos!==''&&lnPos!==null&&lnPos!==undefined);
+  const nAutoRule=N_AUTO_RULES[site.id];
+  if(lnPosProvided&&nAutoRule){
+    const nPosVal=parseInt(lnPos)||0;
+    const expectedN=nAutoRule(nPosVal);
+    const autoOutputs=new Set();
+    for(let i=0;i<=30;i++)autoOutputs.add(nAutoRule(i));
+    if(autoOutputs.has(nCode)&&nCode!==expectedN){
+      errors.push('Categoria N incongruente: con '+nPosVal+' LN+ attesa '+expectedN+', selezionata '+nCode+'. Correggere o usare l\'auto-calcolo LN+.');
+    }
+  }
 
   // pN senza conteggio
   if(nCode!=='NX'&&nCode!=='N0'&&nTot===0){
@@ -1869,8 +1880,8 @@ function computeStage(){
   const extra={};
   if(s.extra){s.extra.forEach(e=>{const el=document.getElementById('sel-extra-'+e.id);if(el)extra[e.id]=el.value;});}
   const pfx=getPfx('stg');
-  const lnTot=document.getElementById('stg-ln-tot')?.value||0;
-  const lnPos=document.getElementById('stg-ln-pos')?.value||0;
+  const lnTot=document.getElementById('stg-ln-tot')?.value??'';
+  const lnPos=document.getElementById('stg-ln-pos')?.value??'';
 
   const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
   const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:computeBestStage(rules,T,N,M,extra);
