@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TNM 9ª Ed. — Anatomia Patologica</title>
+<title>TNM 9ª Ed. — Anatomia Patologica · 29 sedi</title>
 <style>
 :root{
   --bg:#f0f2f5;--panel:#ffffff;--border:#d4d9e2;--accent:#2563a8;--accent2:#1a7a6e;
@@ -149,7 +149,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
 <div id="sidebar">
   <div id="sidebar-header">
     <h1>TNM 9ª Ed.</h1>
-    <small>UICC 2025 · mapping AJCC v9 per sede</small>
+    <small>UICC 2025 · 29 sedi</small>
   </div>
   <input type="text" id="search-box" placeholder="🔍  Cerca sede…">
   <div id="site-list"></div>
@@ -1427,6 +1427,130 @@ staging_variants:{
   ]
 }},
 
+
+,
+
+{id:'pelvi_renale',name:'Pelvi Renale',icd:'C65.9',cat:'uro',
+note:"Carcinoma uroteliale dell'alto tratto urinario. ≥8 linfonodi per pN0 adeguato. T3 include l'invasione del parenchima renale — distinguere da RCC primitivo (IHC: GATA3+/CK7+ vs CD10+/CK7-). Lateralità obbligatoria nel referto.",
+T:[
+  {c:'TX',d:'Non valutabile'},
+  {c:'T0',d:'Nessun tumore'},
+  {c:'Ta',d:'Carcinoma papillare non invasivo'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1',d:'Tumore che invade il tessuto connettivo sottoepiteliale'},
+  {c:'T2',d:'Tumore che invade il muscolo'},
+  {c:'T3',d:'Tumore che invade il grasso peripelvico o il parenchima renale'},
+  {c:'T4',d:'Tumore che invade gli organi adiacenti o attraversa il rene nel grasso perirenale'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},
+  {c:'N0',d:'Nessuna metastasi linfonodale regionale'},
+  {c:'N1',d:'Metastasi in un singolo linfonodo \u226422 cm nella dimensione maggiore'},
+  {c:'N2',d:'Metastasi in un singolo linfonodo >2 cm, o in linfonodi multipli'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1',d:'Metastasi a distanza (inclusi linfonodi controlaterali o mediastinici)'},
+],
+staging:[
+  {stage:'0a',T:'Ta',N:'N0',M:'M0'},
+  {stage:'0is',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'II',T:'T2',N:'N0',M:'M0'},
+  {stage:'III',T:'T3',N:'N0',M:'M0'},
+  {stage:'IV',T:'T4',N:'N0',M:'M0'},
+  {stage:'IV',T:'any',N:['N1','N2'],M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'uretere',name:'Uretere',icd:'C66.9',cat:'uro',
+note:"Carcinoma uroteliale del tratto urinario superiore. ≥8 linfonodi per pN0. Staging identico alla pelvi renale. Multifocalità frequente: refertare ogni lesione separatamente. Specificare margine uretrale distale nel campione di nefroureterectomia.",
+T:[
+  {c:'TX',d:'Non valutabile'},
+  {c:'T0',d:'Nessun tumore'},
+  {c:'Ta',d:'Carcinoma papillare non invasivo'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1',d:'Tumore che invade il tessuto connettivo sottoepiteliale'},
+  {c:'T2',d:'Tumore che invade il muscolo'},
+  {c:'T3',d:'Tumore che invade il grasso periureterale'},
+  {c:'T4',d:'Tumore che invade gli organi adiacenti'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},
+  {c:'N0',d:'Nessuna metastasi linfonodale regionale'},
+  {c:'N1',d:'Metastasi in un singolo linfonodo \u226422 cm nella dimensione maggiore'},
+  {c:'N2',d:'Metastasi in un singolo linfonodo >2 cm, o in linfonodi multipli'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1',d:'Metastasi a distanza'},
+],
+staging:[
+  {stage:'0a',T:'Ta',N:'N0',M:'M0'},
+  {stage:'0is',T:'Tis',N:'N0',M:'M0'},
+  {stage:'I',T:'T1',N:'N0',M:'M0'},
+  {stage:'II',T:'T2',N:'N0',M:'M0'},
+  {stage:'III',T:'T3',N:'N0',M:'M0'},
+  {stage:'IV',T:'T4',N:'N0',M:'M0'},
+  {stage:'IV',T:'any',N:['N1','N2'],M:'M0'},
+  {stage:'IV',T:'any',N:'any',M:'M1'},
+]},
+
+{id:'uretra',name:'Uretra',icd:'C68.0',cat:'uro',
+note:"Classificazione distinta per uretra maschile e femminile (UICC 9\u00aa ed.). L'uretra prostatica con CU usa la classificazione prostatica, non questa. \u22656 linfonodi per pN0. Istotipi per sede: posteriore M/F prossimale \u2192 uroteliale; anteriore M/distale F \u2192 squamoso; adenocarcinoma F da ghiandole di Skene (PSA/PSAP+). Codici T differenziati M/F: T2M/T2F, T3M/T3F, T4M/T4F.",
+variants:[
+  {id:'maschile',label:'Uretra maschile'},
+  {id:'femminile',label:'Uretra femminile'},
+],
+T:[
+  {c:'TX',d:'Non valutabile'},
+  {c:'T0',d:'Nessun tumore'},
+  {c:'Ta',d:'Carcinoma papillare/verrucoso/condilomatoso non invasivo'},
+  {c:'Tis',d:'Carcinoma in situ'},
+  {c:'T1',d:'Tumore che invade il tessuto connettivo sottoepiteliale'},
+  {c:'T2M',d:'[M] Tumore che invade il corpo spongioso, la prostata o il muscolo periuretrale'},
+  {c:'T2F',d:'[F] Tumore che invade il muscolo periuretrale'},
+  {c:'T3M',d:'[M] Tumore che invade il corpo cavernoso, oltre la capsula prostatica, la parete anteriore della vescica o la cute del perineo'},
+  {c:'T3F',d:'[F] Tumore che invade la parete anteriore della vagina o il collo vescicale'},
+  {c:'T4M',d:'[M] Tumore che invade altri organi adiacenti (parete vescicale, retto)'},
+  {c:'T4F',d:'[F] Tumore che invade altri organi adiacenti (parete vescicale o cute)'},
+],
+N:[
+  {c:'NX',d:'Non valutabili'},
+  {c:'N0',d:'Nessuna metastasi linfonodale regionale'},
+  {c:'N1',d:'Metastasi in un singolo linfonodo nella pelvi vera (inguinale o pelvico) \u226422 cm'},
+  {c:'N2',d:'Metastasi in un singolo linfonodo >2 cm, o in linfonodi multipli inguinali o pelvici'},
+],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza'},
+  {c:'M1',d:'Metastasi a distanza (inclusi linfonodi aortici)'},
+],
+staging_variants:{
+  maschile:[
+    {stage:'0a',T:'Ta',N:'N0',M:'M0'},
+    {stage:'0is',T:'Tis',N:'N0',M:'M0'},
+    {stage:'I',T:'T1',N:'N0',M:'M0'},
+    {stage:'II',T:'T2M',N:'N0',M:'M0'},
+    {stage:'III',T:'T3M',N:'N0',M:'M0'},
+    {stage:'III',T:['T1','T2M','T3M'],N:'N1',M:'M0'},
+    {stage:'IV',T:'T4M',N:'any',M:'M0'},
+    {stage:'IV',T:'any',N:'N2',M:'M0'},
+    {stage:'IV',T:'any',N:'any',M:'M1'},
+  ],
+  femminile:[
+    {stage:'0a',T:'Ta',N:'N0',M:'M0'},
+    {stage:'0is',T:'Tis',N:'N0',M:'M0'},
+    {stage:'I',T:'T1',N:'N0',M:'M0'},
+    {stage:'II',T:'T2F',N:'N0',M:'M0'},
+    {stage:'III',T:'T3F',N:'N0',M:'M0'},
+    {stage:'III',T:['T1','T2F','T3F'],N:'N1',M:'M0'},
+    {stage:'IV',T:'T4F',N:'any',M:'M0'},
+    {stage:'IV',T:'any',N:'N2',M:'M0'},
+    {stage:'IV',T:'any',N:'any',M:'M1'},
+  ]
+}}
+
+
 ]; // end SITES
 
 // ======================================================
@@ -1517,6 +1641,12 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
     warnings.push('Tis(LCIS) — divergenza UICC/AJCC: UICC TNM 9ª ed. include questa categoria nello Stadio 0; AJCC 8ª/9ª ed. la esclude. Staging mostrato: UICC. Non classificabile formalmente secondo AJCC.');
   }
 
+  if(site.id==='pelvi_renale'&&T==='T3'){
+    warnings.push("T3 pelvi renale include l'invasione del parenchima renale — può simulare RCC primitivo in campione frammentato. Verificare IHC se necessario (GATA3+/CK7+ vs CD10+/CK7-).");
+  }
+  if(site.id==='uretra'){
+    warnings.push('Uretra: staging usa codici T differenziati per sesso (T2M/T3M/T4M per maschile; T2F/T3F/T4F per femminile). Verificare che la variante selezionata corrisponda al sesso del paziente.');
+  }
   return{errors,incomplete,warnings,isHybrid:false};
 }
 
@@ -1698,6 +1828,9 @@ const N_AUTO_RULES={
   net_stomaco:(n)=>n===0?'N0':'N1',
   net_coloretto:(n)=>n===0?'N0':'N1',
   net_pancreas:(n)=>n===0?'N0':'N1',
+  pelvi_renale:(n)=>n===0?'N0':n===1?'N1':'N2',
+  uretere:(n)=>n===0?'N0':n===1?'N1':'N2',
+  uretra:(n)=>n===0?'N0':n===1?'N1':'N2',
 };
 
 function autoCalcN(){
@@ -1960,6 +2093,9 @@ const PN0_MIN={
   colecisti:6, bile_perihilar:15, bile_distale:12, ampolla:12,
   pancreas:12, mammella:6, tiroide:6, gh_salivari:6,
   melanoma:6, merkel:6,
+  pelvi_renale:8,
+  uretere:8,
+  uretra:6,
 };
 
 function generateReferto(){
