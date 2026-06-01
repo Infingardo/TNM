@@ -3,389 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TNM 9ª Ed. — Anatomia Patologica · 29 sedi</title>
+<title>TNM Tool — Tabella Audit v1.0-rc1</title>
 <style>
-:root{
-  --bg:#f0f2f5;--panel:#ffffff;--border:#d4d9e2;--accent:#2563a8;--accent2:#1a7a6e;
-  --text:#1e2535;--muted:#6b7590;--badge:#e8ecf2;--ok:#2e7d32;--warn:#b35a00;
-  --stage-bg:#eef2f8;--code:#1a4f8a;--hover:#e4e9f2;--radius:6px;
-}
+:root{--bg:#f5f4f0;--panel:#fff;--border:#d8d5cc;--text:#1c1a16;--muted:#7a7670;--accent:#1a5c3a;--radius:4px;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);
-  display:flex;height:100vh;overflow:hidden;font-size:14px;}
-
-/* SIDEBAR */
-#sidebar{width:240px;min-width:200px;background:var(--panel);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;}
-#sidebar-header{padding:14px 16px 10px;border-bottom:1px solid var(--border);}
-#sidebar-header h1{font-size:13px;font-weight:700;letter-spacing:.5px;color:var(--accent);text-transform:uppercase;}
-#sidebar-header small{color:var(--muted);font-size:11px;}
-#search-box{margin:10px;padding:7px 10px;background:var(--bg);border:1px solid var(--border);
-  border-radius:var(--radius);color:var(--text);font-size:13px;width:calc(100% - 20px);}
-#search-box:focus{outline:none;border-color:var(--accent);}
-#site-list{flex:1;overflow-y:auto;padding:4px 0;}
-.cat-label{padding:8px 16px 4px;font-size:10px;font-weight:700;letter-spacing:1px;
-  color:var(--muted);text-transform:uppercase;}
-.site-item{padding:7px 16px;cursor:pointer;border-left:3px solid transparent;
-  font-size:13px;transition:all .15s;line-height:1.3;}
-.site-item:hover{background:var(--hover);color:var(--text);}
-.site-item.active{background:var(--hover);border-left-color:var(--accent);color:var(--accent);}
-.site-item.hidden{display:none;}
-
-/* MAIN */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-#topbar{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;
-  background:var(--panel);}
-#site-title{font-size:17px;font-weight:600;flex:1;}
-#site-icd{font-size:11px;color:var(--muted);margin-top:2px;}
-.tabs{display:flex;gap:2px;}
-.tab-btn{padding:7px 14px;border:1px solid var(--border);background:var(--bg);color:var(--muted);
-  border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;}
-.tab-btn:hover{background:var(--hover);color:var(--text);}
-.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-
-#content{flex:1;overflow-y:auto;padding:20px;}
-.tab-panel{display:none;}
-.tab-panel.active{display:block;}
-
-/* LOOKUP TAB */
-.tnm-section{margin-bottom:24px;}
-.section-title{font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-  color:var(--accent2);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
-.tnm-item{display:flex;gap:10px;padding:7px 10px;border-radius:var(--radius);margin-bottom:3px;
-  background:var(--panel);border:1px solid var(--border);align-items:flex-start;}
-.tnm-code{font-family:'Consolas','Courier New',monospace;font-size:13px;font-weight:700;
-  color:var(--code);min-width:60px;padding-top:1px;}
-.tnm-desc{font-size:13px;color:var(--text);line-height:1.5;}
-.tnm-note{font-size:11px;color:var(--muted);margin-top:3px;}
-
-/* STAGING TAB */
-#staging-form{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
-  padding:18px;margin-bottom:18px;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
-.form-group label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.6px;color:var(--muted);margin-bottom:6px;}
-.form-group select{width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);
-  border-radius:var(--radius);color:var(--text);font-size:13px;cursor:pointer;}
-.form-group select:focus{outline:none;border-color:var(--accent);}
-.variant-row{margin-bottom:14px;}
-.variant-row select{padding:6px 10px;background:var(--bg);border:1px solid var(--border);
-  border-radius:var(--radius);color:var(--text);font-size:13px;cursor:pointer;}
-#calc-btn{padding:9px 22px;background:var(--accent);border:none;border-radius:var(--radius);
-  color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;}
-#calc-btn:hover{background:#3a80d0;}
-#stage-result{background:var(--stage-bg);border:1px solid var(--accent);border-radius:var(--radius);
-  padding:18px;display:none;}
-#stage-value{font-size:32px;font-weight:800;color:var(--accent);letter-spacing:1px;}
-#stage-label{font-size:12px;color:var(--muted);margin-top:2px;}
-#stage-detail{margin-top:14px;font-size:13px;color:var(--text);line-height:1.7;}
-.stage-row{display:flex;gap:10px;padding:5px 8px;border-radius:4px;margin-bottom:2px;background:var(--panel);}
-.stage-code{font-family:'Consolas','Courier New',monospace;font-weight:700;color:var(--code);min-width:80px;}
-
-/* STAGING TABLE */
-.staging-table-wrap{margin-top:20px;}
-.staging-table{width:100%;border-collapse:collapse;font-size:13px;}
-.staging-table th{background:var(--badge);padding:8px 12px;text-align:left;font-size:11px;
-  font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);}
-.staging-table td{padding:7px 12px;border-bottom:1px solid var(--border);}
-.staging-table tr:hover td{background:var(--hover);}
-.staging-table tr.highlighted td{background:rgba(78,144,224,0.15);border-left:3px solid var(--accent);}
-
-/* REFERTO TAB */
-#referto-form{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
-  padding:18px;margin-bottom:18px;}
-.ref-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
-.ref-extras{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
-input[type=text],input[type=number],textarea{width:100%;padding:7px 10px;background:var(--bg);
-  border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;}
-input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;border-color:var(--accent);}
-#gen-btn{padding:9px 22px;background:var(--ok);border:none;border-radius:var(--radius);
-  color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;}
-#referto-output{background:var(--stage-bg);border:1px solid var(--border);border-radius:var(--radius);
-  padding:18px;display:none;margin-top:18px;font-family:'Consolas','Courier New',monospace;
-  font-size:13px;line-height:1.8;white-space:pre-wrap;color:var(--text);}
-#copy-btn{padding:7px 16px;background:var(--badge);border:1px solid var(--border);
-  border-radius:var(--radius);color:var(--text);font-size:13px;cursor:pointer;margin-top:10px;display:none;}
-#copy-btn:hover{background:var(--hover);}
-
-/* NOTE BOX */
-.note-box{background:var(--badge);border:1px solid var(--border);border-radius:var(--radius);
-  padding:12px 16px;font-size:12px;color:var(--muted);line-height:1.6;margin-top:16px;}
-.note-box strong{color:var(--warn);}
-
-/* SITE BADGES */
-.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;
-  letter-spacing:.4px;text-transform:uppercase;}
-.badge-uicc{background:#ddeeff;color:#1a4a80;border:1px solid #a0c0e8;}
-.badge-div{background:#fff3cd;color:#7a5000;border:1px solid #e0c060;}
-.badge-anat{background:#f0e8ff;color:#5a2080;border:1px solid #c0a0e0;}
-.badge-net{background:#e8f8e8;color:#1a6a1a;border:1px solid #80c080;}
-.badge-complete{background:#e8f5e9;color:#2e7d32;border:1px solid #81c784;}
-.badge-partial{background:#fff8e1;color:#e65100;border:1px solid #ffca28;font-weight:800;}
-.badge-anatomic{background:#fce4ec;color:#c62828;border:1px solid #ef9a9a;font-weight:800;}
-.badge-verify{background:#fff3e0;color:#bf360c;border:1px solid #ffb74d;font-weight:800;}
-
-/* VALIDATION ALERTS */
-.v-error{background:#fff0f0;border:1px solid #e88;border-radius:var(--radius);
-  padding:10px 14px;font-size:12px;color:#b00;margin-top:10px;line-height:1.6;}
-.v-warning{background:#fffbe6;border:1px solid #e0c040;border-radius:var(--radius);
-  padding:10px 14px;font-size:12px;color:#7a5800;margin-top:8px;line-height:1.6;}
-.v-incomplete{background:#f0f4ff;border:1px solid #a0b0e0;border-radius:var(--radius);
-  padding:10px 14px;font-size:12px;color:#2a4080;margin-top:8px;line-height:1.6;}
-.v-label{font-weight:700;margin-bottom:3px;}
-
-/* EMPTY STATE */
-#empty{text-align:center;padding:60px 20px;color:var(--muted);}
-#empty h2{font-size:18px;margin-bottom:8px;color:var(--text);}
-
-/* DISCLAIMER */
-#disclaimer{font-size:10px;color:var(--muted);padding:8px 16px;border-top:1px solid var(--border);
-  background:var(--panel);text-align:center;}
-
-/* scrollbar */
-::-webkit-scrollbar{width:6px;height:6px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:#b0b8cc;border-radius:3px;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:12.5px;}
+#topbar{background:var(--accent);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:16px;}
+#topbar h1{font-size:14px;font-weight:700;}
+#topbar small{opacity:.7;font-size:11px;}
+#controls{padding:10px 24px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+select,button{padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--text);cursor:pointer;}
+button{background:var(--accent);color:#fff;border:none;font-weight:600;}
+#content{padding:20px 24px 60px;}
+.site-block{margin-bottom:32px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.site-header{padding:10px 16px;background:#1a5c3a;color:#fff;display:flex;align-items:center;gap:12px;}
+.site-header h2{font-size:13px;font-weight:700;}
+.site-header .icd{font-size:10px;opacity:.7;font-family:monospace;}
+.site-header .level{font-size:10px;padding:2px 8px;border-radius:2px;font-weight:700;}
+.level-complete{background:#e8f5e9;color:#2e7d32;}
+.level-partial{background:#fff8e1;color:#e65100;}
+.level-anatomic{background:#fce4ec;color:#c62828;}
+.tabs{display:flex;background:#f0f0ec;border-bottom:1px solid var(--border);}
+.tab{padding:8px 16px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--panel);}
+.tab-content{display:none;padding:12px 16px;}
+.tab-content.active{display:block;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--bg);padding:6px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:6px 10px;border-bottom:1px solid #ece9e3;vertical-align:top;line-height:1.5;}
+tr:last-child td{border-bottom:none;}
+code{font-family:monospace;font-size:11px;background:#ece9e3;padding:1px 4px;border-radius:2px;}
+.audit-row{display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px dashed #ece9e3;font-size:12px;}
+.audit-check{width:18px;height:18px;border:1px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;flex-shrink:0;}
+.audit-check.done{background:#e8f5e9;border-color:#81c784;color:#2e7d32;}
+.audit-check.fail{background:#fce4ec;border-color:#ef9a9a;color:#c62828;}
+.note-box{font-size:11px;color:var(--muted);font-style:italic;padding:8px 12px;background:#f8f7f3;border-radius:var(--radius);margin-top:8px;line-height:1.5;}
+#disclaimer{position:fixed;bottom:0;left:0;right:0;background:var(--text);color:rgba(255,255,255,.6);font-size:10px;padding:5px 24px;text-align:center;font-family:monospace;}
 </style>
 </head>
 <body>
-
-<div id="sidebar">
-  <div id="sidebar-header">
-    <h1>TNM 9ª Ed.</h1>
-    <small>UICC 2025 · 29 sedi</small>
-    <div id="tool-version-badge" style="margin-top:4px;font-size:9px;color:var(--muted)"></div>
-  </div>
-  <input type="text" id="search-box" placeholder="🔍  Cerca sede…">
-  <div id="site-list"></div>
+<div id="topbar">
+  <h1>TNM TOOL — TABELLA AUDIT</h1>
+  <small>v1.0-rc1 · Dataset: UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Da compilare con manuale in mano</small>
 </div>
-
-<div id="main">
-  <div id="topbar">
-    <div>
-      <div id="site-title">Seleziona una sede</div>
-      <div id="site-icd"></div>
-      <div id="site-badges" style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap"></div>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="showTab('lookup')">📋 Definizioni</button>
-      <button class="tab-btn" onclick="showTab('staging')">🎯 Stadiazione</button>
-      <button class="tab-btn" onclick="showTab('referto')">📄 Referto</button>
-      <button onclick="nuovoCaso()" style="margin-left:10px;padding:7px 14px;border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;" onmouseover="this.style.background='var(--hover)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--bg)';this.style.color='var(--muted)'">🆕 Nuovo caso</button>
-    </div>
-  </div>
-
-  <div id="content">
-    <div id="empty">
-      <h2>TNM 9ª Edizione</h2>
-      <p>Seleziona una sede tumorale dal pannello di sinistra</p>
-    </div>
-
-    <!-- LOOKUP -->
-    <div class="tab-panel" id="tab-lookup">
-      <div id="lookup-content"></div>
-    </div>
-
-    <!-- STAGING -->
-    <div class="tab-panel" id="tab-staging">
-      <div id="staging-content">
-        <div id="staging-form">
-          <div id="variant-wrap" class="variant-row" style="display:none">
-            <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variante/Istotipo:</label>
-            <select id="variant-sel" onchange="updateDropdowns()"></select>
-          </div>
-          <div id="stg-ln-row" style="display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap">
-            <div class="form-group" style="display:inline-block;width:180px;margin-right:14px">
-              <label>LN esaminati</label>
-              <input type="number" id="stg-ln-tot" placeholder="es. 24" min="0" oninput="onTNMChange();syncStgToRef();lnCrossCheck()">
-            </div>
-            <div class="form-group" style="display:inline-block;width:180px">
-              <label>LN positivi → auto-calcola N ↓</label>
-              <input type="number" id="stg-ln-pos" placeholder="es. 3" min="0" oninput="onTNMChange();syncStgToRef();autoCalcN();lnCrossCheck();autoCalcNDim()">
-            </div>
-            <div class="form-group" id="stg-ln-dim-wrap" style="display:none;width:180px">
-              <label>Dim. LN maggiore (mm) → auto-N ↓</label>
-              <input type="number" id="stg-ln-dim" placeholder="es. 18" min="0" step="0.1" oninput="autoCalcNDim()">
-            </div>
-            <div class="form-group" id="stg-ln-ene-wrap" style="display:none;width:160px">
-              <label>ENE (gh. salivari)</label>
-              <select id="stg-ln-ene" onchange="autoCalcNDim()">
-                <option value="neg">ENE− (assente)</option>
-                <option value="pos">ENE+ (presente)</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>T — Tumore primitivo</label>
-              <select id="sel-T" onchange="onTNMChange()"></select>
-            </div>
-            <div class="form-group">
-              <label>N — Linfonodi regionali</label>
-              <select id="sel-N" onchange="onTNMChange();document.getElementById('n-auto-badge')&&(document.getElementById('n-auto-badge').textContent='')"></select>
-            </div>
-            <div class="form-group">
-              <label>M — Metastasi a distanza</label>
-              <select id="sel-M" onchange="onTNMChange()"></select>
-            </div>
-          </div>
-          <div id="extra-selects"></div>
-          <button id="calc-btn" onclick="computeStage()">Calcola Stadio</button>
-        </div>
-        <div id="stage-validation"></div>
-        <div id="stage-result">
-          <div id="stage-value">—</div>
-          <div id="stage-label">Stadio (TNM 9ª Ed.)</div>
-          <div id="stage-detail"></div>
-        </div>
-        <div class="staging-table-wrap">
-          <div class="section-title">Tabella di Stadiazione</div>
-          <table class="staging-table" id="staging-table">
-            <thead><tr><th>Stadio</th><th>T</th><th>N</th><th>M</th><th>Extra</th><th>Note</th><th style='color:var(--accent2)'>AJCC Cancer Staging Manual, Version 9</th></tr></thead>
-            <tbody id="staging-tbody"></tbody>
-          </table>
-          <div id="ajcc-global-banner" style="display:none;margin-top:10px;padding:10px 14px;background:#fff8f0;border:1px solid #e8a060;border-radius:4px;font-size:12px;color:#7a3a00;line-height:1.6"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- REFERTO -->
-    <div class="tab-panel" id="tab-referto">
-      <div id="referto-form">
-        <div id="variant-wrap2" class="variant-row" style="display:none">
-          <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variante/Istotipo:</label>
-          <select id="variant-sel2" onchange="updateDropdowns2()"></select>
-        </div>
-        <!-- Prefisso TNM + Fonte M -->
-        <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;align-items:flex-end">
-          <div class="form-group" style="min-width:160px">
-            <label>Prefisso TNM <span style="color:var(--accent2);font-weight:700">*</span></label>
-            <select id="ref-prefix-sel" style="border:2px solid var(--accent);font-weight:600">
-              <option value="p">p — patologico (post-chirurgia)</option>
-              <option value="yp">yp — post-neoadiuvante</option>
-              <option value="r">r — recidiva</option>
-              <option value="c">c — clinico (pre-chirurgia)</option>
-            </select>
-          </div>
-          <div class="form-group" style="min-width:200px">
-            <label>Fonte M <span style="color:var(--muted);font-weight:400;font-size:10px">(M spesso non è patologico)</span></label>
-            <select id="ref-m-source">
-              <option value="cM">cM — clinico/radiologico (default)</option>
-              <option value="pM">pM — patologico (biopsia metastasi)</option>
-              <option value="ycM">ycM — post-trattamento, clinico/radiologico</option>
-              <option value="ypM">ypM — post-trattamento, patologico</option>
-              <option value="MX">MX — non documentato</option>
-            </select>
-          </div>
-        </div>
-        <div class="ref-grid">
-          <div class="form-group">
-            <label>T</label>
-            <select id="ref-T"></select>
-          </div>
-          <div class="form-group">
-            <label>N</label>
-            <select id="ref-N"></select>
-          </div>
-          <div class="form-group">
-            <label>M</label>
-            <select id="ref-M"></select>
-          </div>
-        </div>
-        <div id="ref-extra-selects"></div>
-        <div class="ref-extras">
-          <div class="form-group">
-            <label>Linfonodi esaminati</label>
-            <input type="number" id="ref-ln-tot" placeholder="es. 24" min="0" oninput="refLnCrossCheck()">
-          </div>
-          <div class="form-group">
-            <label>Linfonodi positivi</label>
-            <input type="number" id="ref-ln-pos" placeholder="es. 3" min="0" oninput="refLnCrossCheck()">
-          </div>
-        </div>
-        <div class="form-group" style="margin-bottom:14px">
-          <label>Note aggiuntive (opzionale)</label>
-          <textarea id="ref-notes" rows="2" placeholder="es. invasione linfovascolare, margini, regressione..."></textarea>
-        </div>
-        <!-- Fattori prognostici non-TNM -->
-        <div style="background:var(--badge);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px">
-            Fattori prognostici non-TNM <span style="font-weight:400;text-transform:none">(opzionale — solo i campi valorizzati compariranno nel referto)</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-            <div class="form-group">
-              <label>LVI — Invasione linfovascolare</label>
-              <select id="ref-lvi">
-                <option value="">— non indicato —</option>
-                <option value="LVI presente">Presente</option>
-                <option value="LVI non identificata nel campione">Non identificata nel campione</option>
-                <option value="LVI non valutabile">Non valutabile</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>PNI — Invasione perineurale</label>
-              <select id="ref-pni">
-                <option value="">— non indicato —</option>
-                <option value="PNI presente">Presente</option>
-                <option value="PNI non identificata nel campione">Non identificata nel campione</option>
-                <option value="PNI non valutabile">Non valutabile</option>
-              </select>
-            </div>
-            <div class="form-group" id="budding-field">
-              <label>Budding tumorale <span style="font-size:10px;color:var(--muted)">(ITBCC 2016)</span></label>
-              <select id="ref-budding">
-                <option value="">— non indicato —</option>
-                <option value="Budding Bd1 (basso, 0–4 buds/0.785mm²)">Bd1 — basso</option>
-                <option value="Budding Bd2 (intermedio, 5–9 buds/0.785mm²)">Bd2 — intermedio</option>
-                <option value="Budding Bd3 (alto, ≥10 buds/0.785mm²)">Bd3 — alto</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Margini di resezione</label>
-              <select id="ref-margins">
-                <option value="">— non indicato —</option>
-                <option value="R0 (margini liberi)">R0 — liberi</option>
-                <option value="R1 (margine microscopicamente coinvolto)">R1 — microscopico</option>
-                <option value="R2 (margine macroscopicamente coinvolto)">R2 — macroscopico</option>
-                <option value="RX (non valutabile)">RX — non valutabile</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Regressione post-neoadiuvante</label>
-              <select id="ref-regression">
-                <option value="">— non indicato —</option>
-                <option value="Ryan 0 — risposta completa (no tumore residuo)">Ryan 0 — completa</option>
-                <option value="Ryan 1 — risposta quasi completa (raro tumore residuo)">Ryan 1 — quasi completa</option>
-                <option value="Ryan 2 — risposta parziale (tumore residuo con fibrosi)">Ryan 2 — parziale</option>
-                <option value="Ryan 3 — risposta minima o assente (tumore esteso residuo)">Ryan 3 — minima/assente</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Perforazione</label>
-              <select id="ref-perforation">
-                <option value="">— non indicato —</option>
-                <option value="Perforazione assente">Assente</option>
-                <option value="Perforazione presente">Presente</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <button id="gen-btn" onclick="generateReferto()">Genera Referto</button>
-      </div>
-      <div id="referto-output"></div>
-      <button id="copy-btn" onclick="copyReferto()">📋 Copia negli Appunti</button>
-    </div>
-  </div>
-
-  <div id="disclaimer">
-    ⚠️ Uso esclusivo anatomia patologica · UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Non sostituisce la valutazione clinico-patologica · Verificare fonte primaria per casi borderline · v1.0-rc1
-  </div>
+<div id="controls">
+  <label style="font-size:11px;color:var(--muted)">Filtra sede:</label>
+  <select id="filter-site" onchange="filterSite()"><option value="all">Tutte le sedi</option></select>
+  <select id="filter-level" onchange="filterSite()">
+    <option value="all">Tutti i livelli</option>
+    <option value="complete">Completo</option>
+    <option value="partial">Parziale</option>
+    <option value="anatomic">Solo anatomico</option>
+  </select>
+  <button onclick="exportCSV()">⬇ Esporta CSV audit</button>
+  <span id="audit-progress" style="font-size:11px;color:var(--muted);margin-left:auto"></span>
 </div>
+<div id="content"></div>
+<div id="disclaimer">TNM Tool Audit Table v1.0-rc1 · F.M.D. Bianchi, SC AP ASST FBF-Sacco · Non distribuire fuori contesto</div>
 
 <script>
-// ======================================================
-// PARENT CODE HIERARCHY
-// ======================================================
 const PARENTS={
   T1:['T1','T1mi','T1a','T1b','T1c'],T2:['T2','T2a','T2b','T2c'],
   T3:['T3','T3a','T3b','T3c'],T4:['T4','T4a','T4b','T4c','T4d'],
@@ -437,10 +113,6 @@ function computeBestStage(rules,T,N,M,extra){
   }
   return{stage:distinctStages[0],ambiguous:false,matchCount:matches.length,allStages:distinctStages};
 }
-
-// ======================================================
-// TNM DATA
-// ======================================================
 const SITES=[
 
 {id:'colon_retto',name:'Colon e Retto',icd:'C18-C20',cat:'gi',completeness:'complete',
@@ -1605,20 +1277,6 @@ staging_variants:{
 
 
 ]; // end SITES
-
-// ======================================================
-// CATEGORIES
-// ======================================================
-const TOOL_META={
-  version:'1.0-rc1',
-  dataset:'UICC TNM Classification of Malignant Tumours, 9ª ed. (2025)',
-  ajcc:'AJCC Cancer Staging Manual, Version 9 (2023)',
-  sedi:29,
-  data_rilascio:'2026-06-01',
-  validazione_automatica:'153/153 casi-test PASS',
-  validazione_manuale:'In corso — vedere tabella audit per sede',
-  responsabile:'F.M.D. Bianchi, SC Anatomia Patologica, ASST FBF-Sacco Milano',
-};
 const CATS={
   gi:{label:'Apparato digerente',order:0},
   gi_net:{label:'NET Gastrointestinali',order:1},
@@ -1628,284 +1286,6 @@ const CATS={
   skin:{label:'Cute / Melanoma',order:5},
 };
 
-// ======================================================
-// PREFISSO FISSO — sempre p/p/c (standard AP)
-// ======================================================
-function getPfx(ctx){
-  const sel=document.getElementById('ref-prefix-sel');
-  const val=sel?sel.value:'p';
-  // Prefix logic per tipo
-  const map={
-    'p':  {T:'p',  N:'p',  M:'c'},
-    'yp': {T:'yp', N:'yp', M:'c'},
-    'r':  {T:'r',  N:'r',  M:'c'},
-    'c':  {T:'c',  N:'c',  M:'c'},
-  };
-  return map[val]||{T:'p',N:'p',M:'c'};
-}
-function applyPreset(ctx){}
-function onPrefixChange(ctx){ onTNMChange(); }
-
-// ======================================================
-// CENTRALIZED VALIDATION
-// ======================================================
-const N1C_TD_SITES=['colon_retto','appendice'];
-
-function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
-  const errors=[];
-  const incomplete=[];
-  const warnings=[];
-
-  const tCode=stripPfx(T);
-  const nCode=stripPfx(N);
-  if(tCode==='TX'){
-    incomplete.push('T non valutabile (TX): lo stadio non può essere assegnato. Rivalutare il campione o indicare il motivo della non valutabilità.');
-  }
-  if(nCode==='NX'){
-    incomplete.push('N non valutabile (NX): lo stadio non può essere assegnato. Specificare il numero di linfonodi esaminati o il motivo della non valutabilità.');
-  }
-  if(tCode==='Tis'&&nCode!=='N0'&&nCode!=='NX'){
-    errors.push('Tis con '+N+': combinazione biologicamente incongruente. Verificare la classificazione T o la presenza di un secondo focolaio invasivo.');
-  }
-  const mCode=stripPfx(M);
-  const nPos=parseInt(lnPos)||0;
-  const nTot=parseInt(lnTot)||0;
-
-  // N0 + linfonodi positivi dichiarati
-  if(nCode==='N0'&&nPos>0){
-    errors.push('N0 è incompatibile con '+nPos+' linfonodi positivi dichiarati.');
-  }
-  // N1c + LN positivi nelle sedi TD
-  if(N1C_TD_SITES.includes(site.id)&&nCode==='N1c'&&nPos>0){
-    errors.push('N1c in questa sede ('+site.name+') indica depositi tumorali senza metastasi linfonodali; incompatibile con '+nPos+' linfonodi positivi dichiarati. Rivalutare la categoria N.');
-  }
-  if(nTot>0&&nPos>nTot){
-    errors.push('Il numero di linfonodi positivi ('+nPos+') supera il totale esaminato ('+nTot+'). Dati incongruenti.');
-  }
-  const lnPosProvided=(lnPos!==''&&lnPos!==null&&lnPos!==undefined);
-  const nAutoRule=N_AUTO_RULES[site.id];
-  if(lnPosProvided&&nAutoRule){
-    const nPosVal=parseInt(lnPos)||0;
-    const expectedN=nAutoRule(nPosVal);
-    const autoOutputs=new Set();
-    for(let i=0;i<=30;i++)autoOutputs.add(nAutoRule(i));
-    if(autoOutputs.has(nCode)&&nCode!==expectedN){
-      errors.push('Categoria N incongruente: con '+nPosVal+' LN+ attesa '+expectedN+', selezionata '+nCode+'. Correggere o usare l\'auto-calcolo LN+.');
-    }
-  }
-
-  // pN senza conteggio
-  if(nCode!=='NX'&&nCode!=='N0'&&nTot===0){
-    warnings.push('Categoria pN selezionata senza numero di linfonodi esaminati documentato.');
-  }
-  // pN0 adeguatezza
-  const minLN=PN0_MIN[site.id];
-  if(minLN&&nCode.startsWith('N0')&&nTot>0&&nTot<minLN){
-    warnings.push('pN0 con campionamento potenzialmente inadeguato: '+nTot+' linfonodi esaminati (minimo raccomandato per questa sede: '+minLN+'). Riportare il numero; la categoria rimane pN0 con riserva.');
-  }
-  if(site.id==='canale_anale'&&nCode.startsWith('N0')&&nTot>0&&nTot<12){
-    warnings.push('Canale anale pN0: il minimo raccomandato è ≥12 LN per la dissezione perirettale/pelvica e ≥6 LN per la dissezione inguinale. Con '+nTot+' LN esaminati verificare il territorio di dissezione.');
-  }
-  if(site.id==='prostata'){
-    warnings.push('Prostata: lo stadio mostrato è il raggruppamento anatomico (T/N/M). Il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason). Per la documentazione clinica includere entrambi.');
-  }
-  if(site.id==='appendice'&&mCode.startsWith('M1b')&&(!extra.G||extra.G==='—')){
-    incomplete.push('M1b appendice: il grado istologico è determinante per IVA (G1) vs IVB (G2/G3/GX). Selezionare il grado.');
-  }
-  if(site.id==='testicolo'&&extra.S==='SX'){
-    warnings.push('S=SX: marcatori sierici non disponibili/non eseguiti. Stadio assegnato come Stage I generico (senza sottostadio IA/IB/IS). Per l\'assegnazione formale registrare il nadir post-orchidectomia di AFP, hCG e LDH.');
-  }
-  if(site.id==='appendice'&&mCode.startsWith('M1a')&&extra.G&&extra.G!=='—'){
-    warnings.push('Per M1a (solo mucina acellulare) il grado non influenza lo stadio (sempre IVA). Il campo grado è rilevante solo per M1b.');
-  }
-  if(site.id==='esofago'){
-    warnings.push('Esofago: i gruppi prognostici con grado (Pathological Prognostic Groups) non sono implementati in questo motore. Lo staging mostrato è lo Stage Group anatomico senza correzione per grado e sede anatomica del tumore.');
-  }
-  if(site.id==='mammella'&&stripPfx(T)==='Tis (LCIS)'){
-    warnings.push('Tis(LCIS) — divergenza UICC/AJCC: UICC TNM 9ª ed. include questa categoria nello Stadio 0; AJCC Cancer Staging Manual, 8ª ed. / Version 9 la esclude. Staging mostrato: UICC. Non classificabile formalmente secondo AJCC.');
-  }
-
-  if(site.id==='pelvi_renale'&&T==='T3'){
-    warnings.push("T3 pelvi renale include l'invasione del parenchima renale — può simulare RCC primitivo in campione frammentato. Verificare IHC se necessario (GATA3+/CK7+ vs CD10+/CK7-).");
-  }
-  if(site.id==='uretra'){
-    warnings.push('Uretra: staging usa codici T differenziati per sesso (T2M/T3M/T4M per maschile; T2F/T3F/T4F per femminile). Verificare che la variante selezionata corrisponda al sesso del paziente.');
-  }
-  // Mammella: ITC warning se dim ≤0.2mm
-  if(site.id==='mammella'){
-    const dimEl=document.getElementById('stg-ln-dim');
-    if(dimEl&&dimEl.value!==''){
-      const dimVal=parseFloat(dimEl.value);
-      if(dimVal>0&&dimVal<=0.2&&nCode==='N0'){
-        warnings.push('Dimensione metastasi ≤0.2 mm: classificare come N0(i+) — ITC (cellule tumorali isolate). Non equivale a N1mi (≤0.2–2 mm). Indicare esplicitamente nel referto.');
-      }
-      if(dimVal>0.2&&dimVal<=2&&nCode!=='N1mi'){
-        warnings.push('Dimensione metastasi >0.2 e ≤2 mm: corrisponde a N1mi (micrometastasi). Verificare la categoria N selezionata.');
-      }
-    }
-  }
-  return{errors,incomplete,warnings,isHybrid:false};
-}
-
-function renderValidation(v){
-  let html='';
-  if(v.errors.length){
-    html+=`<div class="v-error"><div class="v-label">⛔ Combinazione incoerente</div>${v.errors.map(e=>'• '+e).join('<br>')}</div>`;
-  }
-  if(v.incomplete.length){
-    html+=`<div class="v-incomplete"><div class="v-label">⚠ Dato mancante / staging non assegnabile</div>${v.incomplete.map(e=>'• '+e).join('<br>')}</div>`;
-  }
-  if(v.warnings.length){
-    html+=`<div class="v-warning"><div class="v-label">📋 Note cliniche</div>${v.warnings.map(e=>'• '+e).join('<br>')}</div>`;
-  }
-  return html;
-}
-
-// ======================================================
-// STATE
-// ======================================================
-let currentSite=null,currentVariant=null,currentVariant2=null;
-
-// ======================================================
-// INIT
-// ======================================================
-function init(){
-  buildSiteList();
-  const vb=document.getElementById('tool-version-badge');
-  if(vb)vb.textContent='v'+TOOL_META.version+' · '+TOOL_META.data_rilascio;
-  document.getElementById('search-box').addEventListener('input',filterSites);
-}
-
-function buildSiteList(){
-  const list=document.getElementById('site-list');
-  list.innerHTML='';
-  const grouped={};
-  SITES.forEach(s=>{
-    if(!grouped[s.cat])grouped[s.cat]=[];
-    grouped[s.cat].push(s);
-  });
-  const orderedCats=Object.keys(CATS).sort((a,b)=>CATS[a].order-CATS[b].order);
-  orderedCats.forEach(cat=>{
-    if(!grouped[cat])return;
-    const lbl=document.createElement('div');
-    lbl.className='cat-label';lbl.textContent=CATS[cat].label;
-    list.appendChild(lbl);
-    grouped[cat].forEach(s=>{
-      const el=document.createElement('div');
-      el.className='site-item';el.textContent=s.name;
-      el.dataset.id=s.id;
-      el.addEventListener('click',()=>selectSite(s.id));
-      list.appendChild(el);
-    });
-  });
-}
-
-function filterSites(){
-  const q=document.getElementById('search-box').value.toLowerCase();
-  document.querySelectorAll('.site-item').forEach(el=>{
-    el.classList.toggle('hidden',!!(q&&!el.textContent.toLowerCase().includes(q)));
-  });
-  document.querySelectorAll('.cat-label').forEach(lbl=>{
-    let sib=lbl.nextElementSibling;
-    let anyVisible=false;
-    while(sib&&sib.classList.contains('site-item')){
-      if(!sib.classList.contains('hidden'))anyVisible=true;
-      sib=sib.nextElementSibling;
-    }
-    lbl.style.display=anyVisible?'':'none';
-  });
-}
-
-function selectSite(id){
-  currentSite=SITES.find(s=>s.id===id);
-  document.querySelectorAll('.site-item').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
-  document.getElementById('site-title').textContent=currentSite.name;
-  document.getElementById('site-icd').textContent='ICD-O-4: '+currentSite.icd;
-  renderSiteBadges(currentSite);
-  document.getElementById('empty').style.display='none';
-  const activeTab=document.querySelector('.tab-btn.active');
-  const tabId=activeTab?(activeTab.getAttribute('onclick').match(/'(\w+)'/)?.[1]||'lookup'):'lookup';
-  renderLookup();
-  renderStaging();
-  renderReferto();
-  showTab(tabId);
-}
-
-function showTab(id){
-  document.querySelectorAll('.tab-btn').forEach(b=>{
-    b.classList.toggle('active',b.getAttribute('onclick')===`showTab('${id}')`);
-  });
-  document.querySelectorAll('.tab-panel').forEach(p=>{
-    p.style.display='none';
-    p.classList.remove('active');
-  });
-  const target=document.getElementById('tab-'+id);
-  target.style.display='block';
-  target.classList.add('active');
-  document.getElementById('empty').style.display='none';
-}
-
-// ======================================================
-// LOOKUP
-// ======================================================
-function renderLookup(){
-  const s=currentSite;if(!s)return;
-  let html='';
-  html+='<div class="tnm-section"><div class="section-title">T — Tumore Primitivo</div>';
-  s.T.forEach(t=>{
-    html+=`<div class="tnm-item"><div class="tnm-code">${t.c}</div><div class="tnm-desc">${t.d}</div></div>`;
-  });
-  html+='</div>';
-  html+='<div class="tnm-section"><div class="section-title">N — Linfonodi Regionali</div>';
-  s.N.forEach(n=>{
-    html+=`<div class="tnm-item"><div class="tnm-code">${n.c}</div><div class="tnm-desc">${n.d}</div></div>`;
-  });
-  html+='</div>';
-  html+='<div class="tnm-section"><div class="section-title">M — Metastasi a Distanza</div>';
-  s.M.forEach(m=>{
-    html+=`<div class="tnm-item"><div class="tnm-code">${m.c}</div><div class="tnm-desc">${m.d}</div></div>`;
-  });
-  html+='</div>';
-  if(s.note){
-    html+=`<div class="note-box"><strong>⚠ Note cliniche:</strong> ${s.note}</div>`;
-  }
-  document.getElementById('lookup-content').innerHTML=html;
-}
-
-// ======================================================
-// STAGING
-// ======================================================
-function syncStgToRef(){
-  const sv=document.getElementById('variant-sel');
-  const rv=document.getElementById('variant-sel2');
-  if(sv&&rv&&sv.value)rv.value=sv.value;
-  const tnmMap={T:['sel-T','ref-T'],N:['sel-N','ref-N'],M:['sel-M','ref-M']};
-  for(const k in tnmMap){
-    const src=document.getElementById(tnmMap[k][0]);
-    const dst=document.getElementById(tnmMap[k][1]);
-    if(src&&dst&&src.value)dst.value=src.value;
-  }
-  const lnTot=document.getElementById('stg-ln-tot');
-  const lnPos=document.getElementById('stg-ln-pos');
-  const rTot=document.getElementById('ref-ln-tot');
-  const rPos=document.getElementById('ref-ln-pos');
-  if(lnTot&&rTot)rTot.value=lnTot.value;
-  if(lnPos&&rPos)rPos.value=lnPos.value;
-  syncExtraStgToRef();
-}
-
-function syncExtraStgToRef(){
-  const s=currentSite;if(!s||!s.extra)return;
-  s.extra.forEach(e=>{
-    const src=document.getElementById('sel-extra-'+e.id);
-    const dst=document.getElementById('ref-extra-'+e.id);
-    if(src&&dst)dst.value=src.value;
-  });
-}
-
-// ======================================================
-// AUTO-CALCOLO N DA NUMERO DI LINFONODI POSITIVI
-// ======================================================
 const N_AUTO_RULES={
   colon_retto:(n)=>n===0?'N0':n===1?'N1a':n<=3?'N1b':n<=6?'N2a':'N2b',
   appendice:(n)=>n===0?'N0':n===1?'N1a':n<=3?'N1b':'N2',
@@ -1933,38 +1313,17 @@ const N_AUTO_RULES={
   uretra:(n)=>n===0?'N0':n===1?'N1':'N2',
 };
 
+const PN0_MIN={
+  colon_retto:12, stomaco:16, esofago:7, intestino_tenue:6,
+  appendice:12, fegato_hcc:3, bile_intrahep:6,
+  colecisti:6, bile_perihilar:15, bile_distale:12, ampolla:12,
+  pancreas:12, mammella:6, tiroide:6, gh_salivari:10, // V9: min 10 (selettiva) o 15 (radicale)
+  melanoma:6, merkel:6,
+  pelvi_renale:8,
+  uretere:8,
+  uretra:6,
+};
 
-function lnCrossCheck(){
-  const totEl=document.getElementById('stg-ln-tot');
-  const posEl=document.getElementById('stg-ln-pos');
-  if(!totEl||!posEl)return;
-  const tot=parseInt(totEl.value)||0;
-  const pos=parseInt(posEl.value);
-  if(posEl.value===''||isNaN(pos))return;
-  if(tot>0&&pos>tot){
-    posEl.style.borderColor='var(--warn,#c05000)';
-    posEl.style.background='#fff8f0';
-    totEl.style.borderColor='var(--warn,#c05000)';
-    let warn=document.getElementById('ln-cross-warn');
-    if(!warn){
-      warn=document.createElement('div');
-      warn.id='ln-cross-warn';
-      warn.style.cssText='font-size:11px;color:#b35a00;font-weight:700;margin-top:4px;padding:4px 8px;background:#fff3cd;border-radius:3px;border:1px solid #e0c040';
-      posEl.parentNode.appendChild(warn);
-    }
-    warn.textContent='⚠️ LN positivi ('+pos+') > LN esaminati ('+tot+') — dato incongruente';
-  }else{
-    posEl.style.borderColor='';
-    posEl.style.background='';
-    totEl.style.borderColor='';
-    const warn=document.getElementById('ln-cross-warn');
-    if(warn)warn.remove();
-  }
-}
-
-
-// ── LN DIMENSIONAL RULES ──────────────────────────────────────────────
-// Per sedi dove N dipende dalla dimensione del LN maggiore (in mm)
 const LN_DIM_SITES={
   testicolo:true, carcinoma_cute:true, gh_salivari:true,
   pelvi_renale:true, uretere:true, uretra:true, mammella:true,
@@ -2026,318 +1385,6 @@ const LN_DIM_RULES={
   },
 };
 
-function autoCalcNDim(){
-  const s=currentSite;if(!s)return;
-  if(!LN_DIM_SITES[s.id])return;
-  const dimEl=document.getElementById('stg-ln-dim');
-  const posEl=document.getElementById('stg-ln-pos');
-  if(!dimEl||!posEl)return;
-  const dimVal=dimEl.value===''?null:parseFloat(dimEl.value);
-  const nPos=parseInt(posEl.value)||0;
-  const rule=LN_DIM_RULES[s.id];
-  if(!rule)return;
-  // ENE field for gh_salivari
-  const eneEl=document.getElementById('stg-ln-ene');
-  const ene=eneEl?eneEl.value:'neg';
-  const suggested=rule(dimVal,nPos,ene);
-  if(!suggested)return;
-  const selN=document.getElementById('sel-N');
-  if(!selN)return;
-  const opts=Array.from(selN.options).map(o=>o.value);
-  if(opts.includes(suggested)){
-    selN.value=suggested;
-    selN.style.borderColor='var(--accent2)';
-    setTimeout(()=>selN.style.borderColor='',1200);
-    let badge=document.getElementById('n-auto-badge');
-    if(!badge){
-      badge=document.createElement('span');
-      badge.id='n-auto-badge';
-      badge.style.cssText='font-size:10px;font-weight:700;color:var(--accent2);margin-left:8px;letter-spacing:.3px';
-      selN.parentNode.appendChild(badge);
-    }
-    const dimStr=dimVal!==null?(dimVal+'mm'):'';
-    badge.textContent='⟵ suggerito: '+nPos+'LN+ '+(dimStr?'dim.'+dimStr:'');
-    onTNMChange();syncStgToRef();
-  }
-}
-
-function autoCalcN(){
-  const s=currentSite;if(!s)return;
-  const rule=N_AUTO_RULES[s.id];if(!rule)return;
-  const posEl=document.getElementById('stg-ln-pos');
-  if(!posEl||posEl.value===''||posEl.value===null)return;
-  const nPos=parseInt(posEl.value)||0;
-  const suggested=rule(nPos);
-  const selN=document.getElementById('sel-N');
-  if(!selN)return;
-  const opts=Array.from(selN.options).map(o=>o.value);
-  if(opts.includes(suggested)){
-    selN.value=suggested;
-    selN.style.borderColor='var(--accent2)';
-    setTimeout(()=>selN.style.borderColor='',1200);
-    let badge=document.getElementById('n-auto-badge');
-    if(!badge){
-      badge=document.createElement('span');
-      badge.id='n-auto-badge';
-      badge.style.cssText='font-size:10px;font-weight:700;color:var(--accent2);margin-left:8px;letter-spacing:.3px';
-      selN.parentNode.appendChild(badge);
-    }
-    badge.textContent='⟵ suggerito da LN+: '+nPos;
-    onTNMChange();
-    syncStgToRef();
-  }
-}
-
-const COMPLETENESS_BADGE={
-  complete:{cls:'badge-complete',icon:'✓',label:'Completo'},
-  partial: {cls:'badge-partial', icon:'◑',label:'Parziale — alcune funzioni non implementate'},
-  anatomic:{cls:'badge-anatomic',icon:'△',label:'Solo stadio anatomico — mancano parametri prognostici'},
-  verify:  {cls:'badge-verify',  icon:'!',label:'Richiede verifica manuale'},
-};
-function renderSiteBadges(s){
-  const el=document.getElementById('site-badges');
-  if(!el)return;
-  let html='';
-  const cb=COMPLETENESS_BADGE[s.completeness||'complete'];
-  html+=`<span class="badge ${cb.cls}" title="${cb.label}">${cb.icon} ${cb.label}</span>`;
-  if(s.model_limited)html+=`<span class="badge badge-anat">⚠ Modello ridotto</span>`;
-  if(s.badges)s.badges.forEach(b=>{html+=`<span class="badge ${b.cls}">${b.txt}</span>`;});
-  el.innerHTML=html;
-}
-
-function getVariants(s){ return s.variants||null; }
-
-function getStagingRules(s,variant){
-  if(s.staging)return s.staging;
-  if(s.staging_variants&&variant)return s.staging_variants[variant]||[];
-  if(s.staging_variants){const keys=Object.keys(s.staging_variants);return s.staging_variants[keys[0]]||[];}
-  return[];
-}
-
-function renderStaging(){
-  const s=currentSite;if(!s)return;
-  const vw=document.getElementById('variant-wrap');
-  const vs=document.getElementById('variant-sel');
-  const vars=getVariants(s);
-  if(vars){
-    vs.innerHTML=vars.map(v=>`<option value="${v.id}">${v.label}</option>`).join('');
-    currentVariant=vars[0].id;
-    vw.style.display='block';
-  }else{currentVariant=null;vw.style.display='none';}
-  updateDropdowns();
-  // Show/hide LN dim field
-  const dimWrap=document.getElementById('stg-ln-dim-wrap');
-  const eneWrap=document.getElementById('stg-ln-ene-wrap');
-  if(dimWrap)dimWrap.style.display=LN_DIM_SITES[s.id]?'inline-block':'none';
-  if(eneWrap)eneWrap.style.display=(s.id==='gh_salivari')?'inline-block':'none';
-}
-
-function updateDropdowns(){
-  const s=currentSite;if(!s)return;
-  const vs=document.getElementById('variant-sel');
-  if(vs.options.length)currentVariant=vs.value;
-  populateSelect('sel-T',s.T,'T');
-  populateSelect('sel-N',s.N,'N');
-  populateSelect('sel-M',s.M,'M');
-  const ex=document.getElementById('extra-selects');
-  ex.innerHTML='';
-  if(s.extra){
-    s.extra.forEach(e=>{
-      ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>
-        <select id="sel-extra-${e.id}" onchange="onTNMChange();syncExtraStgToRef()">${e.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
-    });
-  }
-  renderStagingTable();
-  document.getElementById('stage-result').style.display='none';
-  document.getElementById('stage-validation').innerHTML='';
-  syncStgToRef();
-}
-
-function updateDropdowns2(){
-  const s=currentSite;if(!s)return;
-  const vs=document.getElementById('variant-sel2');
-  if(vs.options.length)currentVariant2=vs.value;
-  populateSelect('ref-T',s.T,'T');
-  populateSelect('ref-N',s.N,'N');
-  populateSelect('ref-M',s.M,'M');
-  const ex=document.getElementById('ref-extra-selects');
-  ex.innerHTML='';
-  if(s.extra){
-    s.extra.forEach(e=>{
-      ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>
-        <select id="ref-extra-${e.id}">${e.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
-    });
-  }
-}
-
-function renderReferto(){
-  const s=currentSite;if(!s)return;
-  const vw=document.getElementById('variant-wrap2');
-  const vs=document.getElementById('variant-sel2');
-  const vars=getVariants(s);
-  if(vars){
-    vs.innerHTML=vars.map(v=>`<option value="${v.id}">${v.label}</option>`).join('');
-    currentVariant2=vars[0].id;
-    vs.onchange=updateDropdowns2;
-    vw.style.display='block';
-  }else{currentVariant2=null;vw.style.display='none';}
-  updateDropdowns2();
-  const BUDDING_SITES_UI=['colon_retto','appendice','intestino_tenue','stomaco','esofago'];
-  const bf=document.getElementById('budding-field');
-  if(bf)bf.style.display=BUDDING_SITES_UI.includes(s.id)?'':'none';
-  const prefSel=document.getElementById('ref-prefix-sel');
-  if(prefSel)prefSel.selectedIndex=0;
-  const mSrcSel=document.getElementById('ref-m-source');
-  if(mSrcSel)mSrcSel.selectedIndex=0;
-  document.getElementById('referto-output').style.display='none';
-  document.getElementById('copy-btn').style.display='none';
-}
-
-function populateSelect(id,arr,type){
-  const sel=document.getElementById(id);if(!sel)return;
-  sel.innerHTML=arr.map(x=>`<option value="${x.c}">${x.c} — ${x.d.substring(0,65)}${x.d.length>65?'…':''}</option>`).join('');
-}
-
-function nuovoCaso(){
-  ['sel-T','sel-N','sel-M','ref-T','ref-N','ref-M'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.selectedIndex=0;
-  });
-  ['stg-ln-tot','stg-ln-pos','stg-ln-dim','ref-ln-tot','ref-ln-pos'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.value='';
-  });
-  // Reset ENE select
-  const eneEl=document.getElementById('stg-ln-ene');
-  if(eneEl)eneEl.selectedIndex=0;
-  // Clear LN cross-check warning and styles
-  const warn=document.getElementById('ln-cross-warn');
-  if(warn)warn.remove();
-  const refWarn=document.getElementById('ref-ln-cross-warn');
-  if(refWarn)refWarn.remove();
-  ['ref-ln-tot','ref-ln-pos'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){el.style.borderColor='';el.style.background='';}
-  });
-  ['stg-ln-pos','stg-ln-tot'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){el.style.borderColor='';el.style.background='';}
-  });
-  // Clear N auto-badge
-  const badgeEl=document.getElementById('n-auto-badge');
-  if(badgeEl)badgeEl.textContent='';
-  const notes=document.getElementById('ref-notes');
-  if(notes)notes.value='';
-  ['ref-lvi','ref-pni','ref-budding','ref-margins','ref-regression','ref-perforation'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.selectedIndex=0;
-  });
-  if(currentSite&&currentSite.extra){
-    currentSite.extra.forEach(e=>{
-      ['sel-extra-','ref-extra-'].forEach(pfx=>{
-        const el=document.getElementById(pfx+e.id);
-        if(el)el.selectedIndex=0;
-      });
-    });
-  }
-  ['variant-sel','variant-sel2'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el&&el.options.length){el.selectedIndex=0;}
-  });
-  const badgeEl2=document.getElementById('n-auto-badge');
-  if(badgeEl2)badgeEl2.textContent='';
-  document.getElementById('stage-result').style.display='none';
-  document.getElementById('stage-validation').innerHTML='';
-  const ro=document.getElementById('referto-output');
-  if(ro)ro.style.display='none';
-  const cb=document.getElementById('copy-btn');
-  if(cb)cb.style.display='none';
-  showTab('lookup');
-}
-
-function onTNMChange(){
-  document.getElementById('stage-result').style.display='none';
-  document.getElementById('stage-validation').innerHTML='';
-  syncStgToRef();
-}
-
-function computeStage(){
-  const s=currentSite;if(!s)return;
-  const T=document.getElementById('sel-T').value;
-  const N=document.getElementById('sel-N').value;
-  const M=document.getElementById('sel-M').value;
-  const variant=currentVariant;
-  const rules=getStagingRules(s,variant);
-  const extra={};
-  if(s.extra){s.extra.forEach(e=>{const el=document.getElementById('sel-extra-'+e.id);if(el)extra[e.id]=el.value;});}
-  const pfx=getPfx('stg');
-  const lnTot=document.getElementById('stg-ln-tot')?.value??'';
-  const lnPos=document.getElementById('stg-ln-pos')?.value??'';
-
-  const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
-  const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:computeBestStage(rules,T,N,M,extra);
-
-  if(result.ambiguous){
-    v.errors.push('Ambiguità dataset: stadi '+result.allStages.join(' / ')+' compatibili simultaneamente — staging non assegnabile. Segnalare il bug.');
-  }
-
-  document.getElementById('stage-validation').innerHTML=renderValidation(v);
-
-  const stageHeader=currentSite?.model_limited?'Raggruppamento anatomico TNM':'Stadio';
-  let stageLabel,stageQuality='';
-  if(v.errors.length){
-    stageLabel=result.ambiguous
-      ?'⛔ Ambiguità: '+result.allStages.join(' / ')+' — non assegnabile'
-      :'⛔ Combinazione incoerente';
-  }else if(!result.stage&&v.incomplete.length){
-    stageLabel='Parametri incompleti — staging non assegnabile';
-  }else if(!result.stage){
-    stageLabel='Non determinabile (caso fuori modello)';
-  }else{
-    stageLabel=stageHeader+' '+result.stage;
-    stageQuality=v.warnings.length?' (con riserva)':' (assegnato)';
-  }
-
-  const res=document.getElementById('stage-result');
-  res.style.display='block';
-  document.getElementById('stage-value').textContent=stageLabel;
-  document.getElementById('stage-label').textContent='TNM 9ª Ed. · UICC 2025'+stageQuality;
-
-  const td=s.T.find(x=>x.c===T)||{d:''};
-  const nd=s.N.find(x=>x.c===N)||{d:''};
-  const md=s.M.find(x=>x.c===M)||{d:''};
-  let detail=`<div class="stage-row"><span class="stage-code">${pfx.T}${T}</span><span>${td.d}</span></div>`;
-  detail+=`<div class="stage-row"><span class="stage-code">${pfx.N}${N}</span><span>${nd.d}</span></div>`;
-  detail+=`<div class="stage-row"><span class="stage-code">${pfx.M}${M}</span><span>${md.d}</span></div>`;
-  if(Object.keys(extra).length){
-    for(const k in extra){if(extra[k]&&extra[k]!=='—')detail+=`<div class="stage-row"><span class="stage-code">${k}: ${extra[k]}</span></div>`;}
-  }
-  document.getElementById('stage-detail').innerHTML=detail;
-  // Show AJCC note in result box if applicable
-  const ajccResultNote=getAjccGlobalNote(s.id);
-  let ajccResultEl=document.getElementById('stage-ajcc-note');
-  if(!ajccResultEl){
-    ajccResultEl=document.createElement('div');
-    ajccResultEl.id='stage-ajcc-note';
-    ajccResultEl.style.cssText='margin-top:12px;padding:8px 12px;background:#fff8f0;border:1px solid #e8a060;border-radius:4px;font-size:11px;color:#7a3a00;line-height:1.5';
-    document.getElementById('stage-result').appendChild(ajccResultEl);
-  }
-  if(ajccResultNote){
-    ajccResultEl.textContent='AJCC Cancer Staging Manual, Version 9: '+ajccResultNote;
-    ajccResultEl.style.display='block';
-  }else{
-    ajccResultEl.style.display='none';
-  }
-
-  document.querySelectorAll('#staging-tbody tr').forEach(tr=>{
-    tr.classList.toggle('highlighted',tr.dataset.stage===result.stage);
-  });
-  syncStgToRef();
-}
-
-
-// ── AJCC Cancer Staging Manual, Version 9 DIVERGENCES ───────────────────────────────────────────
-// Per ogni sede: mappa stadio → nota AJCC. null = identico a UICC.
 const AJCC_NOTES={
   mammella:{
     _global:null,
@@ -2366,269 +1413,197 @@ const AJCC_NOTES={
   },
 };
 
-function getAjccNote(siteId, stage){
-  const siteData=AJCC_NOTES[siteId];
-  if(!siteData)return null; // sede allineata
-  if(siteData._stages&&siteData._stages[stage]!==undefined)return siteData._stages[stage];
-  return null;
-}
-
-function getAjccGlobalNote(siteId){
-  const siteData=AJCC_NOTES[siteId];
-  if(!siteData)return null;
-  return siteData._global_note||null;
-}
-
-function renderStagingTable(){
-  const s=currentSite;if(!s)return;
-  const variant=currentVariant;
-  const rules=getStagingRules(s,variant);
-  const tbody=document.getElementById('staging-tbody');
-  const ajccGlobal=getAjccGlobalNote(s.id);
-  // Deduplicate AJCC stage notes — show only first occurrence per stage
-  const ajccShown={};
-  tbody.innerHTML=rules.map(r=>{
-    const T=[].concat(r.T).join(', ');
-    const N=[].concat(r.N).join(', ');
-    const M=[].concat(r.M).join(', ');
-    const extraStr=r.extra?Object.entries(r.extra).map(([k,v])=>`${k}=${[].concat(v).join('/')}`).join(' '):'';
-    const note=r.note||'';
-    let ajccCell='';
-    const ajccStageNote=getAjccNote(s.id,r.stage);
-    if(ajccStageNote&&!ajccShown[r.stage]){
-      ajccShown[r.stage]=true;
-      ajccCell=`<span style="color:var(--accent2);font-size:11px">${ajccStageNote}</span>`;
-    }else if(!AJCC_NOTES[s.id]){
-      ajccCell=`<span style="color:var(--muted);font-size:10px">= UICC</span>`;
-    }
-    return`<tr data-stage="${r.stage}">
-      <td><strong>${r.stage}</strong></td>
-      <td style="font-family:monospace;font-size:12px">${T}</td>
-      <td style="font-family:monospace;font-size:12px">${N}</td>
-      <td style="font-family:monospace;font-size:12px">${M}</td>
-      <td style="color:var(--accent);font-size:11px;font-weight:600">${extraStr}</td>
-      <td style="color:var(--muted);font-size:12px">${note}</td>
-      <td style="font-size:11px;max-width:220px;line-height:1.4">${ajccCell}</td>
-    </tr>`;
-  }).join('');
-  // Global AJCC note below table
-  const ajccBanner=document.getElementById('ajcc-global-banner');
-  if(ajccBanner){
-    if(ajccGlobal){
-      ajccBanner.textContent=ajccGlobal;
-      ajccBanner.style.display='block';
-    }else{
-      ajccBanner.style.display='none';
-    }
-  }
-}
-
-// ======================================================
-// REFERTO
-// ======================================================
-const PN0_MIN={
-  colon_retto:12, stomaco:16, esofago:7, intestino_tenue:6,
-  appendice:12, fegato_hcc:3, bile_intrahep:6,
-  colecisti:6, bile_perihilar:15, bile_distale:12, ampolla:12,
-  pancreas:12, mammella:6, tiroide:6, gh_salivari:10, // V9: min 10 (selettiva) o 15 (radicale)
-  melanoma:6, merkel:6,
-  pelvi_renale:8,
-  uretere:8,
-  uretra:6,
+const TOOL_META={
+  version:'1.0-rc1',
+  dataset:'UICC TNM Classification of Malignant Tumours, 9ª ed. (2025)',
+  ajcc:'AJCC Cancer Staging Manual, Version 9 (2023)',
+  sedi:29,
+  data_rilascio:'2026-06-01',
+  validazione_automatica:'153/153 casi-test PASS',
+  validazione_manuale:'In corso — vedere tabella audit per sede',
+  responsabile:'F.M.D. Bianchi, SC Anatomia Patologica, ASST FBF-Sacco Milano',
 };
-
-
-function refLnCrossCheck(){
-  const totEl=document.getElementById('ref-ln-tot');
-  const posEl=document.getElementById('ref-ln-pos');
-  if(!totEl||!posEl)return;
-  const tot=parseInt(totEl.value)||0;
-  const pos=parseInt(posEl.value);
-  if(posEl.value===''||isNaN(pos))return;
-  if(tot>0&&pos>tot){
-    posEl.style.borderColor='var(--warn,#c05000)';
-    posEl.style.background='#fff8f0';
-    totEl.style.borderColor='var(--warn,#c05000)';
-    let warn=document.getElementById('ref-ln-cross-warn');
-    if(!warn){
-      warn=document.createElement('div');
-      warn.id='ref-ln-cross-warn';
-      warn.style.cssText='font-size:11px;color:#b35a00;font-weight:700;margin-top:4px;padding:4px 8px;background:#fff3cd;border-radius:3px;border:1px solid #e0c040;grid-column:1/-1';
-      posEl.parentNode.parentNode.appendChild(warn);
-    }
-    warn.textContent='⚠️ LN positivi ('+pos+') > LN esaminati ('+tot+') — dato incongruente';
-  }else{
-    posEl.style.borderColor='';
-    posEl.style.background='';
-    totEl.style.borderColor='';
-    const warn=document.getElementById('ref-ln-cross-warn');
-    if(warn)warn.remove();
-  }
+function getVariants(s){return s.variants||null;}
+function getStagingRules(s,variant){
+  if(s.staging)return s.staging;
+  if(s.staging_variants&&variant)return s.staging_variants[variant]||[];
+  if(s.staging_variants){const keys=Object.keys(s.staging_variants);return s.staging_variants[keys[0]]||[];}
+  return[];
 }
 
-function generateReferto(){
-  const s=currentSite;if(!s)return;
-  // Block se TX o NX
-  const _T=document.getElementById('ref-T').value;
-  const _N=document.getElementById('ref-N').value;
-  if(stripPfx(_T)==='TX'||stripPfx(_N)==='NX'){
-    const _out2=document.getElementById('referto-output');
-    const _which=[];
-    if(stripPfx(_T)==='TX')_which.push('T non valutabile (TX)');
-    if(stripPfx(_N)==='NX')_which.push('N non valutabile (NX)');
-    _out2.textContent='⚠️ REFERTO NON GENERATO\n\n'+_which.join('\n')+'\n\nLo stadio non può essere assegnato con parametri non valutabili.';
-    _out2.style.display='block';_out2.style.borderColor='#e08040';_out2.style.background='#fff8f0';
-    document.getElementById('copy-btn').style.display='none';return;
-  }
-  // Block if LN incongruent
-  const _refTot=parseInt(document.getElementById('ref-ln-tot').value)||0;
-  const _refPos=parseInt(document.getElementById('ref-ln-pos').value)||0;
-  if(_refTot>0&&_refPos>_refTot){
-    refLnCrossCheck(); // ensure warning visible
-    const out=document.getElementById('referto-output');
-    out.textContent='⚠️ REFERTO NON GENERATO\n\nDato incongruente: linfonodi positivi ('+_refPos+') > linfonodi esaminati ('+_refTot+').\nCorreggere i dati prima di generare il referto.';
-    out.style.display='block';
-    out.style.borderColor='#e08040';
-    out.style.background='#fff8f0';
-    document.getElementById('copy-btn').style.display='none';
-    return;
-  }
-  // Reset referto output style if previously blocked
-  const _out=document.getElementById('referto-output');
-  _out.style.borderColor='';_out.style.background='';
-  const T=document.getElementById('ref-T').value;
-  const N=document.getElementById('ref-N').value;
-  const M=document.getElementById('ref-M').value;
-  const lnTot=document.getElementById('ref-ln-tot').value;
-  const lnPos=document.getElementById('ref-ln-pos').value;
-  const notes=document.getElementById('ref-notes').value.trim();
-  const variant=currentVariant2;
-  const rules=getStagingRules(s,variant);
-  const extra={};
-  if(s.extra){s.extra.forEach(e=>{const el=document.getElementById('ref-extra-'+e.id);if(el)extra[e.id]=el.value;});}
+const SITE_INDEX = SITES.filter(s => s && s.id && s.T && s.N && s.M);
+const LEVEL_LABELS = {complete:'Completo',partial:'Parziale',anatomic:'Solo anatomico',verify:'Verifica'};
 
-  const pfx=getPfx('ref');
-  const mSourceEl=document.getElementById('ref-m-source');
-  const mSource=mSourceEl?mSourceEl.value:'cM';
-  // Override M prefix from fonte M selector
-  const mPfx=mSource==='pM'?'p':mSource==='ycM'?'yc':mSource==='ypM'?'yp':mSource==='MX'?'':'c';
-  const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
-  const result=v.errors.length?{stage:null,ambiguous:false}:computeBestStage(rules,T,N,M,extra);
-  if(result.ambiguous){
-    v.errors.push('Ambiguità dataset: stadi '+result.allStages.join(' / ')+' compatibili simultaneamente — staging non assegnabile. Segnalare il bug.');
-  }
-  const stage=result.stage;
+// Audit state (persisted in memory)
+const auditState = {};
 
-  const td=s.T.find(x=>x.c===T)||{d:'—'};
-  const nd=s.N.find(x=>x.c===N)||{d:'—'};
-  const md=s.M.find(x=>x.c===M)||{d:'—'};
+function getAuditKey(siteId, field, idx) { return `${siteId}__${field}__${idx}`; }
 
-  let txt=`CLASSIFICAZIONE TNM\n`;
-  txt+=`Riferimento: UICC TNM Classification of Malignant Tumours, 9ª ed. (2025) / AJCC Cancer Staging Manual, Version 9\n`;
-  txt+=`Sede: ${s.name} (ICD-O-4: ${s.icd})\n`;
-  if(variant){
-    const varLabel=getVariants(s)?.find(vv=>vv.id===variant)?.label||variant;
-    txt+=`Variante/istotipo: ${varLabel}\n`;
-  }
-  txt+=`\n`;
-
-  const nTotN=parseInt(lnTot)||0;
-  const nPosN=parseInt(lnPos)||0;
-
-  const nRatio=(nTotN>0&&nPosN>=0)?` (${nPosN}/${nTotN})`:'';
-  const stageHeader=s.model_limited?'RAGGRUPPAMENTO ANATOMICO TNM':'STADIO';
-
-  // ── Sezione 1: Classificazione TNM ──
-  txt+='\n── CLASSIFICAZIONE TNM ──────────────────────────────────\n';
-  const nRatioStr=(nTotN>0&&nPosN>=0)?` (${nPosN}/${nTotN})`:'';
-  txt+=`${pfx.T}${T}  ${pfx.N}${N}${nRatioStr}  ${mPfx}${M}\n`;
-  txt+=`\n`;
-  txt+=`${pfx.T}${T} — ${td.d}\n`;
-  let nLine=`${pfx.N}${N} — ${nd.d}`;
-  if(nTotN>0)nLine+=` (${nPosN} LN+ su ${nTotN} esaminati)`;
-  txt+=nLine+'\n';
-  // M con fonte esplicita
-  const mSourceLabel=mSource==='cM'?'clinico/radiologico':mSource==='pM'?'patologico (biopsia)':mSource==='ycM'?'post-trattamento, clinico/radiologico':mSource==='ypM'?'post-trattamento, patologico':'non documentato';
-  let mFullCode, mDesc;
-  if(mSource==='MX'){
-    mFullCode='M non assegnabile';
-    mDesc='metastasi a distanza non documentata nel materiale disponibile';
-  }else{
-    mFullCode=mPfx+M;
-    mDesc=md.d;
-  }
-  txt+=`${mFullCode} — ${mDesc}\n`;
-  if(mSource!=='cM'){
-    txt+=`         Nota M: valutazione ${mSourceLabel}\n`;
-  }
-  const extraKeys=Object.keys(extra).filter(k=>extra[k]&&extra[k]!=='—');
-  if(extraKeys.length){
-    txt+=`Parametri aggiuntivi: ${extraKeys.map(k=>k+'='+extra[k]).join(', ')}\n`;
-  }
-
-  // ── Sezione 2: Raggruppamento di stadio ──
-  txt+='\n── RAGGRUPPAMENTO DI STADIO ─────────────────────────────\n';
-
-  const stageFootnote=s.id==='prostata'?
-    '\n⚠ ATTENZIONE: questo NON corrisponde al Prognostic Stage Group. Per la prostata il gruppo prognostico formale richiede PSA (ng/mL) e Grade Group (Gleason score). Integrare con questi dati prima di qualsiasi uso clinico.'
-    :'';
-
-  let stageQualityLabel;
-  if(v.errors.length){
-    stageQualityLabel='NON ASSEGNABILE — combinazione incoerente (vedi avvertenze)';
-  }else if(!stage&&v.incomplete.length){
-    stageQualityLabel='NON ASSEGNABILE — parametri incompleti (vedi avvertenze)';
-  }else if(!stage){
-    stageQualityLabel='NON DETERMINABILE — caso fuori modello o classificazione non applicabile';
-  }else if(v.warnings.length){
-    stageQualityLabel=stage+' (assegnato con riserva — vedi avvertenze)';
-  }else{
-    stageQualityLabel=stage+' (assegnato)';
-  }
-  txt+=`\n${stageHeader}: ${stageQualityLabel}${stageFootnote}\n`;
-
-  const allV=[
-    ...v.errors.map(e=>'⛔ INCOERENZA: '+e),
-    ...v.incomplete.map(e=>'⚠ INCOMPLETO: '+e),
-    ...v.warnings.map(e=>'📋 NOTA: '+e),
-  ];
-  if(allV.length) txt+='\n'+allV.join('\n')+'\n';
-
-  if(notes)txt+=`\nNote: ${notes}`;
-
-  const BUDDING_SITES=['colon_retto','appendice','intestino_tenue','stomaco','esofago'];
-  const showBudding=BUDDING_SITES.includes(s.id);
-  const pfactors=[
-    document.getElementById('ref-lvi')?.value,
-    document.getElementById('ref-pni')?.value,
-    showBudding?document.getElementById('ref-budding')?.value:null,
-    document.getElementById('ref-margins')?.value,
-    document.getElementById('ref-regression')?.value,
-    document.getElementById('ref-perforation')?.value,
-  ].filter(Boolean);
-  if(pfactors.length){
-    txt+='\n── FATTORI PROGNOSTICI / PREDITTIVI ────────────────────\n';
-    txt+='(Non inclusi nel raggruppamento TNM — riportati a fini clinici)\n';
-    pfactors.forEach(v=>txt+=`- ${v}\n`);
-  }
-  txt+=`\n\n[Stadio preliminare — Verificare sempre con la fonte primaria: TNM Classification of Malignant Tumours, 9ª Ed., UICC 2025]`;
-
-  const out=document.getElementById('referto-output');
-  out.textContent=txt;
-  out.style.display='block';
-  document.getElementById('copy-btn').style.display='inline-block';
+function toggleAudit(key, btn) {
+  const current = auditState[key] || 'none';
+  const next = current==='none'?'done':current==='done'?'fail':'none';
+  auditState[key] = next;
+  btn.className = 'audit-check' + (next==='done'?' done':next==='fail'?' fail':'');
+  btn.textContent = next==='done'?'✓':next==='fail'?'✗':'';
+  updateProgress();
 }
 
-function copyReferto(){
-  const txt=document.getElementById('referto-output').textContent;
-  navigator.clipboard.writeText(txt).then(()=>{
-    const btn=document.getElementById('copy-btn');
-    btn.textContent='✅ Copiato!';
-    setTimeout(()=>{btn.textContent='📋 Copia negli Appunti';},2000);
+function updateProgress() {
+  const total = Object.keys(auditState).length;
+  const done = Object.values(auditState).filter(v=>v==='done').length;
+  const fail = Object.values(auditState).filter(v=>v==='fail').length;
+  document.getElementById('audit-progress').textContent =
+    `Audit: ${done} ✓  ${fail} ✗  su ${total} check effettuati`;
+}
+
+function makeAuditCheck(siteId, field, idx) {
+  const key = getAuditKey(siteId, field, idx);
+  const btn = document.createElement('div');
+  btn.className = 'audit-check';
+  btn.title = 'Click: non verificato → OK → ERRORE';
+  btn.onclick = () => toggleAudit(key, btn);
+  return btn;
+}
+
+function renderSite(s) {
+  const level = s.completeness || 'complete';
+  const levelLabel = LEVEL_LABELS[level] || level;
+  const variants = s.variants ? s.variants.map(v=>v.label).join(' / ') : '—';
+
+  let html = `<div class="site-block" id="block-${s.id}" data-level="${level}">
+    <div class="site-header">
+      <h2>${s.name}</h2>
+      <span class="icd">${s.icd}</span>
+      <span class="level level-${level}">${levelLabel}</span>
+      ${s.variants?`<span style="font-size:10px;opacity:.7">Varianti: ${variants}</span>`:''};
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="showTab(this,'t-${s.id}')">T</div>
+      <div class="tab" onclick="showTab(this,'n-${s.id}')">N</div>
+      <div class="tab" onclick="showTab(this,'m-${s.id}')">M</div>
+      <div class="tab" onclick="showTab(this,'stg-${s.id}')">Staging</div>
+      <div class="tab" onclick="showTab(this,'note-${s.id}')">Note / Audit</div>
+    </div>`;
+
+  // T tab
+  html += `<div class="tab-content active" id="t-${s.id}">
+    <table><thead><tr><th>✓</th><th>Codice T</th><th>Definizione</th></tr></thead><tbody>`;
+  s.T.forEach((t,i) => {
+    html += `<tr><td>${makeAuditCheck(s.id,'T',i).outerHTML}</td><td><code>${t.c}</code></td><td>${t.d}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  // N tab
+  html += `<div class="tab-content" id="n-${s.id}">
+    <table><thead><tr><th>✓</th><th>Codice N</th><th>Definizione</th></tr></thead><tbody>`;
+  s.N.forEach((n,i) => {
+    html += `<tr><td>${makeAuditCheck(s.id,'N',i).outerHTML}</td><td><code>${n.c}</code></td><td>${n.d}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  // M tab
+  html += `<div class="tab-content" id="m-${s.id}">
+    <table><thead><tr><th>✓</th><th>Codice M</th><th>Definizione</th></tr></thead><tbody>`;
+  s.M.forEach((m,i) => {
+    html += `<tr><td>${makeAuditCheck(s.id,'M',i).outerHTML}</td><td><code>${m.c}</code></td><td>${m.d}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  // Staging tab
+  const rules = getStagingRules(s, s.variants?s.variants[0].id:null);
+  html += `<div class="tab-content" id="stg-${s.id}">`;
+  if(s.staging_variants) {
+    Object.keys(s.staging_variants).forEach(vk => {
+      const vrules = s.staging_variants[vk];
+      html += `<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:8px 0 4px">Variante: ${vk}</div>`;
+      html += `<table><thead><tr><th>✓</th><th>Stadio</th><th>T</th><th>N</th><th>M</th><th>Extra</th></tr></thead><tbody>`;
+      vrules.forEach((r,i) => {
+        const T=[].concat(r.T).join(', ');
+        const N=[].concat(r.N).join(', ');
+        const M=[].concat(r.M).join(', ');
+        const ex=r.extra?Object.entries(r.extra).map(([k,v])=>k+'='+[].concat(v).join('/')).join(' '):'';
+        html += `<tr><td>${makeAuditCheck(s.id,'stg_'+vk,i).outerHTML}</td><td><b>${r.stage}</b></td><td><code>${T}</code></td><td><code>${N}</code></td><td><code>${M}</code></td><td style="font-size:11px;color:var(--muted)">${ex}</td></tr>`;
+      });
+      html += '</tbody></table>';
+    });
+  } else {
+    html += `<table><thead><tr><th>✓</th><th>Stadio</th><th>T</th><th>N</th><th>M</th><th>Extra</th></tr></thead><tbody>`;
+    rules.forEach((r,i) => {
+      const T=[].concat(r.T).join(', ');
+      const N=[].concat(r.N).join(', ');
+      const M=[].concat(r.M).join(', ');
+      const ex=r.extra?Object.entries(r.extra).map(([k,v])=>k+'='+[].concat(v).join('/')).join(' '):'';
+      html += `<tr><td>${makeAuditCheck(s.id,'stg',i).outerHTML}</td><td><b>${r.stage}</b></td><td><code>${T}</code></td><td><code>${N}</code></td><td><code>${M}</code></td><td style="font-size:11px;color:var(--muted)">${ex}</td></tr>`;
+    });
+    html += '</tbody></table>';
+  }
+  html += '</div>';
+
+  // Note / Audit tab
+  html += `<div class="tab-content" id="note-${s.id}">
+    <div class="audit-row"><b>Fonte primaria verificata:</b>
+      ${makeAuditCheck(s.id,'meta','source').outerHTML}
+      <span style="color:var(--muted);font-size:11px">UICC TNM 9ª ed. cap. ___  /  AJCC Version 9 cap. ___</span>
+    </div>
+    <div class="audit-row"><b>Divergenze UICC/AJCC annotate:</b>
+      ${makeAuditCheck(s.id,'meta','ajcc').outerHTML}
+    </div>
+    <div class="audit-row"><b>Casi-test eseguiti:</b>
+      ${makeAuditCheck(s.id,'meta','tests').outerHTML}
+    </div>
+    <div class="audit-row"><b>Note speciali / eccezioni verificate:</b>
+      ${makeAuditCheck(s.id,'meta','notes').outerHTML}
+    </div>`;
+  if(s.note) html += `<div class="note-box"><b>Nota tool:</b> ${s.note}</div>`;
+  html += `</div></div>`;
+
+  return html;
+}
+
+function showTab(btn, panelId) {
+  const block = btn.closest('.site-block');
+  block.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  block.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+function filterSite() {
+  const fSite = document.getElementById('filter-site').value;
+  const fLevel = document.getElementById('filter-level').value;
+  document.querySelectorAll('.site-block').forEach(b => {
+    const siteMatch = fSite==='all' || b.id==='block-'+fSite;
+    const levelMatch = fLevel==='all' || b.dataset.level===fLevel;
+    b.style.display = (siteMatch&&levelMatch)?'':'none';
   });
 }
 
-init();
+function exportCSV() {
+  const rows = [['site','field','idx','stato']];
+  Object.entries(auditState).forEach(([k,v]) => {
+    const parts = k.split('__');
+    rows.push([parts[0],parts[1],parts[2],v]);
+  });
+  const csv = rows.map(r=>r.map(x=>'"'+x+'"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = 'audit_TNM_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+// Init
+window.addEventListener('load', () => {
+  const content = document.getElementById('content');
+  const sel = document.getElementById('filter-site');
+  SITE_INDEX.forEach(s => {
+    content.innerHTML += renderSite(s);
+    sel.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+  });
+  // Attach audit check handlers after DOM render
+  document.querySelectorAll('.audit-check').forEach(btn => {
+    const key = btn.dataset ? btn.dataset.key : null;
+  });
+});
 </script>
 </body>
 </html>
