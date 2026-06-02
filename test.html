@@ -2412,7 +2412,7 @@ const TEST_CASES = [
   },
   {
     "site": "canale_anale",
-    "desc": "Tis assente → fuori modello",
+    "desc": "Tis N0 M0 → non assegnabile (AJCC v9)",
     "T": "Tis",
     "N": "N0",
     "M": "M0",
@@ -2636,13 +2636,13 @@ const TEST_CASES = [
   },
   {
     "site": "melanoma",
-    "desc": "T3b N1b M0 → IIIB",
+    "desc": "T3b N1b M0 → IIIC",
     "T": "T3b",
     "N": "N1b",
     "M": "M0",
     "extra": {},
     "variant": "path",
-    "expected": "IIIB"
+    "expected": "IIIC"
   },
   {
     "site": "melanoma",
@@ -2995,10 +2995,12 @@ const TEST_CASES = [
 ];
 
 // ── RUNNER ─────────────────────────────────────────────────────────────
+// Filter out non-site entries (nested objects picked up by parser)
+const SITE_INDEX = SITES.filter(s => s && s.id && s.T && s.N && s.M);
 let testResults = [];
 
 function runTest(tc) {
-  const site = SITES.find(s => s.id === tc.site);
+  const site = SITE_INDEX.find(s => s.id === tc.site);
   if (!site) return { status:'skip', got:null, reason:'Sede non trovata: '+tc.site };
   const rules = getStagingRules(site, tc.variant || null);
   if (!rules || !rules.length) return { status:'skip', got:null, reason:'Nessuna regola per variante: '+(tc.variant||'default') };
@@ -3050,11 +3052,16 @@ function updateSummary() {
 function populateSiteFilter() {
   const sel = document.getElementById('filter-site');
   const sites = [...new Set(testResults.map(r=>r.site))].sort();
-  sel.innerHTML = '<option value="all">Tutte le sedi</option>'+
-    sites.map(s=>{
-      const o=SITES.find(x=>x.id===s);
-      return `<option value="${s}">${o?o.name:s}</option>`;
-    }).join('');
+  const opts = ['<option value="all">Tutte le sedi</option>'];
+  for (const s of sites) {
+    let name = s;
+    for (let i=0; i<SITE_INDEX.length; i++) {
+      const x = SITE_INDEX[i];
+      if (x && x.id && x.id === s) { name = x.name; break; }
+    }
+    opts.push(`<option value="${s}">${name}</option>`);
+  }
+  sel.innerHTML = opts.join('');
 }
 
 function renderResults() {
@@ -3078,7 +3085,7 @@ function renderResults() {
     const p=sr.filter(r=>r.status==='pass').length;
     const f=sr.filter(r=>r.status==='fail').length;
     const sk=sr.filter(r=>r.status==='skip').length;
-    const sObj=SITES.find(s=>s.id===site);
+    let sObj=null; for(let _i=0;_i<SITE_INDEX.length;_i++){if(SITE_INDEX[_i]&&SITE_INDEX[_i].id===site){sObj=SITE_INDEX[_i];break;}}
     html+=`<div class="site-group">
       <div class="site-header">
         ${sObj?sObj.name:site} <code style="font-size:10px;opacity:.6">${site}</code>

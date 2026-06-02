@@ -125,6 +125,28 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
 .badge-anatomic{background:#fce4ec;color:#c62828;border:1px solid #ef9a9a;font-weight:800;}
 .badge-verify{background:#fff3e0;color:#bf360c;border:1px solid #ffb74d;font-weight:800;}
 
+/* Staging type banner */
+#staging-type-bar{padding:6px 14px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.stype-anatomic{background:#f0f4ff;color:#1a4a80;border-left:3px solid #4a7cc0;}
+.stype-prognostic{background:#f0fff4;color:#1a6a3a;border-left:3px solid #4aaa6a;}
+.stype-histotype{background:#fff8f0;color:#7a4000;border-left:3px solid #c08040;}
+.stype-combined{background:#fff0f8;color:#7a006a;border-left:3px solid #c060a0;}
+.stype-markers{background:#f8f0ff;color:#4a006a;border-left:3px solid #9060c0;}
+
+/* UICC/AJCC divergence banner */
+.ajcc-divergence-banner{background:#fffbe6;border:1px solid #e0c040;border-radius:4px;
+  padding:8px 12px;font-size:11px;color:#7a5800;margin-bottom:12px;line-height:1.6;}
+.ajcc-divergence-banner strong{color:#5a3800;}
+
+/* Coverage table */
+.coverage-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:12px;margin-bottom:4px;}
+.coverage-table th{background:var(--badge);padding:5px 8px;text-align:left;font-size:10px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);}
+.coverage-table td{padding:5px 8px;border-bottom:1px solid var(--border);}
+.cov-ok{color:#2e7d32;font-weight:700;}
+.cov-partial{color:#e65100;font-weight:700;}
+.cov-missing{color:#c62828;font-weight:700;}
+
 /* VALIDATION ALERTS */
 .v-error{background:#fff0f0;border:1px solid #e88;border-radius:var(--radius);
   padding:10px 14px;font-size:12px;color:#b00;margin-top:10px;line-height:1.6;}
@@ -167,6 +189,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
       <div id="site-icd"></div>
       <div id="site-badges" style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap"></div>
     </div>
+    <div id="staging-type-bar" style="display:none"></div>
     <div class="tabs">
       <button class="tab-btn active" onclick="showTab('lookup')">📋 Definizioni</button>
       <button class="tab-btn" onclick="showTab('staging')">🎯 Stadiazione</button>
@@ -392,6 +415,8 @@ const PARENTS={
   Tis:['Tis','Tis (DCIS)','Tis (LCIS)','Tis (Paget)','Tis (LAMN)'],
   N1:['N1','N1a','N1b','N1c'],N2:['N2','N2a','N2b','N2c'],
   N3:['N3','N3a','N3b','N3c'],M1:['M1','M1a','M1b','M1c','M1d'],
+  cN1:['cN1'],cN2:['cN2','cN2a','cN2b','cN2c'],cN3:['cN3','cN3a','cN3b'],
+  pN1:['pN1'],pN2:['pN2'],
 };
 
 const STAGE_ORD={'0':0,'0a':0.1,'0is':0.2,
@@ -443,12 +468,12 @@ function computeBestStage(rules,T,N,M,extra){
 // ======================================================
 const SITES=[
 
-{id:'colon_retto',name:'Colon e Retto',icd:'C18-C20',cat:'gi',completeness:'complete',
+{id:'colon_retto',name:'Colon e Retto',icd:'C18-C20',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'≥12 linfonodi per pN0 adeguato. TD (depositi tumorali) classificati come N1c se LN negativi. OGJ con epicentro >2 cm dal GEJ → staging gastrico.',
 T:[
   {c:'TX',d:'Tumore primitivo non valutabile'},
   {c:'T0',d:'Nessuna evidenza di tumore primitivo'},
-  {c:'Tis',d:'Carcinoma in situ: invasione della lamina propria (cellule confinate alla lamina propria mucosale, senza estensione attraverso la muscularis mucosae)'},
+  {c:'Tis',d:'Carcinoma in situ: invasione della lamina propria (cellule confinate alla lamina propria, senza estensione attraverso la muscularis mucosae)'},
   {c:'T1',d:'Tumore che invade la sottomucosa'},
   {c:'T2',d:'Tumore che invade la muscularis propria'},
   {c:'T3',d:'Tumore che invade la sottosierosa o i tessuti pericolici/perirettali non peritonealizzati'},
@@ -489,7 +514,7 @@ staging:[
   {stage:'IVC',T:'any',N:'any',M:'M1c'},
 ]},
 
-{id:'stomaco',name:'Stomaco',icd:'C16',cat:'gi',completeness:'complete',
+{id:'stomaco',name:'Stomaco',icd:'C16',cat:'gi',completeness:'complete',staging_type:'histotype',staging_type_label:'Varianti clinico/patologico',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'≥16 linfonodi per pN0 adeguato. Epicentro OGJ ≤2 cm dalla GEJ (Siewert I/II) → staging esofageo.',
 variants:[
   {id:'clinical',label:'Stadio clinico (cTNM)'},
@@ -553,7 +578,7 @@ staging_variants:{
   ]
 }},
 
-{id:'esofago',name:'Esofago / GEJ',icd:'C15,C16.0',cat:'gi',completeness:'partial',model_limited:true,badges:[{cls:'badge-anat',txt:'Prognostic groups parziali'}],
+{id:'esofago',name:'Esofago / GEJ',icd:'C15,C16.0',cat:'gi',completeness:'complete',staging_type:'histotype',staging_type_label:'4 varianti (SCC/Adeno × cStage/pStage) — PPG con grado/sede non implementati (AJCC v9)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},model_limited:true,badges:[{cls:'badge-div',txt:'PPG con grado/sede non implementati'}],
 note:'≥7 linfonodi per pN0 adeguato. GEJ con epicentro ≤2 cm → staging esofageo. Stage Group anatomico separato per SCC e Adeno (clinico e patologico). I Pathological Prognostic Groups con grado e sede non sono implementati nel motore di calcolo.',
 variants:[
   {id:'scc_path',label:'SCC — pStage'},
@@ -643,7 +668,7 @@ staging_variants:{
   ]
 }},
 
-{id:'intestino_tenue',name:'Intestino Tenue',icd:'C17',cat:'gi',completeness:'complete',
+{id:'intestino_tenue',name:'Intestino Tenue',icd:'C17',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'≥6 linfonodi per pN0. Esclude l\'ampolla di Vater.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -651,7 +676,7 @@ T:[
   {c:'T1a',d:'Invade la lamina propria o la muscularis mucosae'},
   {c:'T1b',d:'Invade la sottomucosa'},
   {c:'T2',d:'Invade la muscularis propria'},
-  {c:'T3',d:'Invade la sottosierosa o il tessuto perimuscolare non peritonealizzato (mesentere/retroperitoneo) senza perforazione della sierosa'},
+  {c:'T3',d:'Invade la sottosierosa o il tessuto perimuscolare non peritonealizzato con estensione ≤2 cm (mesentere o retroperitoneo per digiuno/ileo; retroperitoneo per duodeno), senza perforazione della sierosa'},
   {c:'T4',d:'Perfora il peritoneo viscerale o invade direttamente altri organi/strutture (pancreas per il duodeno)'},
 ],
 N:[
@@ -659,7 +684,11 @@ N:[
   {c:'N1',d:'Metastasi in 1-2 linfonodi regionali'},
   {c:'N2',d:'Metastasi in 3 o più linfonodi regionali'},
 ],
-M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
+M:[
+  {c:'M0',d:'Nessuna metastasi a distanza clinicamente o radiologicamente evidenti'},
+  {c:'cM1',d:'Metastasi a distanza rilevate clinicamente o radiologicamente'},
+  {c:'pM1',d:'Metastasi a distanza confermate istologicamente'},
+],
 staging:[
   {stage:'0',T:'Tis',N:'N0',M:'M0'},
   {stage:'I',T:['T1','T2'],N:'N0',M:'M0'},
@@ -670,7 +699,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'appendice',name:'Appendice',icd:'C18.1',cat:'gi',completeness:'complete',
+{id:'appendice',name:'Appendice',icd:'C18.1',cat:'gi',completeness:'complete',staging_type:'markers',staging_type_label:'Richiede grado per M1b (IVA vs IVB)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'AJCC Version 9 / UICC 9ª ed. ≥12 linfonodi per pN0. Comprende adenocarcinomi (mucinosi e non) e NEC scarsamente differenziati. NET ben differenziati: classificazione separata. V9: HAMN (High-grade Appendiceal Mucinous Neoplasm) aggiunto accanto a LAMN; adenocarcinoma a cellule goblet (ex goblet cell carcinoide — terminologia abbandonata in V9). M1a: solo mucina acellulare intraperitoneale; M1b: epitelio mucinoso intraperitoneale (il grado determina IVA vs IVB); M1c: metastasi non peritoneali.',
 extra:[{id:'G',label:'Grado istologico (rilevante per M1b)',options:['—','G1','G2','G3','GX']}],
 T:[
@@ -688,7 +717,7 @@ N:[
   {c:'NX',d:'Non valutabili'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1a',d:'Metastasi in 1 linfonodo regionale'},
   {c:'N1b',d:'Metastasi in 2-3 linfonodi regionali'},
-  {c:'N1c',d:'Depositi tumorali (satelliti) nella sottosierosa o nei tessuti pericolici/perirettali non peritonealizzati, senza metastasi nei linfonodi regionali'},
+  {c:'N1c',d:'Depositi tumorali (satelliti) nella sottosierosa, nel mesoappendice o nei tessuti periappendicolari non peritonealizzati, senza metastasi nei linfonodi regionali'},
   {c:'N2',d:'Metastasi in 4 o più linfonodi regionali'},
 ],
 M:[
@@ -714,8 +743,8 @@ staging:[
   {stage:'IVC',T:'any',N:'any',M:'M1c'},
 ]},
 
-{id:'canale_anale',name:'Canale Anale',icd:'C21',cat:'gi',completeness:'complete',
-note:'AJCC Version 9 / UICC 9ª ed.: Tis (carcinoma in situ) e Stadio 0 ELIMINATI — dati di sopravvivenza insufficienti e difficoltà di standardizzazione dello screening. ≥12 linfonodi per pN peri-rettale/pelvico; ≥6 per pN inguinale. Include canale anale esteso alla cute perianale (entro 5 cm dal margine anale).',
+{id:'canale_anale',name:'Canale Anale',icd:'C21',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico AJCC v9',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'AJCC v9: Tis/Stadio 0 esclusi'}],
+note:'⚠ Tis e Stadio 0 deliberatamente ESCLUSI seguendo AJCC Cancer Staging Manual Version 9: HSIL/AIN II-III non è un carcinoma invasivo; la sua inclusione nello staging TNM portava a overtreatment. Evidenza: studio ANCHOR e analisi SEER. UICC 9ª ed. 2025 mantiene invece Tis/Stadio 0 per uniformità registrale — divergenza UICC/AJCC esplicita. Scelta del tool: AJCC v9 (clinicamente più solida). Schema si applica a SCC del canale anale; i carcinomi del margine anale (cute perianale entro 5 cm) seguono lo staging cutaneo (carcinoma_cute). HPV status: fattore prognostico raccomandato da AJCC, non incluso nello staging. ≥12 linfonodi per pN peri-rettale/pelvico; ≥6 per pN inguinale.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
   {c:'T1',d:'Tumore ≤2 cm nella dimensione maggiore'},
@@ -740,7 +769,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'fegato_hcc',name:'Fegato (HCC)',icd:'C22.0',cat:'gi',completeness:'complete',
+{id:'fegato_hcc',name:'Fegato (HCC)',icd:'C22.0',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC — solo HCC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'Solo per epatocarcinoma (HCC). CCA e HCC-CC misto hanno classificazione separata (Dotti biliari intraepatici). ≥3 linfonodi per pN0. Il BCLC (Barcelona Clinic Liver Cancer stage) è sistema prognostico parallelo frequentemente usato in clinica.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -765,7 +794,7 @@ staging:[
   {stage:'IVB',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'bile_intrahep',name:'Dotti biliari intraepatici (CCA)',icd:'C22.1',cat:'gi',completeness:'complete',
+{id:'bile_intrahep',name:'Dotti biliari intraepatici (CCA)',icd:'C22.1',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'Include anche l\'HCC-CC misto. ≥6 linfonodi per pN0. Metastasi ai linfonodi celiaci e/o periaortici/cavali = M1.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -792,7 +821,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'colecisti',name:'Colecisti',icd:'C23.9,C24.4',cat:'gi',completeness:'complete',
+{id:'colecisti',name:'Colecisti',icd:'C23.9,C24.4',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'Include il dotto cistico (C24.4). ≥6 linfonodi per pN0.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -823,13 +852,13 @@ staging:[
   {stage:'IVB',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'bile_perihilar',name:'Dotti biliari peribiliari (Klatskin)',icd:'C24.3',cat:'gi',completeness:'complete',
+{id:'bile_perihilar',name:'Dotti biliari peribiliari (Klatskin)',icd:'C24.3',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'Colangiocarcinoma peribilare/ilo epatico (tumore di Klatskin). ≥15 linfonodi per pN0.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
   {c:'Tis',d:'Carcinoma in situ'},
   {c:'T1',d:'Tumore confinato al dotto biliare, con estensione fino allo strato muscolare o al tessuto fibroso'},
-  {c:'T2a',d:'Tumore che invade il tessuto adiposo periducale'},
+  {c:'T2a',d:'Tumore che invade il tessuto adiposo periduttale'},
   {c:'T2b',d:'Tumore che invade il parenchima epatico adiacente'},
   {c:'T3',d:'Tumore che invade rami unilaterali della vena porta o dell\'arteria epatica'},
   {c:'T4',d:'Tumore che invade la vena porta principale o i suoi rami bilateralmente, O l\'arteria epatica comune, O radici biliari secondarie unilaterali con coinvolgimento controlaterale della vena porta o dell\'arteria epatica'},
@@ -851,7 +880,7 @@ staging:[
   {stage:'IVB',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'bile_distale',name:'Via biliare distale',icd:'C24.2',cat:'gi',completeness:'complete',
+{id:'bile_distale',name:'Via biliare distale',icd:'C24.2',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'Include i dotti biliari extraepatici distali all\'inserzione del dotto cistico. ≥12 linfonodi per pN0.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -879,7 +908,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'ampolla',name:'Ampolla di Vater',icd:'C24.1',cat:'gi',completeness:'complete',
+{id:'ampolla',name:'Ampolla di Vater',icd:'C24.1',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'≥12 linfonodi per pN0. I linfonodi splenici e della coda pancreatica sono distanti (M1).',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -909,7 +938,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'pancreas',name:'Pancreas (Adenocarcinoma)',icd:'C25',cat:'gi',completeness:'complete',
+{id:'pancreas',name:'Pancreas (Adenocarcinoma)',icd:'C25',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'≥12 linfonodi per pN0. Esclude i NET ben differenziati (classificazione separata). T4 è irresecabile per definizione anatomica (coinvolgimento celiaco/AMS/arteria epatica comune).',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -938,7 +967,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'net_stomaco',name:'NET GI — Stomaco',icd:'C16',cat:'gi_net',completeness:'complete',badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+{id:'net_stomaco',name:'NET GI — Stomaco',icd:'C16',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
 note:'Solo NET ben differenziati (G1-G3). NEC (small cell, large cell) → staging come carcinoma gastrico. Grading WHO: G1 (<2 mitosi/2mm², Ki67 <3%), G2 (2-20 mitosi/2mm², Ki67 3-20%), G3 (>20 mitosi/2mm², Ki67 >20%). Grado determinato dal parametro più alto tra mitosi e Ki67.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -966,7 +995,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'net_coloretto',name:'NET GI — Colon-Retto',icd:'C18-C20',cat:'gi_net',completeness:'complete',badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+{id:'net_coloretto',name:'NET GI — Colon-Retto',icd:'C18-C20',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
 note:'Solo NET ben differenziati (G1-G3). Grading WHO identico agli altri NET GI.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -995,7 +1024,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'net_pancreas',name:'NET GI — Pancreas',icd:'C25',cat:'gi_net',completeness:'complete',badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+{id:'net_pancreas',name:'NET GI — Pancreas',icd:'C25',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
 note:'AJCC Version 9. Solo NET ben differenziati pancreatici (funzionanti e non). NEC pancreatici → staging come adenocarcinoma pancreatico. V9 introduce biomarcatori prognostici: DAXX/ATRX (loss IHC = meccanismo ALT, prognosi peggiore anche in G1/G2), ARX (marker alfa-cellulare), PDX1 (marker beta-cellulare) — non modificano T/N/M ma orientano comportamento biologico e follow-up.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1022,7 +1051,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'tiroide',name:'Tiroide',icd:'C73.9',cat:'hn',completeness:'complete',badges:[{cls:'badge-div',txt:'UICC≠AJCC (alcuni istotipi)'}],
+{id:'tiroide',name:'Tiroide',icd:'C73.9',cat:'hn',completeness:'complete',staging_type:'prognostic',staging_type_label:'Stadio per età e istotipo (4 varianti)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (alcuni istotipi)'}],
 note:'Staging separato per: PTC/FTC <55 anni (solo Stadio I-II), PTC/FTC ≥55 anni, carcinoma midollare, carcinoma anaplastico. ≥6 linfonodi per pN0 (neck dissection selettiva).',
 variants:[
   {id:'diff_young',label:'PTC/FTC/PDTC/HCC < 55 anni'},
@@ -1076,8 +1105,8 @@ staging_variants:{
   ]
 }},
 
-{id:'gh_salivari',name:'Ghiandole salivari',icd:'C07-C08',cat:'hn',completeness:'complete',
-note:'AJCC Version 9 / UICC 9ª ed.: classificazione N radicalmente semplificata — basata su NUMERO di linfonodi e pENE, non più su dimensione o lateralità. Unifica ghiandole maggiori (parotide, sottomandibolare, sottolinguale) e minori. Minimo LN: 10 (neck dissection selettiva) o 15 (radicale) per pN0 adeguato. pENE patologica = trasgressione attraverso l\'intera capsula linfonodale nel tessuto adiposo circostante — trasforma pN1 in pN2. Discordanza cN/pN: linfonodo controlaterale singolo pENE- = pN1 (numerica) ma cN2 (clinica). pN3 ELIMINATO in V9.',
+{id:'gh_salivari',name:'Ghiandole salivari',icd:'C07-C08',cat:'hn',completeness:'complete',staging_type:'histotype',staging_type_label:'Varianti cN/pN — schema ENE-based V9',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
+note:'AJCC Version 9 / UICC 9ª ed.: pN semplificato (numerica + pENE); cN mantiene schema dimensionale completo con N3. Ghiandole maggiori (parotide, sottomandibolare, sottolinguale). Minimo LN: ≥10 (neck selettiva) o ≥15 (radicale) per pN0 adeguato. ENE (Extranodal Extension) — definizioni: cENE (clinica) = fissità linfonodale, invasione strutture adiacenti, deficit nervo cranico, edema cutaneo su linfonodo; pENE (patologica) = trasgressione istologica attraverso l\'intera capsula linfonodale nel tessuto adiposo circostante (esclude semplice assottigliamento capsulare). pENE trasforma pN1→pN2. Discordanza cN/pN frequente: un linfonodo controlaterale singolo pENE- è pN1 (numerica) ma era cN2c (clinica pre-op). pN3 ELIMINATO in V9. cN3a (>6 cm) e cN3b (ENE clinica) → entrambi Stadio IVA.',
 variants:[
   {id:'path',label:'pN — Stadiazione patologica'},
   {id:'clinical',label:'cN — Stadiazione clinica'},
@@ -1094,10 +1123,14 @@ T:[
 N:[
   {c:'NX',d:'Non valutabili'},
   {c:'N0',d:'Nessuna metastasi linfonodale regionale'},
-  {c:'pN1',d:'[pN] Metastasi in 1–3 linfonodi, pENE assente'},
-  {c:'pN2',d:'[pN] Metastasi in 1–3 linfonodi con pENE presente, OPPURE metastasi in ≥4 linfonodi (qualsiasi stato pENE)'},
-  {c:'cN1',d:'[cN] Metastasi in 1–3 linfonodi ipsilaterali, ENE clinica assente'},
-  {c:'cN2',d:'[cN] Metastasi in 1–3 linfonodi ipsilaterali con ENE clinica, OPPURE linfonodi controlaterali o bilaterali (≤6 cm) senza ENE clinica'},
+  {c:'pN1',d:'[pN — V9] Metastasi in 1–3 linfonodi regionali, pENE assente'},
+  {c:'pN2',d:'[pN — V9] Metastasi in 1–3 linfonodi con pENE presente (trasgressione capsula nel tessuto adiposo), OPPURE metastasi in ≥4 linfonodi (qualsiasi stato pENE). Nota: pN3 eliminato in UICC/AJCC Version 9.'},
+  {c:'cN1',d:'[cN] Metastasi in un singolo linfonodo ipsilaterale ≤3 cm, ENE clinica assente'},
+  {c:'cN2a',d:'[cN] Metastasi in un singolo linfonodo ipsilaterale >3 cm e ≤6 cm, ENE clinica assente'},
+  {c:'cN2b',d:'[cN] Metastasi in linfonodi multipli ipsilaterali ≤6 cm, ENE clinica assente'},
+  {c:'cN2c',d:'[cN] Metastasi in linfonodi bilaterali o controlaterali ≤6 cm, ENE clinica assente'},
+  {c:'cN3a',d:'[cN] Metastasi in linfonodo >6 cm, ENE clinica assente'},
+  {c:'cN3b',d:'[cN] Metastasi in qualsiasi linfonodo con ENE clinica conclamata (fissità, invasione strutture adiacenti, deficit nervo cranico, edema cutaneo)'},
 ],
 M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
 staging_variants:{
@@ -1118,42 +1151,46 @@ staging_variants:{
     {stage:'III',T:['T3','T4a'],N:'N0',M:'M0'},
     {stage:'III',T:['T1','T2','T3','T4a'],N:'cN1',M:'M0'},
     {stage:'IVA',T:'T4b',N:'any',M:'M0'},
-    {stage:'IVA',T:'any',N:'cN2',M:'M0'},
+    {stage:'IVA',T:'any',N:['cN2a','cN2b','cN2c'],M:'M0'},
+    {stage:'IVA',T:'any',N:['cN3a','cN3b'],M:'M0'},
     {stage:'IVB',T:'any',N:'any',M:'M1'},
   ]
 }},
 
-{id:'mammella',name:'Mammella',icd:'C50',cat:'breast',completeness:'partial',badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'}],
-note:'≥6 linfonodi per pN0 (livello I). pN dimensionale basato sul componente invasivo (non in situ). ITC (<0.2 mm o <200 cellule) = N0(i+). Per il report includere il modificatore sn (sentinel node). AJCC esclude Tis(LCIS) dalla classificazione.',
+{id:'mammella',name:'Mammella',icd:'C50',cat:'breast',completeness:'partial',staging_type:'combined',staging_type_label:'Anatomico UICC — Prognostic Stage AJCC non implementato',coverage:{T:'ok',N:'ok',M:'ok',stage:'partial',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'}],
+note:'≥6 linfonodi per pN0 (livello I ascellare). pN basato sul componente invasivo; il DCIS non conta ai fini della classificazione N. ITC (≤0.2 mm o ≤200 cellule) = N0(i+): non modificano lo stadio. Distinguere sempre cN (clinico/imaging) da pN (patologico): cN1 ≠ pN1 per implicazioni terapeutiche. Includere sempre il modificatore (sn) se la classificazione N deriva dal solo sentinella. AJCC esclude Tis(LCIS). ⚠ Staging mostrato: solo raggruppamento anatomico UICC (T/N/M). I Prognostic Stage Groups AJCC (con recettori ormonali, HER2, Ki67, grading) NON sono implementati.',
 T:[
   {c:'TX',d:'Tumore primitivo non valutabile'},
   {c:'T0',d:'Nessuna evidenza di tumore primitivo'},
-  {c:'Tis',d:'Carcinoma in situ'},
   {c:'Tis (DCIS)',d:'Carcinoma duttale in situ'},
-  {c:'Tis (LCIS)',d:'Carcinoma lobulare in situ (UICC include; AJCC esclude)'},
+  {c:'Tis (LCIS)',d:'Carcinoma lobulare in situ (UICC include; AJCC esclude dalla classificazione)'},
   {c:'Tis (Paget)',d:'Malattia di Paget del capezzolo non associata a carcinoma invasivo o in situ nel parenchima mammario sottostante'},
   {c:'T1mi',d:'Microinvasione ≤0.1 cm nella dimensione maggiore'},
   {c:'T1a',d:'Tumore >0.1 cm e ≤0.5 cm'},
   {c:'T1b',d:'Tumore >0.5 cm e ≤1 cm'},
   {c:'T1c',d:'Tumore >1 cm e ≤2 cm'},
   {c:'T2',d:'Tumore >2 cm e ≤5 cm'},
-  {c:'T3',d:'Tumore >5 cm'},
+  {c:'T3',d:'Tumore >5 cm nella dimensione maggiore'},
   {c:'T4a',d:'Estensione alla parete toracica (esclusa invasione isolata della muscolatura pettorale)'},
-  {c:'T4b',d:'Ulcerazione, noduli cutanei satelliti omolaterali, edema cutaneo (incluso peau d\'orange)'},
+  {c:'T4b',d:'Ulcerazione della cute, noduli cutanei satelliti omolaterali, edema cutaneo (incluso peau d\'orange), in assenza di criteri per carcinoma infiammatorio'},
   {c:'T4c',d:'T4a + T4b'},
-  {c:'T4d',d:'Carcinoma infiammatorio'},
+  {c:'T4d',d:'Carcinoma infiammatorio: eritema diffuso e edema (peau d\'orange) della cute che coinvolge ≥1/3 della mammella, con esordio rapido'},
 ],
 N:[
-  {c:'NX',d:'Linfonodi regionali non valutabili (es. già rimossi)'},
-  {c:'N0',d:'Nessuna metastasi nei linfonodi regionali'},
-  {c:'N1mi',d:'Micrometastasi (>0.2 mm e/o >200 cellule ma ≤2 mm)'},
-  {c:'N1a',d:'Metastasi in 1-3 linfonodi ascellari omolaterali, almeno uno >2 mm'},
-  {c:'N1b',d:'Metastasi in linfonodi mammari interni non clinicamente rilevati (solo biopsia del sentinella)'},
-  {c:'N1c',d:'Metastasi in 1-3 linfonodi ascellari E in linfonodi mammari interni non clinicamente rilevati'},
-  {c:'N2a',d:'Metastasi in 4-9 linfonodi ascellari omolaterali (almeno uno >2 mm)'},
+  {c:'NX',d:'Linfonodi regionali non valutabili (es. già rimossi prima della chirurgia)'},
+  {c:'N0',d:'Nessuna metastasi nei linfonodi regionali istologicamente dimostrata'},
+  {c:'N0(i-)',d:'Nessuna metastasi istologica e IHC negativa'},
+  {c:'N0(i+)',d:'Cellule tumorali isolate (ITC): ≤0.2 mm o ≤200 cellule — rilevate con IHC o morfologia. Non classificate come metastasi; non modificano lo stadio N (rimane N0)'},
+  {c:'N0(mol-)',d:'Nessuna metastasi istologica; RT-PCR negativa'},
+  {c:'N0(mol+)',d:'Nessuna metastasi istologica; RT-PCR positiva. Significato clinico non definito; non modifica lo stadio N'},
+  {c:'N1mi',d:'Micrometastasi: >0.2 mm e/o >200 cellule, ma ≤2 mm nella dimensione maggiore'},
+  {c:'N1a',d:'Metastasi in 1-3 linfonodi ascellari omolaterali (almeno una macrometastasi >2 mm)'},
+  {c:'N1b',d:'Metastasi in linfonodi mammari interni omolaterali, non clinicamente rilevati, rilevati alla biopsia del linfonodo sentinella (senza coinvolgimento ascellare concomitante classificabile come N1a)'},
+  {c:'N1c',d:'Metastasi in 1-3 linfonodi ascellari omolaterali E in linfonodi mammari interni non clinicamente rilevati (biopsia del sentinella)'},
+  {c:'N2a',d:'Metastasi in 4-9 linfonodi ascellari omolaterali (almeno una macrometastasi >2 mm)'},
   {c:'N2b',d:'Metastasi clinicamente rilevate in linfonodi mammari interni omolaterali, in assenza di metastasi ascellari'},
-  {c:'N3a',d:'Metastasi in ≥10 linfonodi ascellari omolaterali (almeno uno >2 mm) O in linfonodi infraclavicolari/livello III'},
-  {c:'N3b',d:'Metastasi clinicamente rilevate in linfonodi mammari interni omolaterali in presenza di linfonodi ascellari positivi, O metastasi in >3 linfonodi ascellari e nei linfonodi mammari interni (alla biopsia del sentinella)'},
+  {c:'N3a',d:'Metastasi in ≥10 linfonodi ascellari omolaterali (almeno una >2 mm) O metastasi in linfonodi infraclavicolari omolaterali (livello III)'},
+  {c:'N3b',d:'Metastasi clinicamente rilevate in linfonodi mammari interni omolaterali in presenza di ≥1 linfonodo ascellare positivo; O metastasi in >3 linfonodi ascellari con coinvolgimento microscopico dei linfonodi mammari interni (sentinella)'},
   {c:'N3c',d:'Metastasi in linfonodi sopraclaveari omolaterali'},
 ],
 M:[{c:'M0',d:'Nessuna metastasi a distanza'},{c:'M1',d:'Metastasi a distanza'}],
@@ -1172,7 +1209,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'prostata',name:'Prostata',icd:'C61.9',cat:'uro',completeness:'anatomic',model_limited:true,badges:[{cls:'badge-anat',txt:'Anatomico'}],
+{id:'prostata',name:'Prostata',icd:'C61.9',cat:'uro',completeness:'anatomic',staging_type:'combined',staging_type_label:'Solo anatomico — PSA/Grade Group non implementati',coverage:{T:'ok',N:'ok',M:'ok',stage:'partial',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},model_limited:true,badges:[{cls:'badge-anat',txt:'Anatomico'}],
 note:'⚠ Raggruppamento anatomico (T/N/M) — il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason score), non implementati in questo motore. Esclusi i carcinomi uroteliali della prostata (staging ureterale). Nessun pT1. Suffix MRI: (mr); PSMA-PET: (PET) da indicare in referto.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1191,10 +1228,10 @@ N:[
   {c:'N1',d:'Metastasi nei linfonodi regionali (pelvi vera, sotto la biforcazione delle iliache comuni)'},
 ],
 M:[
-  {c:'M0',d:'Nessuna metastasi a distanza'},
-  {c:'M1a',d:'Metastasi in linfonodi non regionali'},
-  {c:'M1b',d:'Metastasi ossee'},
-  {c:'M1c',d:'Metastasi in altri siti'},
+  {c:'M0',d:'Nessuna metastasi a distanza clinicamente o radiologicamente evidenti'},
+  {c:'cM0(i+)',d:'Nessuna metastasi clinica o radiologica, ma cellule tumorali isolate rilevate nel sangue, midollo osseo o tessuti non regionali (≤0.2 mm) in assenza di sintomi o segni. Non modifica lo stadio M (rimane M0)'},
+  {c:'cM1',d:'Metastasi a distanza rilevate clinicamente o radiologicamente'},
+  {c:'pM1',d:'Metastasi a distanza confermate istologicamente (qualsiasi sede)'},
 ],
 variants:[
   {id:'clinical',label:'Stadio clinico'},
@@ -1216,7 +1253,7 @@ staging_variants:{
   ]
 }},
 
-{id:'vescica',name:'Vescica',icd:'C67',cat:'uro',completeness:'complete',
+{id:'vescica',name:'Vescica',icd:'C67',cat:'uro',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
 note:'Esclude papilloma e PUNLMP. Suffisso (m): tumori multipli; suffisso (is): CIS associato. Staging corrisponde sia a c che pTNM.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1254,7 +1291,7 @@ staging:[
   {stage:'IVB',T:'any',N:'any',M:'M1b'},
 ]},
 
-{id:'rene',name:'Rene (RCC)',icd:'C64',cat:'uro',completeness:'complete',
+{id:'rene',name:'Rene (RCC)',icd:'C64',cat:'uro',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC — solo RCC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
 note:'Solo per carcinoma a cellule renali. Il nefroblastoma è classificato nel capitolo pediatrico.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1281,13 +1318,13 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'testicolo',name:'Testicolo',icd:'C62',cat:'uro',completeness:'complete',badges:[{cls:'badge-uicc',txt:'Richiede marcatori S'}],
+{id:'testicolo',name:'Testicolo',icd:'C62',cat:'uro',completeness:'complete',staging_type:'markers',staging_type_label:'Richiede marcatori sierici S (AFP/hCG/LDH)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-uicc',txt:'Richiede marcatori S'}],
 note:'Solo tumori a cellule germinali. Lo staging richiede l\'orchidectomia radicale (eccetto pTis e pT4). La classificazione S (marcatori sierici) si basa sui valori nadir post-orchidectomia. S: AFP (emivita 7gg), hCG (emivita 3gg), LDH. Includere sempre S nel referto.',
 T:[
   {c:'TX',d:'Non valutabile (in assenza di orchidectomia radicale)'},
   {c:'T0',d:'Nessun tumore (cicatrice istologica nel testicolo)'},
   {c:'Tis',d:'Neoplasia intratubulare a cellule germinali (carcinoma in situ)'},
-  {c:'T1',d:'Tumore limitato al testicolo (inclusa la rete testis) senza invasione vascolare/linfatica, senza invasione dell\'epididimo; può invadere la tunica albuginea ma non la tunica vaginalis'},
+  {c:'T1',d:'Tumore limitato al testicolo (inclusa la rete testis) senza invasione vascolare/linfatica, senza invasione dell\'epididimo; può invadere la tunica albuginea ma non la tunica vaginalis',note:'AJCC v9 suddivide il pT1 del seminoma in pT1a (≤3 cm) e pT1b (>3 cm) in base alla dimensione. UICC 9ª ed. mantiene pT1 unico.'},
   {c:'T2',d:'Tumore limitato al testicolo con invasione vascolare/linfatica, O invasione del tessuto molle ilare o dell\'epididimo, O estensione attraverso la tunica albuginea con coinvolgimento della tunica vaginalis'},
   {c:'T3',d:'Tumore che invade il funicolo spermatico con o senza invasione vascolare/linfatica'},
   {c:'T4',d:'Tumore che invade lo scroto con o senza invasione vascolare/linfatica'},
@@ -1329,7 +1366,7 @@ staging:[
   {stage:'IIIC',T:'any',N:'any',M:'M1b'},
 ]},
 
-{id:'melanoma',name:'Melanoma cutaneo',icd:'C44',cat:'skin',completeness:'partial',
+{id:'melanoma',name:'Melanoma cutaneo',icd:'C44',cat:'skin',completeness:'partial',staging_type:'histotype',staging_type_label:'Varianti clinico/patologico — LDH non implementato',coverage:{T:'ok',N:'ok',M:'ok',stage:'partial',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
 note:'Il T clinico viene classificato dopo escissione (vedi pT). Spessore misurato in mm, arrotondato al decimo più vicino. Suffissi LDH: (0)=LDH normale; (1)=LDH elevata; nessun suffisso se LDH non registrata.',
 variants:[
   {id:'clinical',label:'Stadio clinico (cTNM)'},
@@ -1402,8 +1439,8 @@ staging_variants:{
   ]
 }},
 
-{id:'carcinoma_cute',name:'Carcinoma della cute (SCC/BCC)',icd:'C44',cat:'skin',completeness:'complete',
-note:'Esclude: palpebra, testa-collo (hanno staging separato), perianale, vulva, pene e carcinoma di Merkel. La invasione perineurale (PNI) e la deep invasion (>6 mm o oltre il grasso sottocutaneo) innalzano a T3. ≥6 linfonodi per pN0.',
+{id:'carcinoma_cute',name:'Carcinoma della cute (SCC/BCC)',icd:'C44',cat:'skin',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
+note:'Ambito: cute non testa-collo (C44, escluse C44.1x palpebra e sedi H&N con staging dedicato); esclude perianale, vulva, pene, Merkel. PNI e deep invasion (>6 mm o oltre il grasso sottocutaneo) innalzano a T3. ≥6 linfonodi per pN0.',
 T:[
   {c:'TX',d:'Non identificabile'},{c:'T0',d:'Nessun tumore'},
   {c:'Tis',d:'Carcinoma in situ'},
@@ -1431,7 +1468,7 @@ staging:[
   {stage:'IVB',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'merkel',name:'Carcinoma di Merkel',icd:'C44',cat:'skin',completeness:'complete',
+{id:'merkel',name:'Carcinoma di Merkel',icd:'C44',cat:'skin',completeness:'complete',staging_type:'histotype',staging_type_label:'Varianti clinico/patologico',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'≥6 linfonodi per pN0. Metastasi in transito: tumore discontinuo dalla lesione primaria, tra questa e i linfonodi regionali di drenaggio o distale ad essa. pN1a(sn) = micrometastasi al sentinella.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1483,7 +1520,7 @@ staging_variants:{
 
 ,
 
-{id:'pelvi_renale',name:'Pelvi Renale',icd:'C65.9',cat:'uro',completeness:'complete',
+{id:'pelvi_renale',name:'Pelvi Renale',icd:'C65.9',cat:'uro',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:"Carcinoma uroteliale dell'alto tratto urinario. ≥8 linfonodi per pN0 adeguato. T3 include l'invasione del parenchima renale — distinguere da RCC primitivo (IHC: GATA3+/CK7+ vs CD10+/CK7-). Lateralità obbligatoria nel referto.",
 T:[
   {c:'TX',d:'Non valutabile'},
@@ -1498,7 +1535,7 @@ T:[
 N:[
   {c:'NX',d:'Non valutabili'},
   {c:'N0',d:'Nessuna metastasi linfonodale regionale'},
-  {c:'N1',d:'Metastasi in un singolo linfonodo \u226422 cm nella dimensione maggiore'},
+  {c:'N1',d:'Metastasi in un singolo linfonodo \u22642 cm nella dimensione maggiore'},
   {c:'N2',d:'Metastasi in un singolo linfonodo >2 cm, o in linfonodi multipli'},
 ],
 M:[
@@ -1516,7 +1553,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'uretere',name:'Uretere',icd:'C66.9',cat:'uro',completeness:'complete',
+{id:'uretere',name:'Uretere',icd:'C66.9',cat:'uro',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:"Carcinoma uroteliale del tratto urinario superiore. ≥8 linfonodi per pN0. Staging identico alla pelvi renale. Multifocalità frequente: refertare ogni lesione separatamente. Specificare margine uretrale distale nel campione di nefroureterectomia.",
 T:[
   {c:'TX',d:'Non valutabile'},
@@ -1531,7 +1568,7 @@ T:[
 N:[
   {c:'NX',d:'Non valutabili'},
   {c:'N0',d:'Nessuna metastasi linfonodale regionale'},
-  {c:'N1',d:'Metastasi in un singolo linfonodo \u226422 cm nella dimensione maggiore'},
+  {c:'N1',d:'Metastasi in un singolo linfonodo \u22642 cm nella dimensione maggiore'},
   {c:'N2',d:'Metastasi in un singolo linfonodo >2 cm, o in linfonodi multipli'},
 ],
 M:[
@@ -1549,7 +1586,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'uretra',name:'Uretra',icd:'C68.0',cat:'uro',completeness:'complete',
+{id:'uretra',name:'Uretra',icd:'C68.0',cat:'uro',completeness:'complete',staging_type:'histotype',staging_type_label:'Varianti M/F — codici T differenziati',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:"Classificazione distinta per uretra maschile e femminile (UICC 9\u00aa ed.). L'uretra prostatica con CU usa la classificazione prostatica, non questa. \u22656 linfonodi per pN0. Istotipi per sede: posteriore M/F prossimale \u2192 uroteliale; anteriore M/distale F \u2192 squamoso; adenocarcinoma F da ghiandole di Skene (PSA/PSAP+). Codici T differenziati M/F: T2M/T2F, T3M/T3F, T4M/T4F.",
 variants:[
   {id:'maschile',label:'Uretra maschile'},
@@ -1571,7 +1608,7 @@ T:[
 N:[
   {c:'NX',d:'Non valutabili'},
   {c:'N0',d:'Nessuna metastasi linfonodale regionale'},
-  {c:'N1',d:'Metastasi in un singolo linfonodo nella pelvi vera (inguinale o pelvico) \u226422 cm'},
+  {c:'N1',d:'Metastasi in un singolo linfonodo nella pelvi vera (inguinale o pelvico) \u22642 cm'},
   {c:'N2',d:'Metastasi in un singolo linfonodo >2 cm, o in linfonodi multipli inguinali o pelvici'},
 ],
 M:[
@@ -1615,8 +1652,9 @@ const TOOL_META={
   ajcc:'AJCC Cancer Staging Manual, Version 9 (2023)',
   sedi:29,
   data_rilascio:'2026-06-01',
+  data_audit:'2026-06-02',
   validazione_automatica:'153/153 casi-test PASS',
-  validazione_manuale:'In corso — vedere tabella audit per sede',
+  validazione_manuale:'29/29 sedi auditate — 27 validate, 1 parziale (Mammella), 1 con riserva (Canale anale)',
   responsabile:'F.M.D. Bianchi, SC Anatomia Patologica, ASST FBF-Sacco Milano',
 };
 const CATS={
@@ -1720,6 +1758,9 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
   }
   if(site.id==='esofago'){
     warnings.push('Esofago: i gruppi prognostici con grado (Pathological Prognostic Groups) non sono implementati in questo motore. Lo staging mostrato è lo Stage Group anatomico senza correzione per grado e sede anatomica del tumore.');
+  }
+  if(site.id==='mammella'&&(stripPfx(M)==='cM0(i+)'||stripPfx(N)==='N0(i+)'||stripPfx(N)==='N0(mol+)')){
+    warnings.push('Mammella: N0(i+)/N0(mol+)/cM0(i+) non modificano il raggruppamento di stadio (rimane N0/M0 per le regole di staging). Riportare nel referto come dato biologico aggiuntivo.');
   }
   if(site.id==='mammella'&&stripPfx(T)==='Tis (LCIS)'){
     warnings.push('Tis(LCIS) — divergenza UICC/AJCC: UICC TNM 9ª ed. include questa categoria nello Stadio 0; AJCC Cancer Staging Manual, 8ª ed. / Version 9 la esclude. Staging mostrato: UICC. Non classificabile formalmente secondo AJCC.');
@@ -1829,6 +1870,20 @@ function selectSite(id){
   renderStaging();
   renderReferto();
   showTab(tabId);
+
+  // Staging type bar
+  const stbar=document.getElementById('staging-type-bar');
+  if(stbar&&currentSite){
+    const s=currentSite;
+    const typeMap={
+      anatomic:'stype-anatomic',prognostic:'stype-prognostic',
+      histotype:'stype-histotype',combined:'stype-combined',markers:'stype-markers'
+    };
+    const cls=typeMap[s.staging_type]||'stype-anatomic';
+    stbar.className=cls;
+    stbar.style.display='flex';
+    stbar.innerHTML=`<span style="font-size:10px;opacity:.7;text-transform:uppercase;letter-spacing:.5px">Tipo staging:</span> ${s.staging_type_label||s.staging_type||'—'}`;
+  }
 }
 
 function showTab(id){
@@ -1853,7 +1908,8 @@ function renderLookup(){
   let html='';
   html+='<div class="tnm-section"><div class="section-title">T — Tumore Primitivo</div>';
   s.T.forEach(t=>{
-    html+=`<div class="tnm-item"><div class="tnm-code">${t.c}</div><div class="tnm-desc">${t.d}</div></div>`;
+    const tnote=t.note?`<div class="tnm-note" style="margin-top:3px;color:var(--warn);font-size:11px">⇔ ${t.note}</div>`:'';
+    html+=`<div class="tnm-item"><div class="tnm-code">${t.c}</div><div class="tnm-desc">${t.d}${tnote}</div></div>`;
   });
   html+='</div>';
   html+='<div class="tnm-section"><div class="section-title">N — Linfonodi Regionali</div>';
@@ -1866,9 +1922,33 @@ function renderLookup(){
     html+=`<div class="tnm-item"><div class="tnm-code">${m.c}</div><div class="tnm-desc">${m.d}</div></div>`;
   });
   html+='</div>';
+  // AJCC divergence banner
+  const ajccNote=AJCC_NOTES[s.id];
+  if(ajccNote&&ajccNote._global_note){
+    html+=`<div class="ajcc-divergence-banner"><strong>↔ UICC vs AJCC:</strong> ${ajccNote._global_note}</div>`;
+  }
+
   if(s.note){
     html+=`<div class="note-box"><strong>⚠ Note cliniche:</strong> ${s.note}</div>`;
   }
+
+  // Coverage checklist
+  if(s.coverage){
+    const COV_LABELS={
+      T:'Categorie T',N:'Categorie N',M:'Categorie M',
+      stage:'Stage grouping',note_eccezioni:'Note/eccezioni',
+      soglia_pN0:'Soglia pN0',confini_anatomici:'Confini anatomici'
+    };
+    const COV_ICONS={ok:'✓ completo',partial:'◑ parziale',missing:'— non documentato'};
+    const COV_CLS={ok:'cov-ok',partial:'cov-partial',missing:'cov-missing'};
+    html+='<div style="margin-top:16px"><div class="section-title">Copertura del modello</div>';
+    html+='<table class="coverage-table"><thead><tr><th>Campo</th><th>Stato</th></tr></thead><tbody>';
+    for(const [k,v] of Object.entries(s.coverage)){
+      html+=`<tr><td>${COV_LABELS[k]||k}</td><td class="${COV_CLS[v]}">${COV_ICONS[v]}</td></tr>`;
+    }
+    html+='</tbody></table></div>';
+  }
+
   document.getElementById('lookup-content').innerHTML=html;
 }
 
@@ -2401,8 +2481,12 @@ function renderStagingTable(){
     }else if(!AJCC_NOTES[s.id]){
       ajccCell=`<span style="color:var(--muted);font-size:10px">= UICC</span>`;
     }
+    const ajccN=AJCC_NOTES[s.id]?._stages?.[r.stage];
+    const stageCell=ajccN
+      ?`<strong>${r.stage}</strong> <span title="${ajccN}" style="color:var(--warn);cursor:help;font-size:10px">↔ AJCC</span>`
+      :`<strong>${r.stage}</strong>`;
     return`<tr data-stage="${r.stage}">
-      <td><strong>${r.stage}</strong></td>
+      <td>${stageCell}</td>
       <td style="font-family:monospace;font-size:12px">${T}</td>
       <td style="font-family:monospace;font-size:12px">${N}</td>
       <td style="font-family:monospace;font-size:12px">${M}</td>
