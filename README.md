@@ -1,8 +1,20 @@
 # TNM 9ª Edizione — Tool per Anatomia Patologica
 
-Strumento HTML/JS autonomo per la classificazione TNM dei tumori maligni secondo la **9ª edizione UICC (2025)**, con mapping AJCC v9 per sede dove applicabile e verificato.
+Strumento HTML/JS autonomo per la classificazione TNM dei tumori maligni secondo la **9ª edizione UICC (2025)**, con mapping AJCC Cancer Staging Manual Version 9 per sede dove applicabile.
 
 > *"Tu non stai automatizzando la diagnosi. Stai automatizzando la prudenza."*
+
+**Versione:** v1.0-rc1 · Dataset: UICC TNM 9ª ed. 2025 · Validazione automatica: 153/153 test PASS
+
+---
+
+## File
+
+| File | Funzione |
+|------|----------|
+| `index.html` | Tool principale — 29 sedi, staging interattivo, referto strutturato |
+| `audit.html` | Tabella di audit — validazione manuale sede per sede con manuale in mano |
+| `test.html` | Suite di test automatici — 153 casi su 17 sedi |
 
 ---
 
@@ -15,19 +27,19 @@ Strumento HTML/JS autonomo per la classificazione TNM dei tumori maligni secondo
 | **🎯 Stadiazione** | Calcolo interattivo dello stadio con validazione in tempo reale |
 | **📄 Referto** | Generazione di testo strutturato pronto per il LIS / copia-incolla |
 
-### Sedi coperte (26 totali)
+### Sedi coperte (29 totali)
 
 **Apparato digerente**
 Colon e Retto · Stomaco · Esofago/GEJ · Intestino Tenue · Appendice · Canale Anale · Fegato (HCC) · Dotti biliari intraepatici (CCA) · Dotti biliari peribiliari (Klatskin) · Via biliare distale · Colecisti · Ampolla di Vater · Pancreas (adenocarcinoma)
 
-**NET Gastrointestinali** (WHO 2022, AJCC 9ª)
+**NET Gastrointestinali** (WHO 2022, AJCC v9)
 NET GI — Stomaco · NET GI — Colon-Retto · NET GI — Pancreas
 
 **Testa e Collo**
 Tiroide (4 varianti: PTC/FTC <55aa, PTC/FTC ≥55aa, midollare, anaplastico) · Ghiandole salivari
 
 **Mammella · Urologico**
-Mammella · Prostata · Vescica · Rene (RCC) · Testicolo (con marcatori S)
+Mammella · Prostata · Vescica · Rene (RCC) · Testicolo (con marcatori S) · Pelvi Renale · Uretere · Uretra (maschile e femminile)
 
 **Cute / Melanoma**
 Melanoma cutaneo (staging clinico e patologico) · Carcinoma della cute (SCC/BCC) · Carcinoma di Merkel
@@ -38,26 +50,52 @@ Melanoma cutaneo (staging clinico e patologico) · Carcinoma della cute (SCC/BCC
 
 ### Stadiazione
 - Gerarchia T/N/M: `T1a` matcha regole `T1`, `N2b` matcha regole `N2`, ecc.
-- Varianti per sede: staging clinico vs patologico (Stomaco, Esofago SCC/Adeno, Prostata), per età (Tiroide), per istotipo (Melanoma, Merkel)
-- Categorie speciali autonome: **N1mi** e **N1a(sn)** non vengono assorbite dalla gerarchia N1 (evita overstaging mammella/Merkel)
+- Varianti per sede: staging clinico vs patologico (Stomaco, Esofago SCC/Adeno, Prostata), per età (Tiroide), per istotipo (Melanoma, Merkel, Uretra M/F)
+- Categorie speciali autonome: **N1mi** e **N1a(sn)** non vengono assorbite dalla gerarchia N1
 - Campi extra obbligatori: grado istologico per Appendice (M1b → IVA vs IVB), marcatori S per Testicolo
 - Ambiguità dataset → `stage: null` (mai lo stadio più alto di default)
 
 ### Validazione in tempo reale
 | Tipo | Esempi |
 |------|--------|
-| **Errore bloccante** | pM0 (non esiste), N0 + LN positivi, N1c + LN+ in colon/appendice, cT+pN chimera, LN positivi > totale |
+| **Errore bloccante** | pM0 (non esiste), N0 + LN positivi, LN positivi > totale esaminati, TX o NX (stadio non assegnabile), Tis + N positivo |
 | **Dato incompleto** | M1b appendice senza grado, staging fuori modello |
-| **Warning clinico** | pN0 con campionamento sotto soglia (sede-specifico), S=SX testicolo, variante/prefisso incoerente, staging anatomico prostata |
+| **Warning clinico** | pN0 con campionamento sotto soglia, S=SX testicolo, staging anatomico prostata |
 
-### Prefissi separati T/N/M
-- Select indipendenti per T, N, M (es. `ypT` `ypN` `cM` — tipico post-neoadiuvante)
-- Preset: `pTNM (p/p/c)`, `pTNM (p/p/p)`, `cTNM`, `ypTNM`, `ycTNM`, `rTNM`
-- Staging ibrido fisiologico (p/p/c, yp/yp/c, r/r/c) — nessun falso allarme
-- Chimera cT+pN → errore bloccante
+### Blocco TX / NX
+Se T o N non sono valutabili (**TX** o **NX**), lo staging non viene assegnato. Il referto segnala esplicitamente il parametro non valutabile e blocca la generazione del testo.
+
+### Prefisso TNM obbligatorio
+Dropdown indipendente nel tab Referto: `p` (patologico) · `yp` (post-neoadiuvante) · `r` (recidiva) · `c` (clinico). Il prefisso si applica separatamente a T, N e M.
+
+### Fonte M
+Campo separato per la fonte della classificazione M:
+- `cM` — clinico/radiologico (default)
+- `pM` — patologico (biopsia metastasi)
+- `ycM` — post-trattamento, clinico/radiologico
+- `ypM` — post-trattamento, patologico
+- `MX` — non documentato → produce "M non assegnabile" nel referto
+
+### Referto strutturato — tre sezioni distinte
+```
+── CLASSIFICAZIONE TNM ──────────────────────────────────
+ypT3  ypN1 (3/24)  cM0
+
+ypT3 — Tumore che invade...
+ypN1 (3 LN+ su 24 esaminati) — Metastasi in 1-3 linfonodi...
+cM0 — Nessuna metastasi a distanza [fonte: clinico/radiologico]
+
+── RAGGRUPPAMENTO DI STADIO ─────────────────────────────
+Stadio IIIB (assegnato)
+
+── FATTORI PROGNOSTICI / PREDITTIVI ────────────────────
+(Non inclusi nel raggruppamento TNM — riportati a fini clinici)
+- LVI presente
+- Budding Bd3 (alto)
+```
 
 ### Auto-calcolo N da LN positivi
-Per le sedi con N numerico puro, inserendo il numero di linfonodi positivi il campo N si compila automaticamente:
+Per le sedi con N numerico puro, inserendo il numero di linfonodi positivi il campo N si compila automaticamente come **suggerimento** (badge "⟵ suggerito da LN+").
 
 | Sede | Logica |
 |------|--------|
@@ -68,25 +106,29 @@ Per le sedi con N numerico puro, inserendo il numero di linfonodi positivi il ca
 | Appendice | 0→N0, 1→N1a, 2-3→N1b, ≥4→N2 |
 | Mammella | 0→N0, 1-3→N1a, 4-9→N2a, ≥10→N3a |
 
-> N1c (depositi tumorali), N1mi (micrometastasi), N1a(sn) (sentinella) richiedono valutazione morfologica — non auto-calcolabili.
+### Badge di completezza per sede
+Ogni sede mostra un badge obbligatorio:
+- ✓ **Completo** — staging completo implementato
+- ◑ **Parziale** — alcune funzioni non implementate (esofago PPG, mammella Prognostic Stage Groups, melanoma LDH substaging)
+- △ **Solo stadio anatomico** — prostata (mancano PSA e Grade Group)
 
-### Referto strutturato
-- Riga compatta LIS-ready: `━━ pT3 pN1a (3/24) cM0 → Stadio IIIB`
-- Rapporto linfonodi integrato nel campo N: `pN1a (3/24)`
-- 4 stati di qualità: `assegnato` / `assegnato con riserva` / `non assegnabile — incompleto` / `non assegnabile — incoerente`
-- Label separata per modelli ridotti: `RAGGRUPPAMENTO ANATOMICO TNM` (prostata, esofago)
-- Fattori prognostici non-TNM opzionali:
-  - LVI (presente / non identificata nel campione / non valutabile)
-  - PNI (idem)
-  - Budding tumorale ITBCC 2016 — solo per sedi pertinenti (colon-retto, appendice, intestino tenue, stomaco, esofago)
-  - Margini di resezione (R0/R1/R2/RX)
-  - Regressione post-neoadiuvante (Ryan 0-3 con descrizione morfologica)
-  - Perforazione
+---
 
-### Sincronizzazione tra tab
-- I dati inseriti nel tab Stadiazione (T/N/M, LN, prefissi, variante, extra) si propagano automaticamente al tab Referto
-- Nessuna reinserzione necessaria tra i due tab
-- **Stadiazione è la sorgente di verità**: le modifiche nel tab Referto rimangono locali
+## Suite di test e audit
+
+### Test automatici (`test.html`)
+153 casi di test su 17 sedi. Eseguibili nel browser, risultato immediato PASS/FAIL/SKIP. Export CSV.
+**Stato attuale: 153/153 PASS**
+
+### Tabella di audit (`audit.html`)
+Strumento per la validazione manuale riga per riga con il manuale UICC in mano.
+- Checkbox a tre stati (non verificato / OK / Errore) per ogni definizione T, N, M e regola di staging
+- Campo per sede: verificato da, data, fonte consultata, esito (validata / con riserva / non validata), note
+- Badge stato sede aggiornato live
+- Stato salvato in localStorage (persistente tra sessioni)
+- Export CSV ricco (site_id, section, code, definition, audit_status, reviewer, date, source_ref, esito, note)
+
+**Stato attuale: validazione manuale in corso — v1.0 dopo completamento audit**
 
 ---
 
@@ -96,25 +138,29 @@ Per le sedi con N numerico puro, inserendo il numero di linfonodi positivi il ca
 |------|-------------|
 | Prostata | Raggruppamento anatomico T/N/M — il **Prognostic Stage Group formale richiede PSA + Grade Group (Gleason)**. Esplicitato nell'output. |
 | Esofago | Staging anatomico — i **Pathological Prognostic Groups con grado e sede** (AJCC) non sono implementati. |
+| Mammella | Staging anatomico UICC — i **Prognostic Stage Groups** (AJCC, con recettori ormonali, HER2, Ki67) non sono implementati. |
+| Melanoma | LDH substaging (suffisso (0)/(1)) non implementato nel motore. |
 | Testicolo S=SX | Stadio I generico senza sottostadio (IA/IB/IS) — richiede nadir AFP/hCG/LDH. |
-| UICC vs AJCC | Divergenze dichiarate per sede (es. mammella Tis(LCIS): UICC sì, AJCC no; tiroide: alcune varianti). |
-| Sedi non incluse | Faringe, Laringe, Cavo orale, Pelvi renale/uretere, Sedi ginecologiche, Linfomi, SNC. |
+| UICC vs AJCC | Divergenze dichiarate per sede (es. mammella Tis(LCIS): UICC sì, AJCC no). |
+| Sedi non incluse | Faringe, Laringe, Cavo orale, Sedi ginecologiche, Linfomi, SNC, Osso, Tessuti molli. |
 
 ---
 
 ## Utilizzo
 
-Nessuna installazione, nessuna connessione a internet. Il tool è un singolo file HTML autonomo (~115 KB):
+Nessuna installazione, nessuna connessione a internet. File HTML autonomi:
 
 ```
-TNM_9ed_Tool.html  →  aprire in qualsiasi browser moderno
+index.html   →  tool principale (aprire in qualsiasi browser moderno)
+audit.html   →  validazione manuale (usare sempre dallo stesso URL per preservare lo stato)
+test.html    →  suite di test automatici
 ```
 
 **Flusso tipico**
-1. Seleziona la sede dal pannello sinistro (o usa la barra di ricerca)
-2. Tab **Definizioni** — verifica le categorie T/N/M prima di classificare
-3. Tab **Stadiazione** — inserisci LN esaminati/positivi → N si auto-suggerisce; seleziona T, N, M; calcola
-4. Tab **Referto** — aggiungi fattori prognostici opzionali; genera e copia
+1. Seleziona la sede dal pannello sinistro
+2. Tab **Definizioni** — verifica le categorie T/N/M
+3. Tab **Stadiazione** — inserisci LN esaminati/positivi, seleziona T/N/M, calcola
+4. Tab **Referto** — scegli prefisso TNM e fonte M, aggiungi fattori prognostici, genera e copia
 5. **🆕 Nuovo caso** per azzerare tutti i campi
 
 ---
@@ -122,32 +168,21 @@ TNM_9ed_Tool.html  →  aprire in qualsiasi browser moderno
 ## Architettura tecnica
 
 ```
-TNM_9ed_Tool.html
-├── CSS (theme off-white, badge, validation colors)
+index.html
+├── CSS (theme off-white, badge completeness, validation colors)
 ├── HTML (sidebar · topbar · 3 tab panels)
-└── JS (~1800 righe, no dipendenze esterne)
-    ├── PARENTS{}         Gerarchia T/N/M (parent-child matching)
-    ├── SITES[]           Dataset 26 sedi con T/N/M definitions + staging rules
-    ├── N_AUTO_RULES{}    Auto-calcolo N da LN+ per sede
-    ├── stripPfx()        Stripping prefisso esplicito (yp|yc|rp|p|c|r|y)
-    ├── codeMatch()       Matching con gerarchia PARENTS
-    ├── computeBestStage() → {stage, ambiguous, allStages}
-    │   └── ambiguity: distinctStages.length>1 → stage:null (mai upstaging silenzioso)
-    ├── validateCase()    Validazione centralizzata → {errors, incomplete, warnings, isHybrid}
-    ├── renderValidation() Box colorati per tipo (errore/incompleto/warning/ibrido)
-    └── sync*()           Sincronizzazione unidirezionale Stadiazione→Referto
+└── JS (~1900 righe, no dipendenze esterne)
+    ├── PARENTS{}           Gerarchia T/N/M
+    ├── TOOL_META{}         Versione, dataset, responsabile, stato validazione
+    ├── SITES[]             Dataset 29 sedi con T/N/M + staging rules + completeness
+    ├── N_AUTO_RULES{}      Auto-calcolo N da LN+
+    ├── stripPfx()          Stripping prefisso
+    ├── codeMatch()         Matching con gerarchia PARENTS
+    ├── computeBestStage()  → {stage, ambiguous, allStages}
+    ├── validateCase()      Validazione centralizzata (TX/NX block, Tis+N+, LN cross-check)
+    ├── generateReferto()   Referto a tre sezioni (TNM / Stadio / Fattori prognostici)
+    └── sync*()             Sincronizzazione unidirezionale Stadiazione→Referto
 ```
-
-### Principi di design del motore
-- **Ambiguità blocca, non risolve** — se due stadi diversi matchano, `stage: null`
-- **Validazione precede lo staging** — gli errori bloccanti impediscono il calcolo
-- **N1mi e N1a(sn) sono categorie autonome** — escluse dalla gerarchia N1 per evitare overstaging
-- **pN0 adequacy** gated sul prefisso patologico (p/yp/r) — nessun falso allarme su cN0
-- **N1c site-specific** — errore solo nelle sedi con semantica "tumor deposits" (colon, appendice), non nel canale anale
-- **pM0 non esiste** — errore bloccante
-
-### Test suite
-Il motore è coperto da **58 test funzionali** eseguibili in Node.js (no framework) che coprono: stadiazione di 8 sedi, gerarchia T/N/M, prefissi, ibrido severity, validazioni, integrità dataset.
 
 ---
 
@@ -158,13 +193,22 @@ Il motore è coperto da **58 test funzionali** eseguibili in Node.js (no framewo
 - **WHO Classification of Tumours** (5ª ed., varie sedi) — per grading NET GI
 - **ITBCC 2016** — per grading budding tumorale
 
-> Questo tool è sviluppato per uso esclusivo in anatomia patologica da personale medico qualificato. Non sostituisce la valutazione clinico-patologica né la consultazione della fonte primaria. UICC e AJCC divergono in alcune sedi — verificare per sede.
+> Questo tool è sviluppato per uso esclusivo in anatomia patologica da personale medico qualificato. Non sostituisce la valutazione clinico-patologica né la consultazione della fonte primaria. La v1.0-rc1 ha superato 153/153 test automatici; la validazione manuale riga per riga è in corso tramite `audit.html`.
 
 ---
 
 ## Sviluppo
 
-Tool sviluppato con metodologia di **revisione multi-sistema**: sviluppo iterativo con Claude (Anthropic) e revisione editoriale/critica incrociata con ChatGPT (OpenAI). Le revisioni critiche hanno guidato correzioni successive del motore, della validazione e dell'architettura del dataset.
+Progetto sviluppato con metodologia **multi-AI supervisionata**:
+
+| Ruolo | Strumento |
+|-------|-----------|
+| Architettura, coding, debug, patch | Claude (Anthropic) |
+| Avvocato del diavolo, review critica del motore | ChatGPT (OpenAI) |
+| Audit dataset contro fonte primaria (UICC TNM 9ª ed. + AJCC v9) | Perplexity / Comet |
+| Supervisione clinica, decisioni editoriali, coordinamento | F.M.D. Bianchi |
+
+Ogni sistema ha fatto quello per cui è più adatto. La validazione finale è comunque contro la fonte primaria — gli strumenti sono stati mezzi, non oracoli.
 
 Segnalare bug o divergenze con la fonte primaria aprendo una Issue con: sede, combinazione T/N/M, stadio atteso vs stadio ottenuto.
 
