@@ -4,7 +4,7 @@ Strumento HTML/JS autonomo per la classificazione TNM dei tumori maligni secondo
 
 > *"Tu non stai automatizzando la diagnosi. Stai automatizzando la prudenza."*
 
-**Versione:** v1.0-rc1 · Dataset: UICC TNM 9ª ed. 2025 · Validazione automatica: 153/153 test PASS
+**Versione:** v1.0 · Dataset: UICC TNM 9ª ed. 2025 · Validazione automatica: 153/153 test PASS
 
 ---
 
@@ -53,6 +53,9 @@ Melanoma cutaneo (staging clinico e patologico) · Carcinoma della cute (SCC/BCC
 - Varianti per sede: staging clinico vs patologico (Stomaco, Esofago SCC/Adeno, Prostata), per età (Tiroide), per istotipo (Melanoma, Merkel, Uretra M/F)
 - Categorie speciali autonome: **N1mi** e **N1a(sn)** non vengono assorbite dalla gerarchia N1
 - Campi extra obbligatori: grado istologico per Appendice (M1b → IVA vs IVB), marcatori S per Testicolo
+- **PSG AJCC 8ª ed.** per Mammella (ER/PR/HER2/Nottingham/Ki67) e Prostata (PSA/Grade Group ISUP): calcolato in parallelo allo staging UICC. Toggle per mostrare solo staging anatomico.
+- **LDH suffix** per Melanoma: M1a(0)/M1a(1) ecc. nel referto
+- **IGCCCG prognosis** per Testicolo: soglie S1/S2/S3 e sopravvivenza 5a nel referto
 - Ambiguità dataset → `stage: null` (mai lo stadio più alto di default)
 
 ### Validazione in tempo reale
@@ -109,8 +112,7 @@ Per le sedi con N numerico puro, inserendo il numero di linfonodi positivi il ca
 ### Badge di completezza per sede
 Ogni sede mostra un badge obbligatorio:
 - ✓ **Completo** — staging completo implementato
-- ◑ **Parziale** — alcune funzioni non implementate (esofago PPG, mammella Prognostic Stage Groups, melanoma LDH substaging)
-- △ **Solo stadio anatomico** — prostata (mancano PSA e Grade Group)
+- ◑ **Parziale** — staging incompleto per alcune varianti (es. esofago PPG patologico)
 
 ---
 
@@ -128,7 +130,7 @@ Strumento per la validazione manuale riga per riga con il manuale UICC in mano.
 - Stato salvato in localStorage (persistente tra sessioni)
 - Export CSV ricco (site_id, section, code, definition, audit_status, reviewer, date, source_ref, esito, note)
 
-**Stato attuale: validazione manuale in corso — v1.0 dopo completamento audit**
+**Stato attuale: v1.0 — 153/153 test automatici PASS**
 
 ---
 
@@ -136,10 +138,7 @@ Strumento per la validazione manuale riga per riga con il manuale UICC in mano.
 
 | Sede | Limitazione |
 |------|-------------|
-| Prostata | Raggruppamento anatomico T/N/M — il **Prognostic Stage Group formale richiede PSA + Grade Group (Gleason)**. Esplicitato nell'output. |
-| Esofago | Staging anatomico — i **Pathological Prognostic Groups con grado e sede** (AJCC) non sono implementati. |
-| Mammella | Staging anatomico UICC — i **Prognostic Stage Groups** (AJCC, con recettori ormonali, HER2, Ki67) non sono implementati. |
-| Melanoma | LDH substaging (suffisso (0)/(1)) non implementato nel motore. |
+| Esofago | Staging anatomico — i **Pathological Prognostic Groups** (PPG, con grado e sede, AJCC) non sono implementati. |
 | Testicolo S=SX | Stadio I generico senza sottostadio (IA/IB/IS) — richiede nadir AFP/hCG/LDH. |
 | UICC vs AJCC | Divergenze dichiarate per sede (es. mammella Tis(LCIS): UICC sì, AJCC no). |
 | Sedi non incluse | Faringe, Laringe, Cavo orale, Sedi ginecologiche, Linfomi, SNC, Osso, Tessuti molli. |
