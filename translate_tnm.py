@@ -1061,7 +1061,7 @@ R += [
   ("fonte primaria", "primary source"),
   ("classificazione separata", "separate classification"),
   # ── Mammella AJCC v9 PSG translations ─────────────────────────────────────
-  ('Stadio anatomico UICC + Prognostic Stage Group AJCC v9', 'UICC V9 anatomic stage + AJCC 8th ed. Prognostic Stage Group'),
+  ('Stadio anatomico UICC + Prognostic Stage Group AJCC v9', 'UICC 8th ed. anatomic stage + AJCC 8th ed. Prognostic Stage Group'),
   ("txt:'PSG AJCC v9'", "txt:'AJCC 8th ed. PSG'"),
   ("label:'HER2 ISH/FISH (se IHC 2+)'", "label:'HER2 ISH/FISH (if IHC 2+)'"),
   ("label:'Grado Nottingham'", "label:'Nottingham grade'"),
