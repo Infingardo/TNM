@@ -177,7 +177,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
     <h1>TNM 9th Ed.</h1>
     <small>UICC 2025 · 29 sites</small>
     <div id="tool-version-badge" style="margin-top:4px;font-size:9px;color:var(--muted)"></div>
-    <a href="index.html" style="display:inline-block;margin-top:6px;font-size:10px;color:var(--muted);text-decoration:none;opacity:.7;" title="Passa alla versione italiana">🇮🇹 Versione italiana</a>
+    <a href="index-en.html" style="display:inline-block;margin-top:6px;font-size:10px;color:var(--muted);text-decoration:none;opacity:.7;" title="Switch to English version">🇬🇧 English version</a>
   </div>
   <input type="text" id="search-box" placeholder="🔍  Search site…">
   <div id="site-list"></div>
@@ -259,11 +259,11 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
         <div id="stage-validation"></div>
         <div id="stage-result">
           <div id="stage-value">—</div>
-          <div id="stage-label">Stage (TNM 9th Ed.)</div>
+          <div id="stage-label">Stadio (TNM 9ª Ed.)</div>
           <div id="stage-detail"></div>
         </div>
         <div class="staging-table-wrap">
-          <div class="section-title">Stage grouping table</div>
+          <div class="section-title">Tabella di Stadiazione</div>
           <table class="staging-table" id="staging-table">
             <thead><tr><th>Stage</th><th>T</th><th>N</th><th>M</th><th>Extra</th><th>Notes</th><th style='color:var(--accent2)'>AJCC Cancer Staging Manual, Version 9</th></tr></thead>
             <tbody id="staging-tbody"></tbody>
@@ -280,7 +280,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
           <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variant/Histotype:</label>
           <select id="variant-sel2" onchange="updateDropdowns2()"></select>
         </div>
-        <!-- TNM Prefix + M source -->
+        <!-- Prefisso TNM + Fonte M -->
         <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;align-items:flex-end">
           <div class="form-group" style="min-width:160px">
             <label>TNM Prefix <span style="color:var(--accent2);font-weight:700">*</span></label>
@@ -331,7 +331,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
           <label>Additional notes (optional)</label>
           <textarea id="ref-notes" rows="2" placeholder="e.g. lymphovascular invasion, margins, regression..."></textarea>
         </div>
-        <!-- Non-TNM prognostic factors -->
+        <!-- Fattori prognostici non-TNM -->
         <div style="background:var(--badge);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px">
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px">
             Non-TNM prognostic factors <span style="font-weight:400;text-transform:none">(optional — only completed fields will appear in the report)</span>
@@ -343,7 +343,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
                 <option value="">— not specified —</option>
                 <option value="LVI present">Present</option>
                 <option value="LVI not identified in the sample">Not identified in the sample</option>
-                <option value="LVI not assessable">Not assessable</option>
+                <option value="LVI non valutabile">Not assessable</option>
               </select>
             </div>
             <div class="form-group">
@@ -352,7 +352,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
                 <option value="">— not specified —</option>
                 <option value="PNI present">Present</option>
                 <option value="PNI not identified in the sample">Not identified in the sample</option>
-                <option value="PNI not assessable">Not assessable</option>
+                <option value="PNI non valutabile">Not assessable</option>
               </select>
             </div>
             <div class="form-group" id="budding-field">
@@ -397,7 +397,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
         <button id="gen-btn" onclick="generateReferto()">Generate Report</button>
       </div>
       <div id="referto-output"></div>
-      <button id="copy-btn" onclick="copyReferto()">📋 Copy to Clipboard</button>
+      <button id="copy-btn" onclick="copyReferto()">📋 Copia negli Appunti</button>
     </div>
   </div>
 
@@ -681,7 +681,7 @@ T:[
   {c:'T4',d:'Perforating the visceral peritoneum o directly invading altri organi/strutture (pancreas per il duodeno)'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasis in 1–2 regional lymph nodes'},
   {c:'N2',d:'Metastasis in 3 or more regional lymph nodes'},
 ],
@@ -701,7 +701,7 @@ staging:[
 ]},
 
 {id:'appendice',name:'Appendix',icd:'C18.1',cat:'gi',completeness:'complete',staging_type:'markers',staging_type_label:'Richiede grado per M1b (IVA vs IVB)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
-note:'AJCC Version 9 / UICC 9th ed. ≥12 lymph nodes per pN0. Comprende adenocarcinomi (mucinous e non) e NEC poorly differentiated. NET well-differentiated: separate classification. V9: HAMN (High-grade Appendiceal Mucinous Neoplasm) aggiunto accanto a LAMN; adenocarcinoma a cellule goblet (ex goblet cell carcinoide — terminologia abbandonata in V9). M1a: solo mucina acellular intraperitoneal; M1b: epitelio mucinous intraperitoneal (il grado determina IVA vs IVB); M1c: metastasi non peritoneal.',
+note:'AJCC Version 9 / UICC 9ª ed. ≥12 lymph nodes per pN0. Comprende adenocarcinomi (mucinous e non) e NEC poorly differentiated. NET well-differentiated: separate classification. V9: HAMN (High-grade Appendiceal Mucinous Neoplasm) aggiunto accanto a LAMN; adenocarcinoma a cellule goblet (ex goblet cell carcinoide — terminologia abbandonata in V9). M1a: solo mucina acellular intraperitoneal; M1b: epitelio mucinous intraperitoneal (il grado determina IVA vs IVB); M1c: metastasi non peritoneal.',
 extra:[{id:'G',label:'Histological grade (relevant for M1b)',options:['—','G1','G2','G3','GX']}],
 T:[
   {c:'TX',d:'Not assessable'},{c:'T0',d:'No tumor'},
@@ -715,7 +715,7 @@ T:[
   {c:'T4b',d:'Directly invading altri organi o strutture'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1a',d:'Metastasis in 1 regional lymph node'},
   {c:'N1b',d:'Metastasis in 2–3 regional lymph nodes'},
   {c:'N1c',d:'Depositi tumorali (satelliti) nella subserosa, nel mesoappendix o nei tessuti periappendicolari non peritonealzzati, senza metastasi nei regional lymph nodes'},
@@ -724,7 +724,7 @@ N:[
 M:[
   {c:'M0',d:'No distant metastasis'},
   {c:'M1a',d:'Solo mucina acellular intraperitoneal'},
-  {c:'M1b',d:'Intraperitoneal metastasis with mucinous epithelium (grade determines IVA vs IVB)'},
+  {c:'M1b',d:'Metastasi intraperitoneal con epitelio mucinous (grado determina IVA vs IVB)'},
   {c:'M1c',d:'Metastasi non peritoneal'},
 ],
 staging:[
@@ -745,7 +745,7 @@ staging:[
 ]},
 
 {id:'canale_anale',name:'Anal Canal',icd:'C21',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'AJCC v9 anatomic stage',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'AJCC v9: Tis/Stage 0 excluded'}],
-note:'⚠ Tis and Stage 0 deliberately EXCLUDED following AJCC Cancer Staging Manual Version 9: HSIL/AIN II-III is not invasive carcinoma; its inclusion in TNM staging led to overtreatment. Evidence: ANCHOR trial and SEER analysis. UICC 9th ed. 2025 retains Tis/Stage 0 for registry uniformity — explicit UICC/AJCC divergence. Tool choice: AJCC v9 (clinically more robust). Schema applies to SCC of the anal canal; carcinomas of the anal margin (perianal skin within 5 cm) follow cutaneous staging (skin_carcinoma). HPV status: prognostic factor recommended by AJCC, not included in staging. ≥12 lymph nodes for perirectal/pelvic pN; ≥6 for inguinal pN.',
+note:'⚠ Tis e Stadio 0 deliberatamente ESCLUSI seguendo AJCC Cancer Staging Manual Version 9: HSIL/AIN II-III non è un carcinoma invasivo; la sua inclusione nello staging TNM portava a overtreatment. Evidenza: studio ANCHOR e analisi SEER. UICC 9ª ed. 2025 mantiene invece Tis/Stadio 0 per uniformità registrale — divergenza UICC/AJCC esplicita. Scelta del tool: AJCC v9 (clinicamente più solida). Schema si applica a SCC del canale anale; i carcinomi del margine anale (cute perianale entro 5 cm) seguono lo staging cutaneo (carcinoma_cute). HPV status: prognostic factor raccomandato da AJCC, non incluso nello staging. ≥12 lymph nodes per pN peri-rettale/pelvico; ≥6 per pN inguinale.',
 T:[
   {c:'TX',d:'Not assessable'},{c:'T0',d:'No tumor'},
   {c:'T1',d:'Tumor ≤2 cm in greatest dimension'},
@@ -754,7 +754,7 @@ T:[
   {c:'T4',d:'Tumor di qualsiasi dimensione che invade organi adjacent (vagina, uretra, vescica). L\'invasione isolata della rectal wall, cute perianale, tessuto sottocutaneo o sfinteri NON è T4'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1a',d:'Metastasis in inguinal, mesorectal and/or internal iliac lymph nodes'},
   {c:'N1b',d:'Metastasis in external iliac lymph nodes'},
   {c:'N1c',d:'Metastasis in external iliac lymph nodes E in inguinali/mesorettali/iliaci interni'},
@@ -807,7 +807,7 @@ T:[
   {c:'T4',d:'Tumor invading strutture extraepatiche locali per invasione diretta dal fegato'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasi nei regional lymph nodes'},
 ],
 M:[{c:'M0',d:'No distant metastasis'},{c:'M1',d:'Distant metastasis (inclusi lymph nodes celiaci e periaortici/cavali)'}],
@@ -835,7 +835,7 @@ T:[
   {c:'T4',d:'Tumor invading la portal vein principale o l\'hepatic artery, O invade due o più organi/strutture extraepatiche'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasis in 1–3 regional lymph nodes'},
   {c:'N2',d:'Metastasis in 4 or more regional lymph nodes'},
 ],
@@ -865,7 +865,7 @@ T:[
   {c:'T4',d:'Tumor invading la portal vein principale o i suoi rami bilateralmente, O l\'hepatic artery comune, O radici biliari secondarie unilaterali con coinvolgimento contralateral della portal vein o dell\'hepatic artery'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasis in 1–3 regional lymph nodes'},
   {c:'N2',d:'Metastasis in 4 or more regional lymph nodes'},
 ],
@@ -892,7 +892,7 @@ T:[
   {c:'T4',d:'Tumor che coinvolge l\'asse celiaco, l\'arteria mesenterica superiore e/o l\'hepatic artery comune'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasis in 1–3 regional lymph nodes'},
   {c:'N2',d:'Metastasis in 4 or more regional lymph nodes'},
 ],
@@ -922,7 +922,7 @@ T:[
   {c:'T4',d:'Tumor con coinvolgimento vascolare dell\'AMS, asse celiaco o hepatic artery comune'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasis in 1–3 regional lymph nodes'},
   {c:'N2',d:'Metastasis in 4 or more regional lymph nodes'},
 ],
@@ -952,7 +952,7 @@ T:[
   {c:'T4',d:'Tumor che coinvolge l\'asse celiaco, l\'arteria mesenterica superiore e/o l\'hepatic artery comune (irresecabile per definizione)'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasis in 1–3 regional lymph nodes'},
   {c:'N2',d:'Metastasis in 4 or more regional lymph nodes'},
 ],
@@ -968,7 +968,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'net_stomaco',name:'GI NET — Stomach',icd:'C16',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Anatomic stage WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+{id:'net_stomaco',name:'GI NET — Stomach',icd:'C16',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
 note:'Solo NET well-differentiated (G1-G3). NEC (small cell, large cell) → staging come carcinoma gastrico. Grading WHO: G1 (<2 mitosi/2mm², Ki67 <3%), G2 (2-20 mitosi/2mm², Ki67 3-20%), G3 (>20 mitosi/2mm², Ki67 >20%). Grado determinato dal parametro più alto tra mitosi e Ki67.',
 T:[
   {c:'TX',d:'Not assessable'},{c:'T0',d:'No tumor'},
@@ -978,7 +978,7 @@ T:[
   {c:'T4',d:'Tumor perforating the visceral peritoneum o invade altri organi/strutture adjacent'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasi nei regional lymph nodes'},
 ],
 M:[
@@ -996,7 +996,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'net_coloretto',name:'GI NET — Colorectum',icd:'C18-C20',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Anatomic stage WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+{id:'net_coloretto',name:'GI NET — Colorectum',icd:'C18-C20',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
 note:'Solo NET well-differentiated (G1-G3). Grading WHO identico agli altri NET GI.',
 T:[
   {c:'TX',d:'Not assessable'},{c:'T0',d:'No tumor'},
@@ -1007,7 +1007,7 @@ T:[
   {c:'T4',d:'Tumor perforating the visceral peritoneum o invade altri organi'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasi nei regional lymph nodes'},
 ],
 M:[
@@ -1025,7 +1025,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'net_pancreas',name:'GI NET — Pancreas',icd:'C25',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Anatomic stage WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+{id:'net_pancreas',name:'GI NET — Pancreas',icd:'C25',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
 note:'AJCC Version 9. Solo NET well-differentiated pancreatici (funzionanti e non). NEC pancreatici → staging come adenocarcinoma pancreatico. V9 introduce biomarcatori prognostici: DAXX/ATRX (loss IHC = meccanismo ALT, prognosi peggiore anche in G1/G2), ARX (marker alfa-cellulare), PDX1 (marker beta-cellulare) — non modificano T/N/M ma orientano comportamento biologico e follow-up.',
 T:[
   {c:'TX',d:'Not assessable'},{c:'T0',d:'No tumor'},
@@ -1035,7 +1035,7 @@ T:[
   {c:'T4',d:'Tumor invading organi adjacent (stomaco, milza, colon, surrene) o la parete di grandi vasi (asse celiaco, AMS)'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasi nei regional lymph nodes'},
 ],
 M:[
@@ -1052,8 +1052,8 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'tiroide',name:'Thyroid',icd:'C73.9',cat:'hn',completeness:'complete',staging_type:'prognostic',staging_type_label:'Stage by age and histotype (4 variants)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (some histotypes)'}],
-note:'Separate staging for: PTC/FTC <55 years (Stage I-II only), PTC/FTC ≥55 years, medullary carcinoma, anaplastic carcinoma. ≥6 lymph nodes for adequate pN0 (selective neck dissection).',
+{id:'tiroide',name:'Thyroid',icd:'C73.9',cat:'hn',completeness:'complete',staging_type:'prognostic',staging_type_label:'Stadio per età e istotipo (4 varianti)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (alcuni istotipi)'}],
+note:'Staging separato per: PTC/FTC <55 anni (solo Stadio I-II), PTC/FTC ≥55 anni, carcinoma midollare, carcinoma anaplastico. ≥6 lymph nodes per pN0 (neck dissection selettiva).',
 variants:[
   {id:'diff_young',label:'PTC/FTC/PDTC/HCC < 55 anni'},
   {id:'diff_old',label:'PTC/FTC/PDTC/HCC ≥ 55 anni'},
@@ -1071,7 +1071,7 @@ T:[
   {c:'T4b',d:'Tumor invading la fascia prevertebrale, i vasi mediastinici o ingloba l\'carotid artery'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1a',d:'Metastasi nel livello VI (pretracheale, paratracheale e prelaringeo/Delfino) o nel mediastino superiore'},
   {c:'N1b',d:'Metastasi negli altri lymph nodes cervicali unilaterali, bilaterali o controlaterali (livelli I, II, III, IV o V) o retrofaringei'},
 ],
@@ -1107,7 +1107,7 @@ staging_variants:{
 }},
 
 {id:'gh_salivari',name:'Salivary Glands',icd:'C07-C08',cat:'hn',completeness:'complete',staging_type:'histotype',staging_type_label:'cN/pN variants — V9 ENE-based schema',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
-note:'AJCC Version 9 / UICC 9th ed.: simplified pN (numeric + pENE); cN retains the full dimensional schema with N3. Major glands (parotid, submandibular, sublingual). Minimum LN: ≥10 (selective neck) or ≥15 (radical) for adequate pN0. ENE (Extranodal Extension) — definitions: cENE (clinical) = lymph node fixation, invasion of adjacent structures, cranial nerve deficit, skin edema over lymph node; pENE (pathological) = histological transgression through the entire lymph node capsule into the surrounding adipose tissue (excludes simple capsular thinning). pENE upgrades pN1→pN2. Frequent cN/pN discordance: a single contralateral pENE− lymph node is pN1 (numeric) but was cN2c (pre-op clinical). pN3 ELIMINATED in V9. cN3a (>6 cm) and cN3b (clinical ENE) → both Stage IVA.',
+note:'AJCC Version 9 / UICC 9ª ed.: pN semplificato (numerica + pENE); cN mantiene schema dimensionale completo con N3. Ghiandole maggiori (parotide, sottomandibolare, sottolinguale). Minimum LN: ≥10 (neck selettiva) o ≥15 (radicale) per pN0 adeguato. ENE (Extranodal Extension) — definizioni: cENE (clinica) = fissità linfonodale, invasione strutture adjacent, deficit nervo cranico, edema cutaneo su lymph node; pENE (patologica) = trasgressione istologica attraverso l\'intera capsula linfonodale nel tessuto adiposo circostante (esclude semplice assottigliamento capsulare). pENE trasforma pN1→pN2. Discordanza cN/pN frequente: un lymph node contralateral singolo pENE- è pN1 (numerica) ma era cN2c (clinica pre-op). pN3 ELIMINATO in V9. cN3a (>6 cm) e cN3b (ENE clinica) → entrambi Stadio IVA.',
 variants:[
   {id:'path',label:'pN — Pathological staging'},
   {id:'clinical',label:'cN — Clinical staging'},
@@ -1131,7 +1131,7 @@ N:[
   {c:'cN2b',d:'[cN] Metastasis in multiple ipsilateral lymph nodes ≤6 cm, clinical ENE absent'},
   {c:'cN2c',d:'[cN] Metastasis in bilateral or contralateral lymph nodes ≤6 cm, clinical ENE absent'},
   {c:'cN3a',d:'[cN] Metastasis in lymph node >6 cm, clinical ENE absent'},
-  {c:'cN3b',d:'[cN] Metastasis in any lymph node with overt clinical ENE (fixation, invasion of adjacent structures, cranial nerve deficit, skin edema)'},
+  {c:'cN3b',d:'[cN] Metastasi in qualsiasi lymph node con overt clinical ENE (fissità, invasione strutture adjacent, deficit nervo cranico, edema cutaneo)'},
 ],
 M:[{c:'M0',d:'No distant metastasis'},{c:'M1',d:'Distant metastasis'}],
 staging_variants:{
@@ -1180,10 +1180,10 @@ T:[
 N:[
   {c:'NX',d:'Regional lymph nodes not assessable (es. già rimossi prima della chirurgia)'},
   {c:'N0',d:'No regional lymph node metastasis istologicamente dimostrata'},
-  {c:'N0(i-)',d:'No histological metastasis and negative IHC'},
+  {c:'N0(i-)',d:'Nessuna metastasi istologica e IHC negativa'},
   {c:'N0(i+)',d:'Cellule tumorali isolate (ITC): ≤0.2 mm o ≤200 cellule — rilevate con IHC o morfologia. Non classificate come metastasi; non modificano lo stadio N (rimane N0)'},
-  {c:'N0(mol-)',d:'No histological metastasis; RT-PCR negative'},
-  {c:'N0(mol+)',d:'No histological metastasis; RT-PCR positive. Clinical significance undefined; does not modify N stage'},
+  {c:'N0(mol-)',d:'Nessuna metastasi istologica; RT-PCR negativa'},
+  {c:'N0(mol+)',d:'Nessuna metastasi istologica; RT-PCR positiva. Significato clinico non definito; non modifica lo stadio N'},
   {c:'N1mi',d:'Micrometastasis: >0.2 mm and/or >200 cells, but ≤2 mm in greatest dimension'},
   {c:'N1a',d:'Metastasis in 1–3 ipsilateral axillary lymph nodes (at least one macrometastasis >2 mm)'},
   {c:'N1b',d:'Metastasis in ipsilateral internal mammary lymph nodes, not clinically detected, rilevati alla biopsia del sentinel lymph node (without concomitant axillary involvement classifiable as N1a)'},
@@ -1211,7 +1211,7 @@ staging:[
 ]},
 
 {id:'prostata',name:'Prostate',icd:'C61.9',cat:'uro',completeness:'anatomic',staging_type:'combined',staging_type_label:'Anatomic only — PSA/Grade Group not implemented',coverage:{T:'ok',N:'ok',M:'ok',stage:'partial',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},model_limited:true,badges:[{cls:'badge-anat',txt:'Anatomic'}],
-note:'⚠ Anatomic grouping (T/N/M) — the formal prognostic group also requires PSA and Grade Group (Gleason score), not implemented in this tool. Urothelial carcinomas of the prostate excluded (ureteral staging). No pT1. MRI suffix: (mr); PSMA-PET: (PET) to be indicated in the report.',
+note:'⚠ Raggruppamento anatomico (T/N/M) — il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason score), not implemented in this tool. Esclusi i carcinomi uroteliali della prostata (staging ureterale). Nessun pT1. Suffix MRI: (mr); PSMA-PET: (PET) da indicare in referto.',
 T:[
   {c:'TX',d:'Not assessable'},{c:'T0',d:'No tumor'},
   {c:'T1a',d:'Incidental histological finding in ≤5% of the resected tissue (TURP)'},
@@ -1225,7 +1225,7 @@ T:[
   {c:'T4',d:'Tumor fixed or invading strutture adjacent diverse dalle seminal vesicles: external sphincter, retto, levator muscles e/o pelvic wall'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasis in regional lymph nodes (true pelvis, below the common iliac bifurcation)'},
 ],
 M:[
@@ -1269,15 +1269,15 @@ T:[
   {c:'T4b',d:'Tumor invading la pelvic wall o la abdominal wall'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasis in a single lymph node nella vera pelvi (ipogastrico, otturatore, iliaco esterno o presacrale)'},
-  {c:'N2',d:'Metastasis in multiple regional lymph nodes in the true pelvis'},
-  {c:'N3',d:'Metastasis in a common iliac lymph node'},
+  {c:'N2',d:'Metastasi in più regional lymph nodes nella vera pelvi'},
+  {c:'N3',d:'Metastasi in un lymph node iliaco comune'},
 ],
 M:[
   {c:'M0',d:'No distant metastasis'},
-  {c:'M1a',d:'Non-regional lymph nodes'},
-  {c:'M1b',d:'Other distant metastasis'},
+  {c:'M1a',d:'Linfonodi non regionali'},
+  {c:'M1b',d:'Altre metastasi a distanza'},
 ],
 staging:[
   {stage:'0a',T:'Ta',N:'N0',M:'M0'},
@@ -1306,7 +1306,7 @@ T:[
   {c:'T4',d:'Tumor invading oltre la Gerota fascia (inclusa estensione contigua al surrene ipsilateral)'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasi nei regional lymph nodes (ilo renale, para-aortici addominali, paracavali)'},
 ],
 M:[{c:'M0',d:'No distant metastasis'},{c:'M1',d:'Distant metastasis'}],
@@ -1325,20 +1325,20 @@ T:[
   {c:'TX',d:'Not assessable (in assenza di orchidectomia radicale)'},
   {c:'T0',d:'No tumor (cicatrice istologica nel testicolo)'},
   {c:'Tis',d:'Neoplasia intratubulare a cellule germinali (carcinoma in situ)'},
-  {c:'T1',d:'Tumor limitato al testicolo (inclusa la rete testis) without vascular invasion/linfatica, senza invasione dell\'epididimo; può invadere la tunica albuginea ma non la tunica vaginalis',note:'AJCC v9 suddivide il pT1 del seminoma in pT1a (≤3 cm) e pT1b (>3 cm) in base alla dimensione. UICC 9th ed. mantiene pT1 unico.'},
+  {c:'T1',d:'Tumor limitato al testicolo (inclusa la rete testis) without vascular invasion/linfatica, senza invasione dell\'epididimo; può invadere la tunica albuginea ma non la tunica vaginalis',note:'AJCC v9 suddivide il pT1 del seminoma in pT1a (≤3 cm) e pT1b (>3 cm) in base alla dimensione. UICC 9ª ed. mantiene pT1 unico.'},
   {c:'T2',d:'Tumor limitato al testicolo with vascular invasion/linfatica, O invasione del tessuto molle ilare o dell\'epididimo, O estensione attraverso la tunica albuginea con coinvolgimento della tunica vaginalis'},
   {c:'T3',d:'Tumor invading il funicolo spermatico con o without vascular invasion/linfatica'},
   {c:'T4',d:'Tumor invading lo scroto con o without vascular invasion/linfatica'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasi con massa linfonodale ≤2 cm O lymph nodes multipli, none >2 cm'},
   {c:'N2',d:'Metastasi con massa linfonodale >2 cm e ≤5 cm, O >5 lymph nodes positivi (none >5 cm), O estensione extranodale'},
   {c:'N3',d:'Metastasi con massa linfonodale >5 cm'},
 ],
 M:[
   {c:'M0',d:'No distant metastasis'},
-  {c:'M1a',d:'Metastasis in non-regional or pulmonary lymph nodes'},
+  {c:'M1a',d:'Metastasi in lymph nodes non regionali o polmonari'},
   {c:'M1b',d:'Distant metastasis diverse dai lymph nodes non regionali e dal polmone'},
 ],
 extra:[{id:'S',label:'Marcatori sierici (S) — post-orchiectomy nadir',options:['SX','S0','S1','S2','S3']}],
@@ -1390,19 +1390,19 @@ N:[
   {c:'NX',d:'Not assessable'},{c:'N0',d:'No regional lymph node metastasis'},
   {c:'N1a',d:'Solo micrometastasi (clinicamente occulta) in un lymph node regionale'},
   {c:'N1b',d:'Macrometastasi (clinicamente apparente) in un lymph node regionale'},
-  {c:'N1c',d:'In-transit/satellite metastasis without regional lymph node metastasis'},
+  {c:'N1c',d:'Metastasi in transito/satellite senza metastasi linfonodali regionali'},
   {c:'N2a',d:'Micrometastasi in 2-3 regional lymph nodes'},
   {c:'N2b',d:'Macrometastasi in 2-3 regional lymph nodes (almeno uno clinicamente rilevato)'},
-  {c:'N2c',d:'In-transit/satellite metastasis with a single positive regional lymph node (micro or macro)'},
-  {c:'N3a',d:'Metastasis in ≥4 regional lymph nodes (micrometastases only)'},
-  {c:'N3b',d:'Metastasis in ≥4 regional lymph nodes (at least one clinically detected), OR 2+ matted lymph nodes'},
-  {c:'N3c',d:'In-transit/satellite metastasis with 2+ regional lymph node metastases (micro or macro) OR 2+ matted lymph nodes'},
+  {c:'N2c',d:'Metastasi in transito/satellite con un solo lymph node regionale positivo (micro o macro)'},
+  {c:'N3a',d:'Metastasi in ≥4 regional lymph nodes (solo micrometastasi)'},
+  {c:'N3b',d:'Metastasi in ≥4 regional lymph nodes (almeno uno clinicamente rilevato), O 2+ lymph nodes aggrovigliati'},
+  {c:'N3c',d:'Metastasi in transito/satellite con 2+ metastasi linfonodali regionali (micro o macro) O 2+ lymph nodes aggrovigliati'},
 ],
 M:[
   {c:'M0',d:'No distant metastasis'},
-  {c:'M1a',d:'Metastasis in skin, subcutaneous tissue or non-regional lymph nodes (LDH: suffix (0) or (1))'},
+  {c:'M1a',d:'Metastasi in cute, tessuto sottocutaneo o lymph nodes oltre i regionali (LDH: suffisso (0) o (1))'},
   {c:'M1b',d:'Metastasi polmonari (con o senza metastasi M1a) (LDH: suffisso (0) o (1))'},
-  {c:'M1c',d:'Metastasis in non-CNS visceral sites (with or without M1a/b) (LDH: suffix (0) or (1))'},
+  {c:'M1c',d:'Metastasi in altri siti non-SNC (con o senza M1a/b) (LDH: suffisso (0) o (1))'},
   {c:'M1d',d:'Metastasi nel sistema nervoso centrale (con o senza M1a/b/c) (LDH: suffisso (0) o (1))'},
 ],
 staging_variants:{
@@ -1452,10 +1452,10 @@ T:[
   {c:'T4b',d:'Invasione dello scheletro assiale con coinvolgimento del forame O invasione dello spazio epidurale'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1',d:'Metastasis in a single lymph node ≤3 cm in greatest dimension'},
   {c:'N2',d:'Metastasis in a single lymph node ipsilateral >3 cm e ≤6 cm, O in più lymph nodes omolaterali ≤6 cm'},
-  {c:'N3',d:'Metastasis in a lymph node >6 cm in greatest dimension'},
+  {c:'N3',d:'Metastasi in un lymph node >6 cm in greatest dimension'},
 ],
 M:[{c:'M0',d:'No distant metastasis'},{c:'M1',d:'Distant metastasis (i lymph nodes controlaterali in tumori non-HN sono M1)'}],
 staging:[
@@ -1470,7 +1470,7 @@ staging:[
 ]},
 
 {id:'merkel',name:'Merkel Cell Carcinoma',icd:'C44',cat:'skin',completeness:'complete',staging_type:'histotype',staging_type_label:'Clinical/pathological variants',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
-note:'≥6 lymph nodes per pN0. In-transit metastasis: tumor discontinuous from the primary lesion, between it and the regional draining lymph nodes or distal to it. pN1a(sn) = sentinel node micrometastasis.',
+note:'≥6 lymph nodes per pN0. Metastasi in transito: tumor discontinuo dalla lesione primaria, tra questa e i regional lymph nodes di drenaggio o distale ad essa. pN1a(sn) = micrometastasi al sentinella.',
 T:[
   {c:'TX',d:'Not assessable'},{c:'T0',d:'No tumor'},
   {c:'Tis',d:'Carcinoma in situ'},
@@ -1480,18 +1480,18 @@ T:[
   {c:'T4',d:'Tumor invading strutture extradermica profonde (cartilagine, muscolo scheletrico, fascia o osso)'},
 ],
 N:[
-  {c:'NX',d:'Not assessable'},{c:'N0',d:'No lymph node metastasis'},
+  {c:'NX',d:'Not assessable'},{c:'N0',d:'Nessuna metastasi'},
   {c:'N1a(sn)',d:'Micrometastasi rilevata alla biopsia del sentinel lymph node (pN1a(sn))'},
   {c:'N1a',d:'Micrometastasi rilevata alla dissezione linfonodale'},
   {c:'N1b',d:'Macrometastasi (clinicamente apparente)'},
-  {c:'N2',d:'In-transit metastasis without regional lymph node metastasis'},
-  {c:'N3',d:'In-transit metastasis with regional lymph node metastasis'},
+  {c:'N2',d:'Metastasi in transito senza metastasi linfonodali regionali'},
+  {c:'N3',d:'Metastasi in transito con metastasi linfonodali regionali'},
 ],
 M:[
   {c:'M0',d:'No distant metastasis'},
-  {c:'M1a',d:'Metastasis in skin, subcutaneous tissue or non-regional lymph nodes'},
+  {c:'M1a',d:'Metastasi in cute, tessuto sottocutaneo o lymph nodes non regionali'},
   {c:'M1b',d:'Metastasi polmonari'},
-  {c:'M1c',d:'Metastasis in other sites'},
+  {c:'M1c',d:'Metastasi in altri siti'},
 ],
 variants:[
   {id:'clinical',label:'Clinical stage'},
@@ -1701,7 +1701,7 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
     incomplete.push('T not assessable (TX): stage cannot be assigned. Re-evaluate the specimen or document the reason for non-assessability.');
   }
   if(nCode==='NX'){
-    incomplete.push('N not assessable (NX): stage cannot be assigned. Specify the number of examined lymph nodes or document the reason for non-assessability.');
+    incomplete.push('N non valutabile (NX): lo stadio non può essere assegnato. Specificare il numero di lymph nodes esaminati o il motivo della non valutabilità.');
   }
   if(tCode==='Tis'&&nCode!=='N0'&&nCode!=='NX'){
     errors.push('Tis with '+N+': biologically inconsistent combination. Verify T classification or presence of a second invasive focus.');
@@ -2651,7 +2651,7 @@ function generateReferto(){
     txt+=`Additional parameters: ${extraKeys.map(k=>k+'='+extra[k]).join(', ')}\n`;
   }
 
-  // ── Section 2: Stage grouping ──
+  // ── Sezione 2: Raggruppamento di stadio ──
   txt+='\n── STAGE GROUPING ───────────────────────────────────────\n';
 
   const stageFootnote=s.id==='prostata'?
