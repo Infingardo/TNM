@@ -701,7 +701,7 @@ staging:[
 ]},
 
 {id:'appendice',name:'Appendice',icd:'C18.1',cat:'gi',completeness:'complete',staging_type:'markers',staging_type_label:'Richiede grado per M1b (IVA vs IVB)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
-note:'AJCC Version 9 / UICC 9ª ed. ≥12 linfonodi per pN0. Comprende adenocarcinomi (mucinosi e non) e NEC scarsamente differenziati. NET ben differenziati: classificazione separata. V9: HAMN (High-grade Appendiceal Mucinous Neoplasm) aggiunto accanto a LAMN; adenocarcinoma a cellule goblet (ex goblet cell carcinoide — terminologia abbandonata in V9). M1a: solo mucina acellulare intraperitoneale; M1b: epitelio mucinoso intraperitoneale (il grado determina IVA vs IVB); M1c: metastasi non peritoneali.',
+note:'AJCC Version 9 / UICC V9 ≥12 linfonodi per pN0. Comprende adenocarcinomi (mucinosi e non) e NEC scarsamente differenziati. NET ben differenziati: classificazione separata. V9: HAMN (High-grade Appendiceal Mucinous Neoplasm) aggiunto accanto a LAMN; adenocarcinoma a cellule goblet (ex goblet cell carcinoide — terminologia abbandonata in V9). M1a: solo mucina acellulare intraperitoneale; M1b: epitelio mucinoso intraperitoneale (il grado determina IVA vs IVB); M1c: metastasi non peritoneali.',
 extra:[{id:'G',label:'Grado istologico (rilevante per M1b)',options:['—','G1','G2','G3','GX']}],
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -745,7 +745,7 @@ staging:[
 ]},
 
 {id:'canale_anale',name:'Canale Anale',icd:'C21',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico AJCC v9',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'AJCC v9: Tis/Stadio 0 esclusi'}],
-note:'⚠ Tis e Stadio 0 deliberatamente ESCLUSI seguendo AJCC Cancer Staging Manual Version 9: HSIL/AIN II-III non è un carcinoma invasivo; la sua inclusione nello staging TNM portava a overtreatment. Evidenza: studio ANCHOR e analisi SEER. UICC 9ª ed. 2025 mantiene invece Tis/Stadio 0 per uniformità registrale — divergenza UICC/AJCC esplicita. Scelta del tool: AJCC v9 (clinicamente più solida). Schema si applica a SCC del canale anale; i carcinomi del margine anale (cute perianale entro 5 cm) seguono lo staging cutaneo (carcinoma_cute). HPV status: fattore prognostico raccomandato da AJCC, non incluso nello staging. ≥12 linfonodi per pN peri-rettale/pelvico; ≥6 per pN inguinale.',
+note:'⚠ Tis e Stadio 0 deliberatamente ESCLUSI seguendo AJCC Cancer Staging Manual Version 9: HSIL/AIN II-III non è un carcinoma invasivo; la sua inclusione nello staging TNM portava a overtreatment. Evidenza: studio ANCHOR e analisi SEER. UICC V9 2025 mantiene invece Tis/Stadio 0 per uniformità registrale — divergenza UICC/AJCC esplicita. Scelta del tool: AJCC v9 (clinicamente più solida). Schema si applica a SCC del canale anale; i carcinomi del margine anale (cute perianale entro 5 cm) seguono lo staging cutaneo (carcinoma_cute). HPV status: fattore prognostico raccomandato da AJCC, non incluso nello staging. ≥12 linfonodi per pN peri-rettale/pelvico; ≥6 per pN inguinale.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
   {c:'T1',d:'Tumore ≤2 cm nella dimensione maggiore'},
@@ -1107,7 +1107,7 @@ staging_variants:{
 }},
 
 {id:'gh_salivari',name:'Ghiandole salivari',icd:'C07-C08',cat:'hn',completeness:'complete',staging_type:'histotype',staging_type_label:'Varianti cN/pN — schema ENE-based V9',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
-note:'AJCC Version 9 / UICC 9ª ed.: pN semplificato (numerica + pENE); cN mantiene schema dimensionale completo con N3. Ghiandole maggiori (parotide, sottomandibolare, sottolinguale). Minimo LN: ≥10 (neck selettiva) o ≥15 (radicale) per pN0 adeguato. ENE (Extranodal Extension) — definizioni: cENE (clinica) = fissità linfonodale, invasione strutture adiacenti, deficit nervo cranico, edema cutaneo su linfonodo; pENE (patologica) = trasgressione istologica attraverso l\'intera capsula linfonodale nel tessuto adiposo circostante (esclude semplice assottigliamento capsulare). pENE trasforma pN1→pN2. Discordanza cN/pN frequente: un linfonodo controlaterale singolo pENE- è pN1 (numerica) ma era cN2c (clinica pre-op). pN3 ELIMINATO in V9. cN3a (>6 cm) e cN3b (ENE clinica) → entrambi Stadio IVA.',
+note:'AJCC Version 9 / UICC V9: pN semplificato (numerica + pENE); cN mantiene schema dimensionale completo con N3. Ghiandole maggiori (parotide, sottomandibolare, sottolinguale). Minimo LN: ≥10 (neck selettiva) o ≥15 (radicale) per pN0 adeguato. ENE (Extranodal Extension) — definizioni: cENE (clinica) = fissità linfonodale, invasione strutture adiacenti, deficit nervo cranico, edema cutaneo su linfonodo; pENE (patologica) = trasgressione istologica attraverso l\'intera capsula linfonodale nel tessuto adiposo circostante (esclude semplice assottigliamento capsulare). pENE trasforma pN1→pN2. Discordanza cN/pN frequente: un linfonodo controlaterale singolo pENE- è pN1 (numerica) ma era cN2c (clinica pre-op). pN3 ELIMINATO in V9. cN3a (>6 cm) e cN3b (ENE clinica) → entrambi Stadio IVA.',
 variants:[
   {id:'path',label:'pN — Stadiazione patologica'},
   {id:'clinical',label:'cN — Stadiazione clinica'},
@@ -1158,7 +1158,7 @@ staging_variants:{
   ]
 }},
 
-{id:'mammella',name:'Mammella',icd:'C50',cat:'breast',completeness:'complete',staging_type:'combined',staging_type_label:'Stadio anatomico UICC 9ª ed. + Prognostic Stage Group AJCC 8ª ed.',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'},{cls:'badge-complete',txt:'PSG AJCC 8ª ed.'}],
+{id:'mammella',name:'Mammella',icd:'C50',cat:'breast',completeness:'complete',staging_type:'combined',staging_type_label:'Stadio anatomico UICC V9 + Prognostic Stage Group AJCC 8ª ed.',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'},{cls:'badge-complete',txt:'PSG AJCC 8ª ed.'}],
 note:'≥6 linfonodi per pN0 (livello I ascellare). pN basato sul componente invasivo; il DCIS non conta ai fini della classificazione N. ITC (≤0.2 mm o ≤200 cellule) = N0(i+): non modificano lo stadio. Distinguere sempre cN (clinico/imaging) da pN (patologico): cN1 ≠ pN1 per implicazioni terapeutiche. Includere sempre il modificatore (sn) se la classificazione N deriva dal solo sentinella. AJCC esclude Tis(LCIS). Prognostic Stage Group AJCC 8ª ed.: richiede ER, PR, HER2 (IHC + ISH se 2+), Grado Nottingham. HER2-low (IHC 1+ o IHC 2+/ISH−) riportato nel referto. Verificare con AJCC Cancer Staging Manual v9.',
 extra:[{id:'ER',label:'ER',options:['—','ER+ (≥1%)','ER− (<1%)']},{id:'PR',label:'PR',options:['—','PR+ (≥1%)','PR− (<1%)']},{id:'HER2_IHC',label:'HER2 IHC score',options:['—','0','1+','2+','3+']},{id:'HER2_ISH',label:'HER2 ISH/FISH (se IHC 2+)',options:['—','Amplificato (ratio ≥2.0 o ≥6 copie)','Non amplificato']},{id:'G',label:'Grado Nottingham',options:['—','G1','G2','G3']},{id:'Ki67',label:'Ki67 (%)',type:'text',placeholder:'es. 25'},],
 T:[
@@ -1326,7 +1326,7 @@ T:[
   {c:'TX',d:'Non valutabile (in assenza di orchidectomia radicale)'},
   {c:'T0',d:'Nessun tumore (cicatrice istologica nel testicolo)'},
   {c:'Tis',d:'Neoplasia intratubulare a cellule germinali (carcinoma in situ)'},
-  {c:'T1',d:'Tumore limitato al testicolo (inclusa la rete testis) senza invasione vascolare/linfatica, senza invasione dell\'epididimo; può invadere la tunica albuginea ma non la tunica vaginalis',note:'AJCC v9 suddivide il pT1 del seminoma in pT1a (≤3 cm) e pT1b (>3 cm) in base alla dimensione. UICC 9ª ed. mantiene pT1 unico.'},
+  {c:'T1',d:'Tumore limitato al testicolo (inclusa la rete testis) senza invasione vascolare/linfatica, senza invasione dell\'epididimo; può invadere la tunica albuginea ma non la tunica vaginalis',note:'AJCC v9 suddivide il pT1 del seminoma in pT1a (≤3 cm) e pT1b (>3 cm) in base alla dimensione. UICC V9 mantiene pT1 unico.'},
   {c:'T2',d:'Tumore limitato al testicolo con invasione vascolare/linfatica, O invasione del tessuto molle ilare o dell\'epididimo, O estensione attraverso la tunica albuginea con coinvolgimento della tunica vaginalis'},
   {c:'T3',d:'Tumore che invade il funicolo spermatico con o senza invasione vascolare/linfatica'},
   {c:'T4',d:'Tumore che invade lo scroto con o senza invasione vascolare/linfatica'},
@@ -2463,11 +2463,11 @@ const AJCC_NOTES={
     _stages:{},
   },
   gh_salivari:{
-    _global_note:'AJCC Version 9 / UICC 9ª ed.: classificazione N radicalmente rivista. pN3 ELIMINATO. N ora basato su numero LN e pENE (non dimensione o lateralità). Downgrading complessivo: casi precedentemente IVA/IVB per N2/N3 dimensionale ora classificati come Stadio III. Stadio IV riservato esclusivamente a M1.',
+    _global_note:'AJCC Version 9 / UICC V9: classificazione N radicalmente rivista. pN3 ELIMINATO. N ora basato su numero LN e pENE (non dimensione o lateralità). Downgrading complessivo: casi precedentemente IVA/IVB per N2/N3 dimensionale ora classificati come Stadio III. Stadio IV riservato esclusivamente a M1.',
     _stages:{},
   },
   melanoma:{
-    _global_note:'AJCC Cancer Staging Manual, Version 9: aggiunge suffisso LDH alle sottocategorie M — M1a(0)/M1a(1), M1b(0)/M1b(1), M1c(0)/M1c(1), M1d(0)/M1d(1) — dove (0)=LDH normale, (1)=LDH elevata. UICC 9ª ed. non adotta formalmente il suffisso LDH. Staging T/N/M e Stage Groups: identici.',
+    _global_note:'AJCC Cancer Staging Manual, Version 9: aggiunge suffisso LDH alle sottocategorie M — M1a(0)/M1a(1), M1b(0)/M1b(1), M1c(0)/M1c(1), M1d(0)/M1d(1) — dove (0)=LDH normale, (1)=LDH elevata. UICC V9 non adotta formalmente il suffisso LDH. Staging T/N/M e Stage Groups: identici.',
     _stages:{},
   },
 };
