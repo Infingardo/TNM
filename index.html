@@ -1158,8 +1158,9 @@ staging_variants:{
   ]
 }},
 
-{id:'mammella',name:'Mammella',icd:'C50',cat:'breast',completeness:'partial',staging_type:'combined',staging_type_label:'Anatomico UICC — Prognostic Stage AJCC non implementato',coverage:{T:'ok',N:'ok',M:'ok',stage:'partial',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'}],
-note:'≥6 linfonodi per pN0 (livello I ascellare). pN basato sul componente invasivo; il DCIS non conta ai fini della classificazione N. ITC (≤0.2 mm o ≤200 cellule) = N0(i+): non modificano lo stadio. Distinguere sempre cN (clinico/imaging) da pN (patologico): cN1 ≠ pN1 per implicazioni terapeutiche. Includere sempre il modificatore (sn) se la classificazione N deriva dal solo sentinella. AJCC esclude Tis(LCIS). ⚠ Staging mostrato: solo raggruppamento anatomico UICC (T/N/M). I Prognostic Stage Groups AJCC (con recettori ormonali, HER2, Ki67, grading) NON sono implementati.',
+{id:'mammella',name:'Mammella',icd:'C50',cat:'breast',completeness:'complete',staging_type:'combined',staging_type_label:'Stadio anatomico UICC + Prognostic Stage Group AJCC v9',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'},{cls:'badge-complete',txt:'PSG AJCC v9'}],
+note:'≥6 linfonodi per pN0 (livello I ascellare). pN basato sul componente invasivo; il DCIS non conta ai fini della classificazione N. ITC (≤0.2 mm o ≤200 cellule) = N0(i+): non modificano lo stadio. Distinguere sempre cN (clinico/imaging) da pN (patologico): cN1 ≠ pN1 per implicazioni terapeutiche. Includere sempre il modificatore (sn) se la classificazione N deriva dal solo sentinella. AJCC esclude Tis(LCIS). Prognostic Stage Group AJCC v9: richiede ER, PR, HER2 (IHC + ISH se 2+), Grado Nottingham. HER2-low (IHC 1+ o IHC 2+/ISH−) riportato nel referto. Verificare con AJCC Cancer Staging Manual v9.',
+extra:[{id:'ER',label:'ER',options:['—','ER+ (≥1%)','ER− (<1%)']},{id:'PR',label:'PR',options:['—','PR+ (≥1%)','PR− (<1%)']},{id:'HER2_IHC',label:'HER2 IHC score',options:['—','0','1+','2+','3+']},{id:'HER2_ISH',label:'HER2 ISH/FISH (se IHC 2+)',options:['—','Amplificato (ratio ≥2.0 o ≥6 copie)','Non amplificato']},{id:'G',label:'Grado Nottingham',options:['—','G1','G2','G3']},{id:'Ki67',label:'Ki67 (%)',type:'text',placeholder:'es. 25'},],
 T:[
   {c:'TX',d:'Tumore primitivo non valutabile'},
   {c:'T0',d:'Nessuna evidenza di tumore primitivo'},
@@ -1760,6 +1761,20 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
   if(site.id==='esofago'){
     warnings.push('Esofago: i gruppi prognostici con grado (Pathological Prognostic Groups) non sono implementati in questo motore. Lo staging mostrato è lo Stage Group anatomico senza correzione per grado e sede anatomica del tumore.');
   }
+  if(site.id==='mammella'){
+    const _erM=!extra||!extra.ER||extra.ER==='—';
+    const _prM=!extra||!extra.PR||extra.PR==='—';
+    const _ihM=!extra||!extra.HER2_IHC||extra.HER2_IHC==='—';
+    const _gM =!extra||!extra.G||extra.G==='—';
+    if(_erM||_prM||_ihM||_gM){
+      const _miss=[];
+      if(_erM)_miss.push('ER');if(_prM)_miss.push('PR');
+      if(_ihM)_miss.push('HER2 IHC');if(_gM)_miss.push('Grado Nottingham');
+      warnings.push('Mammella: Prognostic Stage Group AJCC v9 non calcolabile — biomarcatori mancanti: '+_miss.join(', ')+'.');
+    }else if(extra.HER2_IHC==='2+'&&(!extra.HER2_ISH||extra.HER2_ISH==='—')){
+      warnings.push('Mammella: HER2 IHC 2+ — ISH/FISH non documentato. Aggiungere risultato ISH per classificazione HER2-low vs HER2-positivo.');
+    }
+  }
   if(site.id==='mammella'&&(stripPfx(M)==='cM0(i+)'||stripPfx(N)==='N0(i+)'||stripPfx(N)==='N0(mol+)')){
     warnings.push('Mammella: N0(i+)/N0(mol+)/cM0(i+) non modificano il raggruppamento di stadio (rimane N0/M0 per le regole di staging). Riportare nel referto come dato biologico aggiuntivo.');
   }
@@ -2224,8 +2239,13 @@ function updateDropdowns(){
   ex.innerHTML='';
   if(s.extra){
     s.extra.forEach(e=>{
-      ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>
-        <select id="sel-extra-${e.id}" onchange="onTNMChange();syncExtraStgToRef()">${e.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+      if(e.type==='text'){
+        ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>`
+          +`<input type="text" id="sel-extra-${e.id}" placeholder="${e.placeholder||''}" onchange="onTNMChange();syncExtraStgToRef()" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg2);color:var(--text)"></div>`;
+      }else{
+        ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>`
+          +`<select id="sel-extra-${e.id}" onchange="onTNMChange();syncExtraStgToRef()">${e.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+      }
     });
   }
   renderStagingTable();
@@ -2245,8 +2265,13 @@ function updateDropdowns2(){
   ex.innerHTML='';
   if(s.extra){
     s.extra.forEach(e=>{
-      ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>
-        <select id="ref-extra-${e.id}">${e.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+      if(e.type==='text'){
+        ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>`
+          +`<input type="text" id="ref-extra-${e.id}" placeholder="${e.placeholder||''}" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg2);color:var(--text)"></div>`;
+      }else{
+        ex.innerHTML+=`<div class="form-group" style="margin-bottom:14px"><label>${e.label}</label>`
+          +`<select id="ref-extra-${e.id}">${e.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+      }
     });
   }
 }
@@ -2423,7 +2448,7 @@ const AJCC_NOTES={
   mammella:{
     _global:null,
     _stages:{
-      '0':'UICC include Tis(LCIS) nello Stadio 0. AJCC Cancer Staging Manual, Version 9: Tis(LCIS) ESCLUSA — non classificabile secondo AJCC.',
+      '0':'UICC include Tis(LCIS) nello Stadio 0. AJCC Cancer Staging Manual, Version 9: Tis(LCIS) ESCLUSA — non classificabile secondo AJCC. Prognostic Stage Group AJCC v9 implementato: compilare ER, PR, HER2 IHC (±ISH se IHC 2+), Grado Nottingham nel pannello Biomarcatori (scheda Referto). HER2-low (IHC 1+ o IHC 2+/ISH−): rilevante per T-DXd (DESTINY-Breast04, NEJM 2022).',
       'IA':null,'IB':null,'IIA':null,'IIB':null,
       'IIIA':null,'IIIB':null,'IIIC':null,'IV':null,
     },
@@ -2646,17 +2671,61 @@ function generateReferto(){
   if(mSource!=='cM'){
     txt+=`         Nota M: valutazione ${mSourceLabel}\n`;
   }
-  const extraKeys=Object.keys(extra).filter(k=>extra[k]&&extra[k]!=='—');
-  if(extraKeys.length){
-    txt+=`Parametri aggiuntivi: ${extraKeys.map(k=>k+'='+extra[k]).join(', ')}\n`;
+  if(s.id==='mammella'){
+    const ihcVal=extra.HER2_IHC||'—';
+    const ishVal=extra.HER2_ISH||'—';
+    const her2Cat=her2Category(ihcVal,ishVal);
+    const ki67El=document.getElementById('ref-extra-Ki67');
+    const ki67Val=ki67El?ki67El.value:'';
+    txt+='\n── PROFILO BIOMARCATORI (ASCO/CAP 2023) ──────────────────\n';
+    if(extra.ER&&extra.ER!=='—')txt+=`ER: ${extra.ER}\n`;
+    if(extra.PR&&extra.PR!=='—')txt+=`PR: ${extra.PR}\n`;
+    if(ihcVal!=='—'){
+      txt+=`HER2 IHC: ${ihcVal}\n`;
+      if(ihcVal==='2+'&&ishVal!=='—')txt+=`HER2 ISH/FISH: ${ishVal}\n`;
+      if(her2Cat)txt+=`HER2 categoria: ${her2Cat}\n`;
+    }
+    if(extra.G&&extra.G!=='—')txt+=`Grado Nottingham: ${extra.G}\n`;
+    if(ki67Val)txt+=`Ki67: ${ki67Val}%\n`;
+  }else{
+    const extraKeys=Object.keys(extra).filter(k=>extra[k]&&extra[k]!=='—');
+    if(extraKeys.length){
+      txt+=`Parametri aggiuntivi: ${extraKeys.map(k=>k+'='+extra[k]).join(', ')}\n`;
+    }
   }
 
   // ── Sezione 2: Raggruppamento di stadio ──
   txt+='\n── RAGGRUPPAMENTO DI STADIO ─────────────────────────────\n';
 
-  const stageFootnote=s.id==='prostata'?
-    '\n⚠ ATTENZIONE: questo NON corrisponde al Prognostic Stage Group. Per la prostata il gruppo prognostico formale richiede PSA (ng/mL) e Grade Group (Gleason score). Integrare con questi dati prima di qualsiasi uso clinico.'
-    :'';
+  let stageFootnote='';
+  if(s.id==='prostata'){
+    stageFootnote='\n⚠ ATTENZIONE: questo NON corrisponde al Prognostic Stage Group. Per la prostata il gruppo prognostico formale richiede PSA (ng/mL) e Grade Group (Gleason score). Integrare con questi dati prima di qualsiasi uso clinico.';
+  }else if(s.id==='mammella'){
+    const psg=computePrognosticStage_mammella(T,N,extra);
+    const erPos2=extra.ER&&extra.ER.startsWith('ER+');
+    const prPos2=extra.PR&&extra.PR.startsWith('PR+');
+    const hr2=erPos2||prPos2;
+    const ihcV=extra.HER2_IHC||'—';
+    const ishV=extra.HER2_ISH||'—';
+    const her2V=(ihcV==='3+')||(ihcV==='2+'&&ishV.startsWith('Amplificato'));
+    const gV=extra.G||'—';
+    if(psg){
+      const hrStr=hr2?'HR+':'HR−';
+      const h2Str=her2V?'HER2+':'HER2−';
+      stageFootnote='\n── STADIO PROGNOSTICO AJCC v9 ─────────────────────────'
+        +'\nPrognostic Stage Group: '+psg
+        +'\nDeterminanti: '+stripPfx(T)+' '+stripPfx(N)+' '+gV+' '+hrStr+' '+h2Str
+        +'\n⚠ Verificare con: AJCC Cancer Staging Manual, Version 9';
+    }else{
+      const miss2=[];
+      if(!extra.ER||extra.ER==='—')miss2.push('ER');
+      if(!extra.PR||extra.PR==='—')miss2.push('PR');
+      if(!extra.HER2_IHC||extra.HER2_IHC==='—')miss2.push('HER2 IHC');
+      if(!extra.G||extra.G==='—')miss2.push('Grado');
+      stageFootnote='\n── STADIO PROGNOSTICO AJCC v9 ─────────────────────────'
+        +'\nPrognostic Stage Group: non calcolabile — dati mancanti ('+miss2.join(', ')+')';
+    }
+  }
 
   let stageQualityLabel;
   if(v.errors.length){
@@ -2702,6 +2771,105 @@ function generateReferto(){
   out.textContent=txt;
   out.style.display='block';
   document.getElementById('copy-btn').style.display='inline-block';
+}
+
+
+// ── AJCC v9 Breast Prognostic Stage Group ─────────────────────────────────
+// Source: AJCC Cancer Staging Manual, Version 9 (2023)
+// hr=HR+(ER+ OR PR+); h2=HER2-pos(IHC3+ OR IHC2+/ISH-amp)
+// ⚠ Verificare sempre con fonte primaria per casi limite
+const MAMMELLA_PSG_TABLE=[
+  // T1 N0
+  {t:'T1',n:'N0',g:1,hr:1,h2:0,psg:'IA'},{t:'T1',n:'N0',g:1,hr:1,h2:1,psg:'IA'},
+  {t:'T1',n:'N0',g:1,hr:0,h2:1,psg:'IA'},{t:'T1',n:'N0',g:1,hr:0,h2:0,psg:'IA'},
+  {t:'T1',n:'N0',g:2,hr:1,h2:0,psg:'IA'},{t:'T1',n:'N0',g:2,hr:1,h2:1,psg:'IA'},
+  {t:'T1',n:'N0',g:2,hr:0,h2:1,psg:'IA'},{t:'T1',n:'N0',g:2,hr:0,h2:0,psg:'IA'},
+  {t:'T1',n:'N0',g:3,hr:1,h2:0,psg:'IA'},{t:'T1',n:'N0',g:3,hr:1,h2:1,psg:'IA'},
+  {t:'T1',n:'N0',g:3,hr:0,h2:1,psg:'IA'},{t:'T1',n:'N0',g:3,hr:0,h2:0,psg:'IB'},
+  // T1 N1mi
+  {t:'T1',n:'N1mi',g:1,hr:1,h2:0,psg:'IA'},{t:'T1',n:'N1mi',g:1,hr:1,h2:1,psg:'IB'},
+  {t:'T1',n:'N1mi',g:1,hr:0,h2:1,psg:'IB'},{t:'T1',n:'N1mi',g:1,hr:0,h2:0,psg:'IB'},
+  {t:'T1',n:'N1mi',g:2,hr:1,h2:0,psg:'IB'},{t:'T1',n:'N1mi',g:2,hr:1,h2:1,psg:'IB'},
+  {t:'T1',n:'N1mi',g:2,hr:0,h2:1,psg:'IB'},{t:'T1',n:'N1mi',g:2,hr:0,h2:0,psg:'IB'},
+  {t:'T1',n:'N1mi',g:3,hr:1,h2:0,psg:'IB'},{t:'T1',n:'N1mi',g:3,hr:1,h2:1,psg:'IB'},
+  {t:'T1',n:'N1mi',g:3,hr:0,h2:1,psg:'IB'},{t:'T1',n:'N1mi',g:3,hr:0,h2:0,psg:'IIA'},
+  // T1 N1
+  {t:'T1',n:'N1',g:1,hr:1,h2:0,psg:'IB'},{t:'T1',n:'N1',g:1,hr:1,h2:1,psg:'IB'},
+  {t:'T1',n:'N1',g:1,hr:0,h2:1,psg:'IB'},{t:'T1',n:'N1',g:1,hr:0,h2:0,psg:'IIA'},
+  {t:'T1',n:'N1',g:2,hr:1,h2:0,psg:'IIA'},{t:'T1',n:'N1',g:2,hr:1,h2:1,psg:'IB'},
+  {t:'T1',n:'N1',g:2,hr:0,h2:1,psg:'IB'},{t:'T1',n:'N1',g:2,hr:0,h2:0,psg:'IIA'},
+  {t:'T1',n:'N1',g:3,hr:1,h2:0,psg:'IIA'},{t:'T1',n:'N1',g:3,hr:1,h2:1,psg:'IIA'},
+  {t:'T1',n:'N1',g:3,hr:0,h2:1,psg:'IIB'},{t:'T1',n:'N1',g:3,hr:0,h2:0,psg:'IIIA'},
+  // T2 N0
+  {t:'T2',n:'N0',g:1,hr:1,h2:0,psg:'IA'},{t:'T2',n:'N0',g:1,hr:1,h2:1,psg:'IB'},
+  {t:'T2',n:'N0',g:1,hr:0,h2:1,psg:'IB'},{t:'T2',n:'N0',g:1,hr:0,h2:0,psg:'IIA'},
+  {t:'T2',n:'N0',g:2,hr:1,h2:0,psg:'IIA'},{t:'T2',n:'N0',g:2,hr:1,h2:1,psg:'IB'},
+  {t:'T2',n:'N0',g:2,hr:0,h2:1,psg:'IB'},{t:'T2',n:'N0',g:2,hr:0,h2:0,psg:'IIA'},
+  {t:'T2',n:'N0',g:3,hr:1,h2:0,psg:'IIA'},{t:'T2',n:'N0',g:3,hr:1,h2:1,psg:'IB'},
+  {t:'T2',n:'N0',g:3,hr:0,h2:1,psg:'IIA'},{t:'T2',n:'N0',g:3,hr:0,h2:0,psg:'IIB'},
+  // T2 N1
+  {t:'T2',n:'N1',g:1,hr:1,h2:0,psg:'IIA'},{t:'T2',n:'N1',g:1,hr:1,h2:1,psg:'IB'},
+  {t:'T2',n:'N1',g:1,hr:0,h2:1,psg:'IB'},{t:'T2',n:'N1',g:1,hr:0,h2:0,psg:'IIA'},
+  {t:'T2',n:'N1',g:2,hr:1,h2:0,psg:'IIB'},{t:'T2',n:'N1',g:2,hr:1,h2:1,psg:'IIA'},
+  {t:'T2',n:'N1',g:2,hr:0,h2:1,psg:'IIA'},{t:'T2',n:'N1',g:2,hr:0,h2:0,psg:'IIB'},
+  {t:'T2',n:'N1',g:3,hr:1,h2:0,psg:'IIB'},{t:'T2',n:'N1',g:3,hr:1,h2:1,psg:'IIB'},
+  {t:'T2',n:'N1',g:3,hr:0,h2:1,psg:'IIIA'},{t:'T2',n:'N1',g:3,hr:0,h2:0,psg:'IIIB'},
+  // T3 N0
+  {t:'T3',n:'N0',g:1,hr:1,h2:0,psg:'IIA'},{t:'T3',n:'N0',g:1,hr:1,h2:1,psg:'IB'},
+  {t:'T3',n:'N0',g:1,hr:0,h2:1,psg:'IIA'},{t:'T3',n:'N0',g:1,hr:0,h2:0,psg:'IIA'},
+  {t:'T3',n:'N0',g:2,hr:1,h2:0,psg:'IIA'},{t:'T3',n:'N0',g:2,hr:1,h2:1,psg:'IIA'},
+  {t:'T3',n:'N0',g:2,hr:0,h2:1,psg:'IIA'},{t:'T3',n:'N0',g:2,hr:0,h2:0,psg:'IIB'},
+  {t:'T3',n:'N0',g:3,hr:1,h2:0,psg:'IIB'},{t:'T3',n:'N0',g:3,hr:1,h2:1,psg:'IIA'},
+  {t:'T3',n:'N0',g:3,hr:0,h2:1,psg:'IIA'},{t:'T3',n:'N0',g:3,hr:0,h2:0,psg:'IIIB'},
+  // T3 N1
+  {t:'T3',n:'N1',g:1,hr:1,h2:0,psg:'IIB'},{t:'T3',n:'N1',g:1,hr:1,h2:1,psg:'IIA'},
+  {t:'T3',n:'N1',g:1,hr:0,h2:1,psg:'IIA'},{t:'T3',n:'N1',g:1,hr:0,h2:0,psg:'IIB'},
+  {t:'T3',n:'N1',g:2,hr:1,h2:0,psg:'IIIA'},{t:'T3',n:'N1',g:2,hr:1,h2:1,psg:'IIB'},
+  {t:'T3',n:'N1',g:2,hr:0,h2:1,psg:'IIB'},{t:'T3',n:'N1',g:2,hr:0,h2:0,psg:'IIIA'},
+  {t:'T3',n:'N1',g:3,hr:1,h2:0,psg:'IIIA'},{t:'T3',n:'N1',g:3,hr:1,h2:1,psg:'IIIA'},
+  {t:'T3',n:'N1',g:3,hr:0,h2:1,psg:'IIIB'},{t:'T3',n:'N1',g:3,hr:0,h2:0,psg:'IIIC'},
+  // N2 (T0-T3)
+  {t:'T0T3',n:'N2',g:1,hr:1,h2:0,psg:'IIIA'},{t:'T0T3',n:'N2',g:1,hr:1,h2:1,psg:'IIB'},
+  {t:'T0T3',n:'N2',g:1,hr:0,h2:1,psg:'IIB'},{t:'T0T3',n:'N2',g:1,hr:0,h2:0,psg:'IIIA'},
+  {t:'T0T3',n:'N2',g:2,hr:1,h2:0,psg:'IIIA'},{t:'T0T3',n:'N2',g:2,hr:1,h2:1,psg:'IIIA'},
+  {t:'T0T3',n:'N2',g:2,hr:0,h2:1,psg:'IIIB'},{t:'T0T3',n:'N2',g:2,hr:0,h2:0,psg:'IIIC'},
+  {t:'T0T3',n:'N2',g:3,hr:1,h2:0,psg:'IIIC'},{t:'T0T3',n:'N2',g:3,hr:1,h2:1,psg:'IIIB'},
+  {t:'T0T3',n:'N2',g:3,hr:0,h2:1,psg:'IIIC'},{t:'T0T3',n:'N2',g:3,hr:0,h2:0,psg:'IIIC'},
+];
+
+function computePrognosticStage_mammella(T,N,extra){
+  const t=stripPfx(T);
+  const n=stripPfx(N);
+  const erPos =extra.ER  &&extra.ER.startsWith('ER+');
+  const prPos =extra.PR  &&extra.PR.startsWith('PR+');
+  const ihc   =extra.HER2_IHC||'—';
+  const ish   =extra.HER2_ISH||'—';
+  const hr    =erPos||prPos;
+  const her2  =ihc==='3+'||(ihc==='2+'&&ish.startsWith('Amplificato'));
+  const g     =parseInt((extra.G||'').replace('G',''))||0;
+  if(!g||ihc==='—'||((!extra.ER||extra.ER==='—')&&(!extra.PR||extra.PR==='—')))return null;
+  if(['N3','N3a','N3b','N3c'].includes(n))return 'IIIC';
+  if(['T4','T4a','T4b','T4c','T4d'].includes(t))return 'IIIB';
+  if(['N2','N2a','N2b'].includes(n)){
+    const r=MAMMELLA_PSG_TABLE.find(x=>x.t==='T0T3'&&x.n==='N2'&&x.g===g&&x.hr===(hr?1:0)&&x.h2===(her2?1:0));
+    return r?r.psg:null;
+  }
+  const tN=['T1mi','T1a','T1b','T1c','T0'].includes(t)?'T1':t;
+  const nN=['N1a','N1b','N1c'].includes(n)?'N1':n;
+  const r=MAMMELLA_PSG_TABLE.find(x=>x.t===tN&&x.n===nN&&x.g===g&&x.hr===(hr?1:0)&&x.h2===(her2?1:0));
+  return r?r.psg:null;
+}
+
+function her2Category(ihc,ish){
+  if(ihc==='3+')return 'HER2-positivo (IHC 3+)';
+  if(ihc==='2+'){
+    if(ish.startsWith('Amplificato'))return 'HER2-positivo (IHC 2+/ISH amplificato)';
+    if(ish.startsWith('Non amplificato'))return 'HER2-low (IHC 2+/ISH non amplificato)';
+    return 'HER2 equivoco (IHC 2+ — ISH pendente)';
+  }
+  if(ihc==='1+')return 'HER2-low (IHC 1+)';
+  if(ihc==='0')return 'HER2-zero (IHC 0)';
+  return null;
 }
 
 function copyReferto(){

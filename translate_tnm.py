@@ -1060,6 +1060,33 @@ R += [
   ("uso clinico", "clinical use"),
   ("fonte primaria", "primary source"),
   ("classificazione separata", "separate classification"),
+  # ── Mammella AJCC v9 PSG translations ─────────────────────────────────────
+  ('Stadio anatomico UICC + Prognostic Stage Group AJCC v9', 'UICC anatomic stage + AJCC v9 Prognostic Stage Group'),
+  ("txt:'PSG AJCC v9'", "txt:'AJCC v9 PSG'"),
+  ("label:'HER2 ISH/FISH (se IHC 2+)'", "label:'HER2 ISH/FISH (if IHC 2+)'"),
+  ("label:'Grado Nottingham'", "label:'Nottingham grade'"),
+  ("placeholder:'es. 25'", "placeholder:'e.g. 25'"),
+  ("'Amplificato (ratio ≥2.0 o ≥6 copie)'", "'Amplified (ratio ≥2.0 or ≥6 copies)'"),
+  ("'Non amplificato'", "'Non-amplified'"),
+  ('── PROFILO BIOMARCATORI (ASCO/CAP 2023) ──────────────', '── BIOMARKER PROFILE (ASCO/CAP 2023) ───────────────'),
+  ('HER2 categoria: ', 'HER2 category: '),
+  ('Grado Nottingham: ', 'Nottingham grade: '),
+  ('── STADIO PROGNOSTICO AJCC v9 ─────────────────────────', '── AJCC v9 PROGNOSTIC STAGE ─────────────────────────'),
+  ("'\\nDeterminanti: '", "'\\nDeterminants: '"),
+  ('\\n⚠ Verificare con: AJCC Cancer Staging Manual, Version 9', '\\n⚠ Verify with: AJCC Cancer Staging Manual, Version 9'),
+  ('Prognostic Stage Group: non calcolabile — dati mancanti (', 'Prognostic Stage Group: not calculable — missing data ('),
+  ('Prognostic Stage Group AJCC v9 non calcolabile — biomarcatori mancanti: ', 'AJCC v9 Prognostic Stage Group not calculable — missing biomarkers: '),
+  ('ISH/FISH non documentato. Aggiungere risultato ISH per classificazione HER2-low vs HER2-positivo.', 'ISH/FISH not documented. Add ISH result to classify HER2-low vs HER2-positive.'),
+  ("'HER2-positivo (IHC 3+)'", "'HER2-positive (IHC 3+)'"),
+  ("'HER2-positivo (IHC 2+/ISH amplificato)'", "'HER2-positive (IHC 2+/ISH amplified)'"),
+  ("'HER2-low (IHC 2+/ISH non amplificato)'", "'HER2-low (IHC 2+/ISH non-amplified)'"),
+  ("'HER2 equivoco (IHC 2+ — ISH pendente)'", "'HER2 equivocal (IHC 2+ — ISH pending)'"),
+  ('Prognostic Stage Group AJCC v9 implementato: compilare ER, PR, HER2 IHC (±ISH se IHC 2+), Grado Nottingham nel pannello Biomarcatori (scheda Referto). HER2-low (IHC 1+ o IHC 2+/ISH−): rilevante per T-DXd (DESTINY-Breast04, NEJM 2022).', 'AJCC v9 Prognostic Stage Group implemented: fill in ER, PR, HER2 IHC (±ISH if IHC 2+), Nottingham grade in the Biomarker panel (Report tab). HER2-low (IHC 1+ or IHC 2+/ISH−): relevant for T-DXd (DESTINY-Breast04, NEJM 2022).'),
+  ('Prognostic Stage Group AJCC v9: richiede ER, PR, HER2 (IHC + ISH se 2+), Grado Nottingham. HER2-low (IHC 1+ o IHC 2+/ISH−) riportato nel referto. Verificare con AJCC Cancer Staging Manual v9.', 'AJCC v9 Prognostic Stage Group: requires ER, PR, HER2 (IHC + ISH if 2+), Nottingham grade. HER2-low (IHC 1+ or IHC 2+/ISH−) reported in the pathology report. Verify with AJCC Cancer Staging Manual v9.'),
+  ('Mammella: Prognostic Stage Group', 'Breast: Prognostic Stage Group'),
+  ('Mammella: HER2 IHC 2+', 'Breast: HER2 IHC 2+'),
+  ('se IHC 2+', 'if IHC 2+'),  ('Mammella: AJCC v9 Prognostic Stage Group', 'Breast: AJCC v9 Prognostic Stage Group'),
+
 ]
 
 # ════════════════════════════════════════════════════════════════════════════
