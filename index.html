@@ -253,7 +253,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
               <select id="sel-M" onchange="onTNMChange()"></select>
             </div>
           </div>
-          <div id="extra-selects"></div>
+          <div id="psg-toggle-wrap" style="display:none;margin:0 0 10px 0;padding:7px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text)"><input type="checkbox" id="psg-toggle" checked onchange="togglePSG()"><span>Includi <strong>PSG AJCC 8ª ed.</strong></span></label></div><div id="extra-selects"></div>
           <button id="calc-btn" onclick="computeStage()">Calcola Stadio</button>
         </div>
         <div id="stage-validation"></div>
@@ -2256,6 +2256,13 @@ function updateDropdowns(){
       }
     });
   }
+  // PSG toggle visibility
+  const _PSG=['mammella','prostata'];
+  const _tw=document.getElementById('psg-toggle-wrap');
+  if(_tw)_tw.style.display=(_PSG.includes(s.id)&&s.extra)?'block':'none';
+  const _tc=document.getElementById('psg-toggle');
+  if(_tc&&!_PSG.includes(s.id))_tc.checked=true; // reset when leaving PSG site
+  togglePSG();
   renderStagingTable();
   document.getElementById('stage-result').style.display='none';
   document.getElementById('stage-validation').innerHTML='';
@@ -2623,7 +2630,12 @@ function generateReferto(){
   const variant=currentVariant2;
   const rules=getStagingRules(s,variant);
   const extra={};
-  if(s.extra){s.extra.forEach(e=>{const el=document.getElementById('ref-extra-'+e.id);if(el)extra[e.id]=el.value;});}
+  const _psgSites=['mammella','prostata'];
+  const psgActive=!_psgSites.includes(s.id)||(()=>{const _c=document.getElementById('psg-toggle');return !_c||_c.checked;})();
+  if(s.extra&&psgActive){
+    s.extra.forEach(e=>{const el=document.getElementById('ref-extra-'+e.id);if(el)extra[e.id]=el.value;});
+  }else if(s.extra&&!psgActive){/* PSG off: skip extra for mammella/prostata */
+  }else if(s.extra){s.extra.forEach(e=>{const el=document.getElementById('ref-extra-'+e.id);if(el)extra[e.id]=el.value;});}
 
   const pfx=getPfx('ref');
   const mSourceEl=document.getElementById('ref-m-source');
@@ -2679,7 +2691,7 @@ function generateReferto(){
   if(mSource!=='cM'){
     txt+=`         Nota M: valutazione ${mSourceLabel}\n`;
   }
-  if(s.id==='mammella'){
+  if(s.id==='mammella'&&psgActive){
     const ihcVal=extra.HER2_IHC||'—';
     const ishVal=extra.HER2_ISH||'—';
     const her2Cat=her2Category(ihcVal,ishVal);
@@ -2714,7 +2726,7 @@ function generateReferto(){
       if(extra.HER2==='Amplificato / IHC 3+')impl.push('HER2+: valutare trastuzumab+tucatinib (MOUNTAINEER)');
       if(impl.length)txt+='Implicazioni: '+impl.join('; ')+'\n';
     }
-  }else if(s.id==='prostata'){
+  }else if(s.id==='prostata'&&psgActive){
     if(extra.PSA&&extra.PSA!=='—'||extra.GG&&extra.GG!=='—'){
       txt+='\n── PARAMETRI PROGNOSTICI ────────────────────────────────\n';
       if(extra.PSA&&extra.PSA!=='—')txt+=`PSA: ${extra.PSA}\n`;
@@ -2740,7 +2752,7 @@ function generateReferto(){
   txt+='\n── RAGGRUPPAMENTO DI STADIO ─────────────────────────────\n';
 
   let stageFootnote='';
-  if(s.id==='prostata'){
+  if(s.id==='prostata'&&psgActive){
     const psaV=extra.PSA||'—';
     const ggRaw=extra.GG||'—';
     const ggNum=parseInt(ggRaw.replace('GG',''))||0;
@@ -2757,7 +2769,7 @@ function generateReferto(){
       stageFootnote='\n── STADIO PROGNOSTICO AJCC 8ª ed. ──────────────────────'
         +'\nPrognostic Stage Group: non calcolabile — dati mancanti ('+miss3.join(', ')+')';
     }
-  }else if(s.id==='mammella'){
+  }else if(s.id==='mammella'&&psgActive){
     const psg=computePrognosticStage_mammella(T,N,extra);
     const erPos2=extra.ER&&extra.ER.startsWith('ER+');
     const prPos2=extra.PR&&extra.PR.startsWith('PR+');
@@ -2954,6 +2966,16 @@ function computePrognosticStage_prostata(T,N,M,psa,gg){
   if(psa.startsWith('<10'))return 'I';
   if(psa.startsWith('10'))return 'IIA'; // 10-19 ng/mL
   return null;
+}
+
+function togglePSG(){
+  const chk=document.getElementById('psg-toggle');
+  const on=!chk||chk.checked;
+  const ex=document.getElementById('extra-selects');
+  const rex=document.getElementById('ref-extra-selects');
+  if(ex)ex.style.display=on?'':'none';
+  if(rex)rex.style.display=on?'':'none';
+  document.getElementById('stage-result').style.display='none';
 }
 
 function copyReferto(){
