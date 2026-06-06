@@ -2741,6 +2741,28 @@ function generateReferto(){
       txt+=`LDH: ${ldhV}\n`;
       if(mCat.startsWith('M1'))txt+=`M con suffisso LDH: ${mCat}${ldhSuf}\n`;
     }
+  }else if(s.id==='testicolo'){
+    const sVal=extra.S||'—';
+    if(sVal!=='—'){
+      txt+='\n── MARCATORI SIERICI (IGCCCG) ──────────────────────────\n';
+      const sLabels={
+        'SX':'SX — Marcatori non disponibili o non eseguiti',
+        'S0':'S0 — Valori nella norma post-orchidectomia',
+        'S1':'S1 — AFP <1000 ng/mL E β-hCG <5000 mUI/mL E LDH <1.5× ULN',
+        'S2':'S2 — AFP 1000–10000 ng/mL O β-hCG 5000–50000 mUI/mL O LDH 1.5–10× ULN',
+        'S3':'S3 — AFP >10000 ng/mL O β-hCG >50000 mUI/mL O LDH >10× ULN',
+      };
+      txt+=`Categoria S: ${sLabels[sVal]||sVal}\n`;
+      const igcccg={
+        'S1':'Prognosi buona (IGCCCG) — non-seminoma: sopravvivenza 5a ~92%',
+        'S2':'Prognosi intermedia (IGCCCG) — non-seminoma: sopravvivenza 5a ~80%',
+        'S3':'Prognosi sfavorevole (IGCCCG) — non-seminoma: sopravvivenza 5a ~48%',
+      };
+      if(igcccg[sVal])txt+=`${igcccg[sVal]}\n`;
+      // Stage IS note
+      if(sVal!=='S0'&&sVal!=='SX'&&stripPfx(N)==='N0'&&stripPfx(M)==='M0')
+        txt+='Nota: marcatori elevati con N0 M0 = Stage IS (malattia sistemica subclinica)\n';
+    }
   }else{
     const extraKeys=Object.keys(extra).filter(k=>extra[k]&&extra[k]!=='—');
     if(extraKeys.length){
