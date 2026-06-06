@@ -1212,8 +1212,12 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'prostata',name:'Prostata',icd:'C61.9',cat:'uro',completeness:'anatomic',staging_type:'combined',staging_type_label:'UICC V9 — Solo anatomico (PSA/Grade Group non implementati)',coverage:{T:'ok',N:'ok',M:'ok',stage:'partial',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},model_limited:true,badges:[{cls:'badge-anat',txt:'Anatomico'}],
-note:'⚠ Raggruppamento anatomico (T/N/M) — il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason score), non implementati in questo motore. Esclusi i carcinomi uroteliali della prostata (staging ureterale). Nessun pT1. Suffix MRI: (mr); PSMA-PET: (PET) da indicare in referto.',
+{id:'prostata',name:'Prostata',icd:'C61.9',cat:'uro',completeness:'complete',staging_type:'combined',staging_type_label:'UICC V9 + PSG AJCC 8ª ed.',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-complete',txt:'PSG AJCC 8ª ed.'}],
+note:'PSG AJCC 8ª ed.: richiede PSA (ng/mL) e Grade Group (1–5). Esclusi i carcinomi uroteliali della prostata (staging ureterale). Nessun pT1. Suffix MRI: (mr); PSMA-PET: (PET) da indicare in referto.',
+extra:[
+  {id:'PSA',label:'PSA (ng/mL)',options:['—','<10 ng/mL','10–19 ng/mL','≥20 ng/mL','Non dosato']},
+  {id:'GG',label:'Grade Group (ISUP)',options:['—','GG1 (Gleason 6)','GG2 (Gleason 3+4=7)','GG3 (Gleason 4+3=7)','GG4 (Gleason 8)','GG5 (Gleason 9–10)']},
+],
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
   {c:'T1a',d:'Riscontro istologico incidentale nel ≤5% del tessuto resecato (TURP)'},
@@ -1369,8 +1373,11 @@ staging:[
   {stage:'IIIC',T:'any',N:'any',M:'M1b'},
 ]},
 
-{id:'melanoma',name:'Melanoma cutaneo',icd:'C44',cat:'skin',completeness:'partial',staging_type:'histotype',staging_type_label:'Varianti clinico/patologico — LDH non implementato',coverage:{T:'ok',N:'ok',M:'ok',stage:'partial',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
+{id:'melanoma',name:'Melanoma cutaneo',icd:'C44',cat:'skin',completeness:'complete',staging_type:'histotype',staging_type_label:'UICC 8ª ed. — Varianti clinico/patologico',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
 note:'Il T clinico viene classificato dopo escissione (vedi pT). Spessore misurato in mm, arrotondato al decimo più vicino. Suffissi LDH: (0)=LDH normale; (1)=LDH elevata; nessun suffisso se LDH non registrata.',
+extra:[
+  {id:'LDH',label:'LDH sierico',options:['—','Nella norma (LDH 0)','Elevato (LDH 1)','Non dosato']},
+],
 variants:[
   {id:'clinical',label:'Stadio clinico (cTNM)'},
   {id:'path',label:'Stadio patologico (pTNM)'},
@@ -2707,6 +2714,21 @@ function generateReferto(){
       if(extra.HER2==='Amplificato / IHC 3+')impl.push('HER2+: valutare trastuzumab+tucatinib (MOUNTAINEER)');
       if(impl.length)txt+='Implicazioni: '+impl.join('; ')+'\n';
     }
+  }else if(s.id==='prostata'){
+    if(extra.PSA&&extra.PSA!=='—'||extra.GG&&extra.GG!=='—'){
+      txt+='\n── PARAMETRI PROGNOSTICI ────────────────────────────────\n';
+      if(extra.PSA&&extra.PSA!=='—')txt+=`PSA: ${extra.PSA}\n`;
+      if(extra.GG&&extra.GG!=='—')txt+=`Grade Group: ${extra.GG}\n`;
+    }
+  }else if(s.id==='melanoma'){
+    const mCat=stripPfx(M);
+    const ldhV=extra.LDH||'—';
+    if(ldhV!=='—'&&ldhV!=='Non dosato'){
+      const ldhSuf=ldhV.startsWith('Nella norma')?'(0)':'(1)';
+      txt+='\n── LDH E CLASSIFICAZIONE M ──────────────────────────────\n';
+      txt+=`LDH: ${ldhV}\n`;
+      if(mCat.startsWith('M1'))txt+=`M con suffisso LDH: ${mCat}${ldhSuf}\n`;
+    }
   }else{
     const extraKeys=Object.keys(extra).filter(k=>extra[k]&&extra[k]!=='—');
     if(extraKeys.length){
@@ -2719,7 +2741,22 @@ function generateReferto(){
 
   let stageFootnote='';
   if(s.id==='prostata'){
-    stageFootnote='\n⚠ ATTENZIONE: questo NON corrisponde al Prognostic Stage Group. Per la prostata il gruppo prognostico formale richiede PSA (ng/mL) e Grade Group (Gleason score). Integrare con questi dati prima di qualsiasi uso clinico.';
+    const psaV=extra.PSA||'—';
+    const ggRaw=extra.GG||'—';
+    const ggNum=parseInt(ggRaw.replace('GG',''))||0;
+    const psgP=computePrognosticStage_prostata(T,N,M,psaV,ggNum);
+    if(psgP){
+      stageFootnote='\n── STADIO PROGNOSTICO AJCC 8ª ed. ──────────────────────'
+        +'\nPrognostic Stage Group: '+psgP
+        +'\nDeterminanti: '+stripPfx(T)+' '+stripPfx(N)+' '+stripPfx(M)+' | PSA: '+psaV+' | '+ggRaw
+        +'\n⚠ Verificare con: AJCC Cancer Staging Manual, 8ª ed. Tab. 58.5';
+    }else{
+      const miss3=[];
+      if(!extra.PSA||extra.PSA==='—')miss3.push('PSA');
+      if(!extra.GG||extra.GG==='—')miss3.push('Grade Group');
+      stageFootnote='\n── STADIO PROGNOSTICO AJCC 8ª ed. ──────────────────────'
+        +'\nPrognostic Stage Group: non calcolabile — dati mancanti ('+miss3.join(', ')+')';
+    }
   }else if(s.id==='mammella'){
     const psg=computePrognosticStage_mammella(T,N,extra);
     const erPos2=extra.ER&&extra.ER.startsWith('ER+');
@@ -2889,6 +2926,33 @@ function her2Category(ihc,ish){
   }
   if(ihc==='1+')return 'HER2-low (IHC 1+)';
   if(ihc==='0')return 'HER2-zero (IHC 0)';
+  return null;
+}
+
+function computePrognosticStage_prostata(T,N,M,psa,gg){
+  const t=stripPfx(T);
+  const n=stripPfx(N);
+  const m=stripPfx(M);
+  if(!gg||!psa||psa==='—'||psa==='Non dosato')return null;
+  // M1 → IVB
+  if(m==='cM1'||m==='pM1')return 'IVB';
+  // N1 → IVA (any PSA, any GG)
+  if(n==='N1')return 'IVA';
+  // GG5 → IIIC (any T, N0, M0)
+  if(gg===5)return 'IIIC';
+  // T3/T4, N0, M0, GG1-4 → IIIB
+  if(['T3','T3a','T3b','T4'].includes(t))return 'IIIB';
+  // T1/T2, N0, M0
+  if(psa.startsWith('≥20'))return 'IIIA';
+  // PSA <20 (< 10 or 10-19)
+  if(gg>=3)return 'IIC'; // GG3/GG4
+  // GG1 or GG2
+  if(t==='T2b'||t==='T2c')return 'IIB';
+  // T1/T1a/T1b/T1c/T2/T2a
+  if(gg===2)return 'IIA';
+  // GG1
+  if(psa.startsWith('<10'))return 'I';
+  if(psa.startsWith('10'))return 'IIA'; // 10-19 ng/mL
   return null;
 }
 

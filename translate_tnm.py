@@ -1087,6 +1087,20 @@ R += [
   ('Mammella: HER2 IHC 2+', 'Breast: HER2 IHC 2+'),
   ('se IHC 2+', 'if IHC 2+'),  ('Mammella: AJCC v9 Prognostic Stage Group', 'Breast: AJCC 8th ed. Prognostic Stage Group'),
 
+  # ── Prostata PSG + Melanoma LDH translations ─────────────────────────────────
+  ('UICC V9 + PSG AJCC 8ª ed.', 'UICC V9 + AJCC 8th ed. PSG'),
+  ("txt:'PSG AJCC 8ª ed.'", "txt:'AJCC 8th ed. PSG'"),
+  ('PSG AJCC 8ª ed.: richiede PSA (ng/mL) e Grade Group (1–5).', 'AJCC 8th ed. PSG: requires PSA (ng/mL) and Grade Group (1–5).'),
+  ("'Non dosato'", "'Not measured'"),
+  ('── PARAMETRI PROGNOSTICI ────────────────────────────────', '── PROGNOSTIC PARAMETERS ────────────────────────────────'),
+  ('⚠ Verificare con: AJCC Cancer Staging Manual, 8ª ed. Tab. 58.5', '⚠ Verify with: AJCC Cancer Staging Manual, 8th ed. Tab. 58.5'),
+  ('UICC 8ª ed. — Varianti clinico/patologico', 'UICC 8th ed. — Clinical/pathological variants'),
+  ("label:'LDH sierico'", "label:'Serum LDH'"),
+  ("'Nella norma (LDH 0)'", "'Normal (LDH 0)'"),
+  ("'Elevato (LDH 1)'", "'Elevated (LDH 1)'"),
+  ('── LDH E CLASSIFICAZIONE M ──────────────────────────────', '── LDH AND M CLASSIFICATION ─────────────────────────────'),
+  ('M con suffisso LDH: ', 'M with LDH suffix: '),
+
 ]
 
 # ════════════════════════════════════════════════════════════════════════════
