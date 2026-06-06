@@ -1159,7 +1159,7 @@ staging_variants:{
   ]
 }},
 
-{id:'mammella',name:'Breast',icd:'C50',cat:'breast',completeness:'complete',staging_type:'combined',staging_type_label:'UICC V9 (≡ TNM 8) + PSG AJCC 8ª ed.',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'},{cls:'badge-complete',txt:'PSG AJCC 8ª ed.'}],
+{id:'mammella',name:'Breast',icd:'C50',cat:'breast',completeness:'complete',staging_type:'combined',staging_type_label:'UICC V9 (≡ TNM 8) + PSG AJCC 8ª ed.',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'},{cls:'badge-complete',txt:'AJCC 8th ed. PSG'}],
 note:'≥6 lymph nodes per pN0 (livello I ascellare). pN basato sul componente invasivo; il DCIS non conta ai fini della classificazione N. ITC (≤0.2 mm o ≤200 cellule) = N0(i+): non modificano lo stadio. Distinguere sempre cN (clinico/imaging) da pN (patologico): cN1 ≠ pN1 per implicazioni terapeutiche. Includere sempre il modificatore (sn) se la classificazione N deriva dal solo sentinella. AJCC esclude Tis(LCIS). Prognostic Stage Group AJCC 8ª ed.: richiede ER, PR, HER2 (IHC + ISH se 2+), Grado Nottingham. HER2-low (IHC 1+ o IHC 2+/ISH−) riportato nel referto. Verificare con AJCC Cancer Staging Manual v9.',
 extra:[{id:'ER',label:'ER',options:['—','ER+ (≥1%)','ER− (<1%)']},{id:'PR',label:'PR',options:['—','PR+ (≥1%)','PR− (<1%)']},{id:'HER2_IHC',label:'HER2 IHC score',options:['—','0','1+','2+','3+']},{id:'HER2_ISH',label:'HER2 ISH/FISH (if IHC 2+)',options:['—','Amplified (ratio ≥2.0 or ≥6 copies)','Non-amplified']},{id:'G',label:'Nottingham grade',options:['—','G1','G2','G3']},{id:'Ki67',label:'Ki67 (%)',type:'text',placeholder:'e.g. 25'},],
 T:[
@@ -1212,8 +1212,12 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'prostata',name:'Prostate',icd:'C61.9',cat:'uro',completeness:'anatomic',staging_type:'combined',staging_type_label:'UICC V9 — Solo anatomico (PSA/Grade Group non implementati)',coverage:{T:'ok',N:'ok',M:'ok',stage:'partial',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},model_limited:true,badges:[{cls:'badge-anat',txt:'Anatomic'}],
-note:'⚠ Raggruppamento anatomico (T/N/M) — il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason score), not implemented in this tool. Esclusi i carcinomi uroteliali della prostata (staging ureterale). Nessun pT1. Suffix MRI: (mr); PSMA-PET: (PET) da indicare in referto.',
+{id:'prostata',name:'Prostate',icd:'C61.9',cat:'uro',completeness:'complete',staging_type:'combined',staging_type_label:'UICC V9 + AJCC 8th ed. PSG',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-complete',txt:'AJCC 8th ed. PSG'}],
+note:'AJCC 8th ed. PSG: requires PSA (ng/mL) and Grade Group (1–5). Esclusi i carcinomi uroteliali della prostata (staging ureterale). Nessun pT1. Suffix MRI: (mr); PSMA-PET: (PET) da indicare in referto.',
+extra:[
+  {id:'PSA',label:'PSA (ng/mL)',options:['—','<10 ng/mL','10–19 ng/mL','≥20 ng/mL','Not measured']},
+  {id:'GG',label:'Grade Group (ISUP)',options:['—','GG1 (Gleason 6)','GG2 (Gleason 3+4=7)','GG3 (Gleason 4+3=7)','GG4 (Gleason 8)','GG5 (Gleason 9–10)']},
+],
 T:[
   {c:'TX',d:'Not assessable'},{c:'T0',d:'No tumor'},
   {c:'T1a',d:'Incidental histological finding in ≤5% of the resected tissue (TURP)'},
@@ -1369,8 +1373,11 @@ staging:[
   {stage:'IIIC',T:'any',N:'any',M:'M1b'},
 ]},
 
-{id:'melanoma',name:'Cutaneous Melanoma',icd:'C44',cat:'skin',completeness:'partial',staging_type:'histotype',staging_type_label:'Varianti clinico/patologico — LDH non implementato',coverage:{T:'ok',N:'ok',M:'ok',stage:'partial',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
+{id:'melanoma',name:'Cutaneous Melanoma',icd:'C44',cat:'skin',completeness:'complete',staging_type:'histotype',staging_type_label:'UICC 8th ed. — Clinical/pathological variants',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
 note:'Il T clinico viene classificato dopo escissione (vedi pT). Spessore misurato in mm, arrotondato al decimo più vicino. Suffissi LDH: (0)=LDH normale; (1)=LDH elevata; nessun suffisso se LDH non registrata.',
+extra:[
+  {id:'LDH',label:'Serum LDH',options:['—','Normal (LDH 0)','Elevated (LDH 1)','Not measured']},
+],
 variants:[
   {id:'clinical',label:'Clinical stage (cTNM)'},
   {id:'path',label:'Pathological stage (pTNM)'},
@@ -2707,6 +2714,21 @@ function generateReferto(){
       if(extra.HER2==='Amplificato / IHC 3+')impl.push('HER2+: valutare trastuzumab+tucatinib (MOUNTAINEER)');
       if(impl.length)txt+='Implicazioni: '+impl.join('; ')+'\n';
     }
+  }else if(s.id==='prostata'){
+    if(extra.PSA&&extra.PSA!=='—'||extra.GG&&extra.GG!=='—'){
+      txt+='\n── PROGNOSTIC PARAMETERS ────────────────────────────────\n';
+      if(extra.PSA&&extra.PSA!=='—')txt+=`PSA: ${extra.PSA}\n`;
+      if(extra.GG&&extra.GG!=='—')txt+=`Grade Group: ${extra.GG}\n`;
+    }
+  }else if(s.id==='melanoma'){
+    const mCat=stripPfx(M);
+    const ldhV=extra.LDH||'—';
+    if(ldhV!=='—'&&ldhV!=='Not measured'){
+      const ldhSuf=ldhV.startsWith('Nella norma')?'(0)':'(1)';
+      txt+='\n── LDH AND M CLASSIFICATION ─────────────────────────────\n';
+      txt+=`LDH: ${ldhV}\n`;
+      if(mCat.startsWith('M1'))txt+=`M with LDH suffix: ${mCat}${ldhSuf}\n`;
+    }
   }else{
     const extraKeys=Object.keys(extra).filter(k=>extra[k]&&extra[k]!=='—');
     if(extraKeys.length){
@@ -2719,7 +2741,22 @@ function generateReferto(){
 
   let stageFootnote='';
   if(s.id==='prostata'){
-    stageFootnote='\n⚠ WARNING: this does NOT correspond to the Prognostic Stage Group. For prostate, the formal prognostic group requires PSA (ng/mL) and Grade Group (Gleason score). Integrate these data before any clinical use.';
+    const psaV=extra.PSA||'—';
+    const ggRaw=extra.GG||'—';
+    const ggNum=parseInt(ggRaw.replace('GG',''))||0;
+    const psgP=computePrognosticStage_prostata(T,N,M,psaV,ggNum);
+    if(psgP){
+      stageFootnote='\n── STADIO PROGNOSTICO AJCC 8ª ed. ──────────────────────'
+        +'\nPrognostic Stage Group: '+psgP
+        +'\nDeterminants: '+stripPfx(T)+' '+stripPfx(N)+' '+stripPfx(M)+' | PSA: '+psaV+' | '+ggRaw
+        +'\n⚠ Verify with: AJCC Cancer Staging Manual, 8th ed. Tab. 58.5';
+    }else{
+      const miss3=[];
+      if(!extra.PSA||extra.PSA==='—')miss3.push('PSA');
+      if(!extra.GG||extra.GG==='—')miss3.push('Grade Group');
+      stageFootnote='\n── STADIO PROGNOSTICO AJCC 8ª ed. ──────────────────────'
+        +'\nPrognostic Stage Group: not calculable — missing data ('+miss3.join(', ')+')';
+    }
   }else if(s.id==='mammella'){
     const psg=computePrognosticStage_mammella(T,N,extra);
     const erPos2=extra.ER&&extra.ER.startsWith('ER+');
@@ -2889,6 +2926,33 @@ function her2Category(ihc,ish){
   }
   if(ihc==='1+')return 'HER2-low (IHC 1+)';
   if(ihc==='0')return 'HER2-zero (IHC 0)';
+  return null;
+}
+
+function computePrognosticStage_prostata(T,N,M,psa,gg){
+  const t=stripPfx(T);
+  const n=stripPfx(N);
+  const m=stripPfx(M);
+  if(!gg||!psa||psa==='—'||psa==='Not measured')return null;
+  // M1 → IVB
+  if(m==='cM1'||m==='pM1')return 'IVB';
+  // N1 → IVA (any PSA, any GG)
+  if(n==='N1')return 'IVA';
+  // GG5 → IIIC (any T, N0, M0)
+  if(gg===5)return 'IIIC';
+  // T3/T4, N0, M0, GG1-4 → IIIB
+  if(['T3','T3a','T3b','T4'].includes(t))return 'IIIB';
+  // T1/T2, N0, M0
+  if(psa.startsWith('≥20'))return 'IIIA';
+  // PSA <20 (< 10 or 10-19)
+  if(gg>=3)return 'IIC'; // GG3/GG4
+  // GG1 or GG2
+  if(t==='T2b'||t==='T2c')return 'IIB';
+  // T1/T1a/T1b/T1c/T2/T2a
+  if(gg===2)return 'IIA';
+  // GG1
+  if(psa.startsWith('<10'))return 'I';
+  if(psa.startsWith('10'))return 'IIA'; // 10-19 ng/mL
   return null;
 }
 
