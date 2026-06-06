@@ -471,6 +471,7 @@ const SITES=[
 
 {id:'colon_retto',name:'Colorectum',icd:'C18-C20',cat:'gi',completeness:'complete',staging_type:'anatomic',staging_type_label:'UICC anatomic stage',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:'≥12 lymph nodes per pN0 adeguato. TD (depositi tumorali) classificati come N1c se LN negativi. OGJ con epicentro >2 cm dal GEJ → staging gastrico.',
+extra:[{id:'MSI',label:'MSI / MMR',options:['—','MSI-H / dMMR','MSS / pMMR','Non testato']},{id:'RAS',label:'RAS (KRAS/NRAS)',options:['—','WT (non mutato)','KRAS mut es. 2 (cod. 12/13)','KRAS mut es. 3 (cod. 59/61)','KRAS mut es. 4 (cod. 117/146)','NRAS mut','Non testato']},{id:'BRAF',label:'BRAF',options:['—','WT','BRAF V600E mut','Non testato']},{id:'HER2',label:'HER2 (colon)',options:['—','Amplificato / IHC 3+','Negativo / Non testato']},],
 T:[
   {c:'TX',d:'Primary tumor not assessable'},
   {c:'T0',d:'No evidence of primary tumor'},
@@ -2687,6 +2688,25 @@ function generateReferto(){
     }
     if(extra.G&&extra.G!=='—')txt+=`Nottingham grade: ${extra.G}\n`;
     if(ki67Val)txt+=`Ki67: ${ki67Val}%\n`;
+  }else if(s.id==='colon_retto'){
+    const hasMol=Object.keys(extra).some(k=>extra[k]&&extra[k]!=='—');
+    if(hasMol){
+      txt+='\n── FATTORI MOLECOLARI PREDITTIVI ──────────────────────\n';
+      if(extra.MSI&&extra.MSI!=='—'){txt+=`MSI/MMR: ${extra.MSI}\n`;}
+      if(extra.RAS&&extra.RAS!=='—'){txt+=`RAS: ${extra.RAS}\n`;}
+      if(extra.BRAF&&extra.BRAF!=='—'){txt+=`BRAF: ${extra.BRAF}\n`;}
+      if(extra.HER2&&extra.HER2!=='—')txt+=`HER2: ${extra.HER2}\n`;
+      // Clinical implications
+      const impl=[];
+      if(extra.MSI==='MSI-H / dMMR')impl.push('MSI-H/dMMR: candidato a immunoterapia (pembrolizumab 1L metastatico)');
+      if(extra.BRAF==='BRAF V600E mut')impl.push('BRAF V600E: anti-EGFR controindicati; valutare encorafenib+cetuximab (BEACON-CRC)');
+      if(extra.RAS&&extra.RAS!=='WT (non mutato)'&&extra.RAS!=='—'&&extra.RAS!=='Non testato')
+        impl.push('RAS mut: anti-EGFR (cetuximab/panitumumab) controindicati');
+      if(extra.RAS==='WT (non mutato)'&&extra.BRAF==='WT')
+        impl.push('RAS/BRAF WT: anti-EGFR potenzialmente indicati (valutare lato primitivo)');
+      if(extra.HER2==='Amplificato / IHC 3+')impl.push('HER2+: valutare trastuzumab+tucatinib (MOUNTAINEER)');
+      if(impl.length)txt+='Implicazioni: '+impl.join('; ')+'\n';
+    }
   }else{
     const extraKeys=Object.keys(extra).filter(k=>extra[k]&&extra[k]!=='—');
     if(extraKeys.length){
