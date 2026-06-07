@@ -1,0 +1,16 @@
+{
+  "name": "TNM 9ª Ed. — Anatomia Patologica",
+  "short_name": "TNM AP",
+  "description": "Staging TNM UICC v9 — 29 sedi tumorali per Anatomia Patologica",
+  "start_url": "/TNM/",
+  "scope": "/TNM/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f0f2f5",
+  "theme_color": "#2563a8",
+  "lang": "it",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
