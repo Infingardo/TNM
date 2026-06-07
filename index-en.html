@@ -168,10 +168,66 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:#b0b8cc;border-radius:3px;}
+
+/* ── MOBILE RESPONSIVE ──────────────────────────────────── */
+#menu-btn{display:none;background:none;border:none;font-size:22px;cursor:pointer;
+  color:var(--text);padding:4px 8px;line-height:1;flex-shrink:0;}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;}
+
+@media(max-width:768px){
+  body{overflow:auto;height:auto;min-height:100vh;}
+
+  /* Sidebar: off-screen by default, slides in */
+  #sidebar{position:fixed;left:-260px;top:0;height:100%;z-index:1000;
+    transition:left .22s ease;box-shadow:2px 0 12px rgba(0,0,0,.18);
+    width:240px !important;min-width:0 !important;}
+  #sidebar.mob-open{left:0;}
+  #sidebar-overlay.mob-show{display:block;}
+
+  #menu-btn{display:inline-flex;align-items:center;}
+
+  #main{width:100%;}
+
+  /* Topbar: stack title + tabs vertically */
+  #topbar{flex-wrap:wrap;padding:10px 12px;gap:6px;}
+  #topbar>div:first-child{flex:1;min-width:0;}
+  #site-title{font-size:15px;}
+
+  /* Tabs: icone sole su schermi stretti */
+  .tabs{flex-wrap:wrap;gap:4px;width:100%;}
+  .tab-btn{font-size:11px;padding:6px 8px;white-space:nowrap;}
+  .tab-btn.active{background:var(--accent) !important;}
+  button[onclick="nuovoCaso()"]{font-size:11px !important;padding:6px 8px;margin-left:0 !important;}
+
+  /* Prevent iOS font-size zoom on inputs */
+  select,input[type="text"],input[type="number"],textarea{font-size:16px !important;}
+
+  /* Content: reduce padding */
+  .tab-panel{padding:14px 12px !important;}
+  #staging-content,#referto-content{padding:14px 12px;}
+
+  /* Dropdowns: full width */
+  .form-group select,.form-group input{width:100% !important;box-sizing:border-box;}
+
+  /* Stage result: break long lines */
+  #stage-result,#referto-output{word-break:break-word;font-size:13px;}
+
+  /* Lookup table: horizontal scroll */
+  #lookup-content{overflow-x:auto;}
+
+  /* Staging type bar: wrap */
+  #staging-type-bar{flex-wrap:wrap;font-size:12px;}
+}
+
+@media(min-width:769px){
+  #sidebar-overlay{display:none !important;}
+  #menu-btn{display:none !important;}
+}
 </style>
 </head>
 <body>
 
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
   <div id="sidebar-header">
     <h1>TNM 9th Ed.</h1>
@@ -185,6 +241,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
 
 <div id="main">
   <div id="topbar">
+    <button id="menu-btn" onclick="toggleSidebar()" title="Menu sites">☰</button>
     <div>
       <div id="site-title">Select a site</div>
       <div id="site-icd"></div>
@@ -1882,6 +1939,11 @@ function filterSites(){
 }
 
 function selectSite(id){
+  // Close mobile sidebar on site select
+  if(window.innerWidth<=768){
+    document.getElementById('sidebar').classList.remove('mob-open');
+    document.getElementById('sidebar-overlay').classList.remove('mob-show');
+  }
   currentSite=SITES.find(s=>s.id===id);
   document.querySelectorAll('.site-item').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
   document.getElementById('site-title').textContent=currentSite.name;
@@ -2988,6 +3050,13 @@ function computePrognosticStage_prostata(T,N,M,psa,gg){
   if(psa.startsWith('<10'))return 'I';
   if(psa.startsWith('10'))return 'IIA'; // 10-19 ng/mL
   return null;
+}
+
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sidebar-overlay');
+  const open=sb.classList.toggle('mob-open');
+  ov.classList.toggle('mob-show',open);
 }
 
 function togglePSG(){
