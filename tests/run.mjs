@@ -184,6 +184,9 @@ const swJs = readFile('sw.js');
 ok('index.html registra ./sw.js', indexHtml.includes('register("./sw.js")'));
 ok('index.html non usa più /TNM/sw.js', !indexHtml.includes('/TNM/sw.js'));
 ok('sw.js non contiene path assoluti /TNM/', !swJs.includes('/TNM/'));
+const manifest = JSON.parse(readFile('manifest.json'));
+ok('manifest start_url relativo (no /TNM/)', !manifest.start_url.startsWith('/'));
+ok('manifest scope relativo (no /TNM/)', !manifest.scope.startsWith('/'));
 
 // ── Riepilogo ────────────────────────────────────────────────────────
 console.log('\n' + '─'.repeat(60));
