@@ -1072,6 +1072,7 @@ R += [
   ('HER2 categoria: ', 'HER2 category: '),
   ('Grado Nottingham: ', 'Nottingham grade: '),
   ('── STADIO PROGNOSTICO AJCC v9 ─────────────────────────', '── AJCC 8th ed. PROGNOSTIC STAGE ─────────────────────────'),
+  ('── STADIO PROGNOSTICO PATOLOGICO (pPSG) AJCC 8ª ed. ────', '── PATHOLOGIC PROGNOSTIC STAGE (pPSG) AJCC 8th ed. ─────'),
   ("'\\nDeterminanti: '", "'\\nDeterminants: '"),
   ('\\n⚠ Verificare con: AJCC Cancer Staging Manual, Version 9', '\\n⚠ Verify with: AJCC Cancer Staging Manual, 8th Edition (2017)'),
   ('Prognostic Stage Group: non calcolabile — dati mancanti (', 'Prognostic Stage Group: not calculable — missing data ('),

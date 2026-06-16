@@ -2849,7 +2849,7 @@ function generateReferto(){
     const ggNum=parseInt(ggRaw.replace('GG',''))||0;
     const psgP=computePrognosticStage_prostata(T,N,M,psaV,ggNum);
     if(psgP){
-      stageFootnote='\n── STADIO PROGNOSTICO AJCC 8ª ed. ──────────────────────'
+      stageFootnote='\n── STADIO PROGNOSTICO PATOLOGICO (pPSG) AJCC 8ª ed. ────'
         +'\nPrognostic Stage Group: '+psgP
         +'\nDeterminanti: '+stripPfx(T)+' '+stripPfx(N)+' '+stripPfx(M)+' | PSA: '+psaV+' | '+ggRaw
         +'\n⚠ Verificare con: AJCC Cancer Staging Manual, 8ª ed. Tab. 58.5';
@@ -2857,7 +2857,7 @@ function generateReferto(){
       const miss3=[];
       if(!extra.PSA||extra.PSA==='—')miss3.push('PSA');
       if(!extra.GG||extra.GG==='—')miss3.push('Grade Group');
-      stageFootnote='\n── STADIO PROGNOSTICO AJCC 8ª ed. ──────────────────────'
+      stageFootnote='\n── STADIO PROGNOSTICO PATOLOGICO (pPSG) AJCC 8ª ed. ────'
         +'\nPrognostic Stage Group: non calcolabile — dati mancanti ('+miss3.join(', ')+')';
     }
   }else if(s.id==='mammella'&&psgActive){
@@ -2872,7 +2872,7 @@ function generateReferto(){
     if(psg){
       const hrStr=hr2?'HR+':'HR−';
       const h2Str=her2V?'HER2+':'HER2−';
-      stageFootnote='\n── STADIO PROGNOSTICO AJCC 8ª ed. ──────────────────────'
+      stageFootnote='\n── STADIO PROGNOSTICO PATOLOGICO (pPSG) AJCC 8ª ed. ────'
         +'\nPrognostic Stage Group: '+psg
         +'\nDeterminanti: '+stripPfx(T)+' '+stripPfx(N)+' '+gV+' '+hrStr+' '+h2Str
         +'\n⚠ Verificare con: AJCC Cancer Staging Manual, Version 9';
@@ -2882,7 +2882,7 @@ function generateReferto(){
       if(!extra.PR||extra.PR==='—')miss2.push('PR');
       if(!extra.HER2_IHC||extra.HER2_IHC==='—')miss2.push('HER2 IHC');
       if(!extra.G||extra.G==='—')miss2.push('Grado');
-      stageFootnote='\n── STADIO PROGNOSTICO AJCC 8ª ed. ──────────────────────'
+      stageFootnote='\n── STADIO PROGNOSTICO PATOLOGICO (pPSG) AJCC 8ª ed. ────'
         +'\nPrognostic Stage Group: non calcolabile — dati mancanti ('+miss2.join(', ')+')';
     }
   }

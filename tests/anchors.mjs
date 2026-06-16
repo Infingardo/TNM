@@ -53,8 +53,12 @@ export const ANCHORS = [
 // PSG mammella (AJCC 8ª Prognostic Stage Group). Confidenza MEDIA: i valori
 // vanno confermati cella per cella sul manuale. Un mismatch qui NON è
 // necessariamente un bug del motore — può essere l'atteso da correggere.
+// La MAMMELLA_PSG_TABLE del motore è il PATHOLOGIC PSG (pPSG) — corretto per uno
+// strumento di anatomia patologica (referto pTNM). ATTENZIONE alla trappola AJCC8:
+// per T2N0M0/HR+/HER2−/G1 il Clinical PSG = IB, ma il Pathologic PSG = IA.
+// Confermato vs fonte primaria (AJCC Cancer Staging Manual 8th, breast pPSG tables).
 export const ANCHORS_PSG_BREAST = [
-  // Esempio canonico AJCC8: T2N0M0 con biologia favorevole scende da IIA(anat) a IB.
-  { T: 'T1c', N: 'N0', M: 'M0', extra: HR_HER2neg('G1'), expect: 'IA', confidence: 'media', src: 'AJCC8 breast PSG' },
-  { T: 'T2',  N: 'N0', M: 'M0', extra: HR_HER2neg('G1'), expect: 'IB', confidence: 'media', src: 'AJCC8 breast PSG (downstage canonico)' },
+  { T: 'T1c', N: 'N0', M: 'M0', extra: HR_HER2neg('G1'), expect: 'IA', confidence: 'alta', src: 'AJCC8 breast pPSG' },
+  // Downstage canonico: T2N0M0 favorevole → pathologic IA (clinical sarebbe IB).
+  { T: 'T2',  N: 'N0', M: 'M0', extra: HR_HER2neg('G1'), expect: 'IA', confidence: 'alta', src: 'AJCC8 breast pPSG (≠ clinical IB)' },
 ];
