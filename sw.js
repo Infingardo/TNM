@@ -1,8 +1,10 @@
 const CACHE = 'tnm-v1';
+// Path relativi allo scope del service worker: funzionano sia su /TNM/ (GitHub Pages)
+// sia su root o sottocartelle diverse senza modifiche.
 const ASSETS = [
-  '/TNM/',
-  '/TNM/index.html',
-  '/TNM/index-en.html'
+  './',
+  './index.html',
+  './index-en.html'
 ];
 
 self.addEventListener('install', e => {
@@ -20,12 +22,13 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Network-first per le pagine principali, cache fallback
-  if (ASSETS.some(a => e.request.url.endsWith(a.replace('/TNM','')))) {
+  // Network-first solo per i documenti HTML principali, cache fallback offline.
+  if (e.request.mode === 'navigate' ||
+      /\.html$/.test(new URL(e.request.url).pathname)) {
     e.respondWith(
       fetch(e.request)
         .then(r => { caches.open(CACHE).then(c => c.put(e.request, r.clone())); return r; })
-        .catch(() => caches.match(e.request))
+        .catch(() => caches.match(e.request).then(m => m || caches.match('./index.html')))
     );
   }
 });
