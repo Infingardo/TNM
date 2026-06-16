@@ -14,7 +14,7 @@
 :root{
   --bg:#f0f2f5;--panel:#ffffff;--border:#d4d9e2;--accent:#2563a8;--accent2:#1a7a6e;
   --text:#1e2535;--muted:#6b7590;--badge:#e8ecf2;--ok:#2e7d32;--warn:#b35a00;
-  --stage-bg:#eef2f8;--code:#1a4f8a;--hover:#e4e9f2;--radius:6px;
+  --stage-bg:#eef2f8;--code:#1a4f8a;--hover:#e4e9f2;--radius:6px;--bg2:#f7f9fc;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);
@@ -1312,14 +1312,14 @@ staging_variants:{
     {stage:'I',T:['T1','T2a'],N:'N0',M:'M0'},
     {stage:'II',T:['T2b','T2c'],N:'N0',M:'M0'},
     {stage:'III',T:['T3','T4'],N:'N0',M:'M0'},
-    {stage:'IV',T:'any',N:'N1',M:'M0'},
-    {stage:'IV',T:'any',N:'any',M:'M1'},
+    {stage:'IVA',T:'any',N:'N1',M:'M0'},
+    {stage:'IVB',T:'any',N:'any',M:'M1'},
   ],
   path:[
     {stage:'II',T:'T2',N:'N0',M:'M0'},
     {stage:'III',T:['T3','T4'],N:'N0',M:'M0'},
-    {stage:'IV',T:'any',N:'N1',M:'M0'},
-    {stage:'IV',T:'any',N:'any',M:'M1'},
+    {stage:'IVA',T:'any',N:'N1',M:'M0'},
+    {stage:'IVB',T:'any',N:'any',M:'M1'},
   ]
 }},
 
@@ -1589,9 +1589,6 @@ staging_variants:{
     {stage:'IV',T:'any',N:'any',M:'M1'},
   ]
 }},
-
-
-,
 
 {id:'pelvi_renale',name:'Renal Pelvis',icd:'C65.9',cat:'uro',completeness:'complete',staging_type:'anatomic',staging_type_label:'UICC anatomic stage',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
 note:"Carcinoma uroteliale dell'alto tratto urinario. ≥8 lymph nodes per pN0 adeguato. T3 include l'invasione del renal parenchyma — distinguere da RCC primitivo (IHC: GATA3+/CK7+ vs CD10+/CK7-). Lateralità obbligatoria nel referto.",
@@ -2715,6 +2712,10 @@ function generateReferto(){
   if(result.ambiguous){
     v.errors.push('Dataset ambiguity: stages '+result.allStages.join(' / ')+' simultaneously compatible — staging not assignable. Please report the bug.');
   }
+  if(mSource==='MX'){
+    result.stage=null;
+    v.incomplete.push('Fonte M = MX: categoria M non documentata nel materiale disponibile — stadio non assegnabile finché M non è classificato (cM/pM).');
+  }
   const stage=result.stage;
 
   const td=s.T.find(x=>x.c===T)||{d:'—'};
@@ -3036,8 +3037,8 @@ function computePrognosticStage_prostata(T,N,M,psa,gg){
   const n=stripPfx(N);
   const m=stripPfx(M);
   if(!gg||!psa||psa==='—'||psa==='Not measured')return null;
-  // M1 → IVB
-  if(m==='cM1'||m==='pM1')return 'IVB';
+  // M1 → IVB (m è già privato del prefisso da stripPfx: cM1/pM1/M1 → 'M1')
+  if(m==='M1')return 'IVB';
   // N1 → IVA (any PSA, any GG)
   if(n==='N1')return 'IVA';
   // GG5 → IIIC (any T, N0, M0)
@@ -3089,7 +3090,7 @@ init();
 <script>
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("/TNM/sw.js")
+    navigator.serviceWorker.register("./sw.js")
       .then(r=>console.log("SW registered:",r.scope))
       .catch(e=>console.warn("SW error:",e));
   });
