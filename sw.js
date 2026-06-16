@@ -1,6 +1,6 @@
 const CACHE = 'tnm-v1';
-// Path relativi allo scope del service worker: funzionano sia su /TNM/ (GitHub Pages)
-// sia su root o sottocartelle diverse senza modifiche.
+// Path relativi allo scope del service worker: funzionano sia sul sottopercorso
+// del progetto GitHub Pages sia su root o sottocartelle diverse senza modifiche.
 const ASSETS = [
   './',
   './index.html',
