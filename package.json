@@ -4,6 +4,8 @@
   "description": "Strumento di stadiazione TNM 9ª ed. per anatomia patologica — test del motore di staging",
   "private": true,
   "scripts": {
-    "test": "node tests/run.mjs"
+    "test": "node tests/run.mjs",
+    "test:anchors": "node tests/anchors.run.mjs",
+    "test:all": "node tests/run.mjs && node tests/anchors.run.mjs"
   }
 }

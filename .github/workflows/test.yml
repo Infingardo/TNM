@@ -28,3 +28,5 @@ jobs:
           node-version: '24'
       - name: Esegui i test del motore di staging
         run: node tests/run.mjs
+      - name: Esegui i casi-ancora (vs fonte primaria)
+        run: node tests/anchors.run.mjs
