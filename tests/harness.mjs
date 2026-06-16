@@ -28,8 +28,8 @@ function makeFake() {
   return fake;
 }
 
-export function loadEngine() {
-  const html = fs.readFileSync(join(ROOT, 'index.html'), 'utf8');
+export function loadEngine(file = 'index.html') {
+  const html = fs.readFileSync(join(ROOT, file), 'utf8');
   const re = /<script>([\s\S]*?)<\/script>/g;
   let m, code = '';
   while ((m = re.exec(html))) code += m[1] + '\n';
@@ -67,7 +67,7 @@ export function loadEngine() {
   }
   const eng = sandbox.__engine;
   const missing = EXPORTS.filter(n => eng[n] === undefined);
-  if (missing.length) throw new Error('Simboli motore mancanti in index.html: ' + missing.join(', '));
+  if (missing.length) throw new Error('Simboli motore mancanti in ' + file + ': ' + missing.join(', '));
   return eng;
 }
 

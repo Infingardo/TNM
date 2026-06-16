@@ -127,6 +127,56 @@ const psgB = computePrognosticStage_mammella('T1', 'N0', breastExtra);
 ok('ritorna uno stadio noto o null (no crash/typo)', psgB === null || (psgB in STAGE_ORD),
    'valore: ' + psgB);
 
+// ── 8b. Parità motore su index-en.html (logica identica alla IT) ─────
+section('Parità struttura/logica — index-en.html');
+let engEn = null;
+try { engEn = loadEngine('index-en.html'); } catch (e) { /* file assente: skip */ }
+if (!engEn) {
+  console.log('  (index-en.html non presente — sezione saltata)');
+} else {
+  ok('EN: stesso numero di sedi', engEn.SITES.length === SITES.length,
+     `IT ${SITES.length} vs EN ${engEn.SITES.length}`);
+  ok('EN: stessi id sede e stesso ordine',
+     engEn.SITES.map(s => s.id).join(',') === SITES.map(s => s.id).join(','));
+  // STAGE_ORD coerente
+  const enUnknown = new Set();
+  for (const s of engEn.SITES)
+    for (const variant of (engEn.getVariants(s) ? engEn.getVariants(s).map(x => x.id) : [null]))
+      for (const r of engEn.getStagingRules(s, variant))
+        if (!(r.stage in engEn.STAGE_ORD)) enUnknown.add(s.id + ':' + r.stage);
+  ok('EN: tutti gli stage in STAGE_ORD', enUnknown.size === 0, [...enUnknown].join(', '));
+  // Anti-ambiguità EN
+  let enAmbig = [];
+  for (const s of engEn.SITES)
+    for (const variant of (engEn.getVariants(s) ? engEn.getVariants(s).map(x => x.id) : [null])) {
+      const rules = engEn.getStagingRules(s, variant);
+      if (!rules.length) continue;
+      for (const t of s.T) for (const n of s.N) for (const mm of s.M)
+        if (engEn.computeBestStage(rules, t.c, n.c, mm.c, {}).ambiguous)
+          enAmbig.push(`${s.id}/${variant ?? '-'}: ${t.c}/${n.c}/${mm.c}`);
+    }
+  ok('EN: nessuna ambiguità nelle tabelle', enAmbig.length === 0,
+     enAmbig.slice(0, 6).join(' | '));
+  // Coerenza stadio per ogni sede/regola: IT e EN devono dare lo stesso risultato
+  let mismatch = [];
+  for (const s of SITES) {
+    const sEn = engEn.SITES.find(x => x.id === s.id);
+    for (const variant of variantsOf(s)) {
+      const rIt = getStagingRules(s, variant), rEn = engEn.getStagingRules(sEn, variant);
+      for (const t of s.T) for (const n of s.N) for (const mm of s.M) {
+        const a = computeBestStage(rIt, t.c, n.c, mm.c, {});
+        const b = engEn.computeBestStage(rEn, t.c, n.c, mm.c, {});
+        if (a.stage !== b.stage) mismatch.push(`${s.id}/${variant ?? '-'} ${t.c}/${n.c}/${mm.c}: IT ${a.stage} ≠ EN ${b.stage}`);
+      }
+    }
+  }
+  ok('IT ed EN producono lo stesso stadio per ogni T/N/M', mismatch.length === 0,
+     mismatch.slice(0, 6).join(' | ') + (mismatch.length > 6 ? ` …(+${mismatch.length - 6})` : ''));
+  // PSG prostata (codici non tradotti)
+  ok('EN: PSG prostata cM1/N0 → IVB',
+     engEn.computePrognosticStage_prostata('T2', 'N0', 'cM1', '<10 ng/mL', 1) === 'IVB');
+}
+
 // ── 9. Service worker: path relativi (punto 3) ───────────────────────
 section('Service worker path');
 const indexHtml = readFile('index.html');
