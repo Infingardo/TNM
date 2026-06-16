@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="TNM AP">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>TNM 9th Ed. v1.0 — Surgical Pathology · 29 sites</title>
+<title>TNM 9th Ed. v1.0.1 — Surgical Pathology · 29 sites</title>
 <style>
 :root{
   --bg:#f0f2f5;--panel:#ffffff;--border:#d4d9e2;--accent:#2563a8;--accent2:#1a7a6e;
@@ -465,8 +465,8 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
   </div>
 
   <div id="disclaimer">
-    ⚠️ For use in surgical pathology only · UICC TNM 9th ed. 2025 / AJCC Cancer Staging Manual Version 9 · Does not replace clinicopathological assessment · Always verify borderline cases against the primary source · v1.0
-  </div>
+    ⚠️ For use in surgical pathology only · UICC TNM 9th ed. 2025 / AJCC Cancer Staging Manual Version 9 · Does not replace clinicopathological assessment · Always verify borderline cases against the primary source · v1.0.1
+</div>
 </div>
 
 <script>
@@ -1717,14 +1717,14 @@ staging_variants:{
 // CATEGORIES
 // ======================================================
 const TOOL_META={
-  version:'1.0',
+  version:'1.0.1',
   dataset:'UICC TNM Classification of Malignant Tumours, 9th ed. (2025)',
   ajcc:'AJCC Cancer Staging Manual, Version 9 (2023)',
   sites:29,
-  data_rilascio:'2026-06-01',
+  data_rilascio:'2026-06-16',
   data_audit:'2026-06-02',
-  validazione_automatica:'153/153 test cases PASS',
-  validazione_manuale:'29/29 sites audited — 27 validated, 1 partial (Breast), 1 with caveat (Anal canal)',
+  validazione_automatica:'60 reproducible automated tests PASS (engine consistency + anchor cases) — see tests/ folder',
+  validazione_manuale:'Internal audit 29/29 sites. Primary-source verification completed for colorectum and breast; other sites: internal consistency verified, correctness vs manual to be confirmed.',
   responsabile:'F.M.D. Bianchi, Division of Pathology, ASST FBF-Sacco Milan',
 };
 const CATS={

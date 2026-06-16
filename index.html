@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="TNM AP">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>TNM 9ª Ed. v1.0 — Anatomia Patologica · 29 sedi</title>
+<title>TNM 9ª Ed. v1.0.1 — Anatomia Patologica · 29 sedi</title>
 <style>
 :root{
   --bg:#f0f2f5;--panel:#ffffff;--border:#d4d9e2;--accent:#2563a8;--accent2:#1a7a6e;
@@ -465,8 +465,8 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
   </div>
 
   <div id="disclaimer">
-    ⚠️ Uso esclusivo anatomia patologica · UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Non sostituisce la valutazione clinico-patologica · Verificare fonte primaria per casi borderline · v1.0
-  </div>
+    ⚠️ Uso esclusivo anatomia patologica · UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Non sostituisce la valutazione clinico-patologica · Verificare fonte primaria per casi borderline · v1.0.1
+</div>
 </div>
 
 <script>
@@ -1717,14 +1717,14 @@ staging_variants:{
 // CATEGORIES
 // ======================================================
 const TOOL_META={
-  version:'1.0',
+  version:'1.0.1',
   dataset:'UICC TNM Classification of Malignant Tumours, 9ª ed. (2025)',
   ajcc:'AJCC Cancer Staging Manual, Version 9 (2023)',
   sedi:29,
-  data_rilascio:'2026-06-01',
+  data_rilascio:'2026-06-16',
   data_audit:'2026-06-02',
-  validazione_automatica:'153/153 casi-test PASS',
-  validazione_manuale:'29/29 sedi auditate — 27 validate, 1 parziale (Mammella), 1 con riserva (Canale anale)',
+  validazione_automatica:'60 test automatici riproducibili PASS (coerenza motore + casi-ancora) — vedi cartella tests/',
+  validazione_manuale:'Audit interno 29/29 sedi. Verifica vs fonte primaria completata per colon e mammella; altre sedi: coerenza interna verificata, correttezza vs manuale da confermare.',
   responsabile:'F.M.D. Bianchi, SC Anatomia Patologica, ASST FBF-Sacco Milano',
 };
 const CATS={

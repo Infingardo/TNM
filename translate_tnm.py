@@ -17,8 +17,8 @@ R = []
 # ════════════════════════════════════════════════════════════════════════════
 R += [
   ('<html lang="it">', '<html lang="en">'),
-  ('TNM 9ª Ed. v1.0 — Anatomia Patologica · 29 sedi',
-   'TNM 9th Ed. v1.0 — Surgical Pathology · 29 sites'),
+  ('TNM 9ª Ed. v1.0.1 — Anatomia Patologica · 29 sedi',
+   'TNM 9th Ed. v1.0.1 — Surgical Pathology · 29 sites'),
 ]
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -169,8 +169,8 @@ R += [
 # 6. DISCLAIMER
 # ════════════════════════════════════════════════════════════════════════════
 R += [
-  ('⚠️ Uso esclusivo anatomia patologica · UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Non sostituisce la valutazione clinico-patologica · Verificare fonte primaria per casi borderline · v1.0',
-   '⚠️ For use in surgical pathology only · UICC TNM 9th ed. 2025 / AJCC Cancer Staging Manual Version 9 · Does not replace clinicopathological assessment · Always verify borderline cases against the primary source · v1.0'),
+  ('⚠️ Uso esclusivo anatomia patologica · UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Non sostituisce la valutazione clinico-patologica · Verificare fonte primaria per casi borderline · v1.0.1',
+   '⚠️ For use in surgical pathology only · UICC TNM 9th ed. 2025 / AJCC Cancer Staging Manual Version 9 · Does not replace clinicopathological assessment · Always verify borderline cases against the primary source · v1.0.1'),
 ]
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -179,10 +179,10 @@ R += [
 R += [
   ("dataset:'UICC TNM Classification of Malignant Tumours, 9ª ed. (2025)'",
    "dataset:'UICC TNM Classification of Malignant Tumours, 9th ed. (2025)'"),
-  ("validazione_automatica:'153/153 casi-test PASS'",
-   "validazione_automatica:'153/153 test cases PASS'"),
-  ("validazione_manuale:'29/29 sedi auditate — 27 validate, 1 parziale (Mammella), 1 con riserva (Canale anale)'",
-   "validazione_manuale:'29/29 sites audited — 27 validated, 1 partial (Breast), 1 with caveat (Anal canal)'"),
+  ("validazione_automatica:'60 test automatici riproducibili PASS (coerenza motore + casi-ancora) — vedi cartella tests/'",
+   "validazione_automatica:'60 reproducible automated tests PASS (engine consistency + anchor cases) — see tests/ folder'"),
+  ("validazione_manuale:'Audit interno 29/29 sedi. Verifica vs fonte primaria completata per colon e mammella; altre sedi: coerenza interna verificata, correttezza vs manuale da confermare.'",
+   "validazione_manuale:'Internal audit 29/29 sites. Primary-source verification completed for colorectum and breast; other sites: internal consistency verified, correctness vs manual to be confirmed.'"),
   ("responsabile:'F.M.D. Bianchi, SC Anatomia Patologica, ASST FBF-Sacco Milano'",
    "responsabile:'F.M.D. Bianchi, Division of Pathology, ASST FBF-Sacco Milan'"),
   ("gi:{label:'Apparato digerente',order:0}",   "gi:{label:'Gastrointestinal',order:0}"),

@@ -4,7 +4,26 @@ Strumento HTML/JS autonomo per la classificazione TNM dei tumori maligni secondo
 
 > *"Tu non stai automatizzando la diagnosi. Stai automatizzando la prudenza."*
 
-**Versione:** v1.0 · Dataset: UICC TNM 9ª ed. 2025 · Validazione automatica: 153/153 test PASS
+**Versione:** v1.0.1 · Dataset: UICC TNM 9ª ed. 2025 · Test automatici riproducibili: **60 PASS** (coerenza motore + casi-ancora) · Verifica vs fonte primaria: **colon + mammella**
+
+---
+
+## Novità — v1.0.1 (2026-06-16)
+
+**Correzioni**
+- **Prostata PSG (clinicamente rilevante):** `M1` non veniva riconosciuto (confronto con `cM1/pM1` dopo `stripPfx`, irraggiungibile) → una prostata metastatica con N0 poteva essere sottostadiata fino a Stadio I. Ora `M1 → IVB`.
+- **Prostata stadio anatomico:** sdoppiato `IV` in `IVA` (N1, M0) e `IVB` (M1).
+- **Fonte M = MX** nel referto: forza `stadio = null` con nota "non assegnabile".
+- **Mammella PSG:** etichetta resa esplicita **Pathologic PSG (pPSG)** (per `T2N0M0/HR+/HER2−/G1` il pathologic è IA, il clinical sarebbe IB — confermato vs fonte primaria).
+- **PWA portabile:** service worker, `manifest.json` e cache list resi con path **relativi** (`./`) → installabile anche in locale o sottocartelle diverse, non solo su GitHub Pages. Precache di manifest e icone → offline completo dal primo avvio.
+- Corretta una virgola orfana in `SITES` e una variabile CSS (`--bg2`) non definita.
+
+**Test (nuovi)**
+- Suite Node riproducibile (`tests/`, nessuna dipendenza): integrità dataset, assenza di ambiguità su tutte le combinazioni T×N×M, round-trip regole, casi TX/NX, parità logica IT/EN, PSG prostata/mammella, path PWA.
+- **Casi-ancora** vs fonte primaria per **colon** (15) e **mammella** (12 anatomici + 2 pPSG): verificano la *correttezza* delle tabelle, non solo la coerenza interna.
+- CI GitHub Actions (`.github/workflows/test.yml`) ad ogni push. `npm test` / `npm run test:all`.
+
+> ⚠ **Ambito di validazione onesto:** la verifica contro la fonte primaria è completata per **colon e mammella**. Le altre 27 sedi sono coperte dal solo livello di *coerenza interna* (nessuna garanzia di correttezza di trascrizione). Usare sempre come strumento **assistito**, verificando i casi non banali contro il manuale.
 
 ---
 
@@ -14,7 +33,8 @@ Strumento HTML/JS autonomo per la classificazione TNM dei tumori maligni secondo
 |------|----------|
 | `index.html` | Tool principale — 29 sedi, staging interattivo, referto strutturato |
 | `audit.html` | Tabella di audit — validazione manuale sede per sede con manuale in mano |
-| `test.html` | Suite di test automatici — 153 casi su 17 sedi |
+| `tests/` | **Suite di test riproducibile (Node)** — 60 asserzioni, eseguita in CI ad ogni push |
+| `test.html` | Suite di test in-browser (storica) — 153 casi su 17 sedi |
 
 ---
 
@@ -118,9 +138,18 @@ Ogni sede mostra un badge obbligatorio:
 
 ## Suite di test e audit
 
-### Test automatici (`test.html`)
-153 casi di test su 17 sedi. Eseguibili nel browser, risultato immediato PASS/FAIL/SKIP. Export CSV.
-**Stato attuale: 153/153 PASS**
+### Test riproducibili (`tests/`, Node — autorevoli)
+60 asserzioni senza dipendenze esterne, eseguite in CI ad ogni push:
+- **Coerenza motore** (`tests/run.mjs`, 31): integrità `SITES`, etichette stadio in `STAGE_ORD`, **assenza di ambiguità su tutte le combinazioni T×N×M**, round-trip regole, blocco TX/NX, cross-check LN, parità logica IT/EN, path PWA.
+- **Casi-ancora vs fonte primaria** (`tests/anchors.mjs`, 29): colon e mammella confrontati con lo schema UICC9/AJCC8 — verificano la *correttezza* delle tabelle.
+
+```
+npm test          # coerenza motore
+npm run test:all  # coerenza + casi-ancora
+```
+
+### Test in-browser (`test.html`, storico)
+153 casi su 17 sedi. Eseguibili nel browser, risultato immediato PASS/FAIL/SKIP. Export CSV.
 
 ### Tabella di audit (`audit.html`)
 Strumento per la validazione manuale riga per riga con il manuale UICC in mano.
@@ -130,7 +159,7 @@ Strumento per la validazione manuale riga per riga con il manuale UICC in mano.
 - Stato salvato in localStorage (persistente tra sessioni)
 - Export CSV ricco (site_id, section, code, definition, audit_status, reviewer, date, source_ref, esito, note)
 
-**Stato attuale: v1.0 — 153/153 test automatici PASS**
+**Stato attuale: v1.0.1 — 60 test riproducibili PASS (CI verde); verifica vs fonte primaria: colon + mammella**
 
 ---
 
@@ -192,7 +221,7 @@ index.html
 - **WHO Classification of Tumours** (5ª ed., varie sedi) — per grading NET GI
 - **ITBCC 2016** — per grading budding tumorale
 
-> Questo tool è sviluppato per uso esclusivo in anatomia patologica da personale medico qualificato. Non sostituisce la valutazione clinico-patologica né la consultazione della fonte primaria. La v1.0-rc1 ha superato 153/153 test automatici; la validazione manuale riga per riga è in corso tramite `audit.html`.
+> Questo tool è sviluppato per uso esclusivo in anatomia patologica da personale medico qualificato. Non sostituisce la valutazione clinico-patologica né la consultazione della fonte primaria. La v1.0.1 supera 60 test automatici riproducibili (CI verde); la verifica contro la fonte primaria è completata per **colon e mammella**, mentre per le altre sedi è garantita la sola coerenza interna. La validazione manuale riga per riga prosegue tramite `audit.html`.
 
 ---
 
