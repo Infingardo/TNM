@@ -37,6 +37,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .site-item:hover{background:var(--hover);color:var(--text);}
 .site-item.active{background:var(--hover);border-left-color:var(--accent);color:var(--accent);}
 .site-item.hidden{display:none;}
+.site-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;background:var(--hover);}
 
 /* MAIN */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
@@ -229,6 +230,22 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
   #sidebar-overlay{display:none !important;}
   #menu-btn{display:none !important;}
 }
+
+/* Focus visibility (keyboard navigation) */
+button:focus-visible,.tab-btn:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;
+}
+
+/* Print: solo il referto generato, senza sidebar/topbar/form */
+@media print{
+  #sidebar,#topbar,#referto-form,#copy-btn,#disclaimer,.tabs,#menu-btn{display:none !important;}
+  body{height:auto;overflow:visible;background:#fff;}
+  #content{overflow:visible;padding:0;}
+  #main{overflow:visible;}
+  .tab-panel{display:none !important;}
+  #tab-referto{display:block !important;}
+  #referto-output{border:none;padding:0;}
+}
 </style>
 </head>
 <body>
@@ -241,23 +258,23 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
     <div id="tool-version-badge" style="margin-top:4px;font-size:9px;color:var(--muted)"></div>
     <a href="index-en.html" style="display:inline-block;margin-top:6px;font-size:10px;color:var(--muted);text-decoration:none;opacity:.7;" title="Switch to English version">🇬🇧 English version</a>
   </div>
-  <input type="text" id="search-box" placeholder="🔍  Cerca sede…">
-  <div id="site-list"></div>
+  <input type="text" id="search-box" placeholder="🔍  Cerca sede…" aria-label="Cerca sede tumorale">
+  <div id="site-list" role="listbox" aria-label="Elenco sedi tumorali"></div>
 </div>
 
 <div id="main">
   <div id="topbar">
-    <button id="menu-btn" onclick="toggleSidebar()" title="Menu sedi">☰</button>
+    <button id="menu-btn" onclick="toggleSidebar()" title="Menu sedi" aria-label="Apri/chiudi menu sedi">☰</button>
     <div>
       <div id="site-title">Seleziona una sede</div>
       <div id="site-icd"></div>
       <div id="site-badges" style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap"></div>
     </div>
     <div id="staging-type-bar" style="display:none"></div>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="showTab('lookup')">📋 Definizioni</button>
-      <button class="tab-btn" onclick="showTab('staging')">🎯 Stadiazione</button>
-      <button class="tab-btn" onclick="showTab('referto')">📄 Referto</button>
+    <div class="tabs" role="tablist" aria-label="Sezioni sede">
+      <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-lookup" id="tabbtn-lookup" onclick="showTab('lookup')">📋 Definizioni</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-staging" id="tabbtn-staging" onclick="showTab('staging')">🎯 Stadiazione</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-referto" id="tabbtn-referto" onclick="showTab('referto')">📄 Referto</button>
       <button onclick="nuovoCaso()" style="margin-left:10px;padding:7px 14px;border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;" onmouseover="this.style.background='var(--hover)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--bg)';this.style.color='var(--muted)'">🆕 Nuovo caso</button>
     </div>
   </div>
@@ -269,33 +286,33 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
     </div>
 
     <!-- LOOKUP -->
-    <div class="tab-panel" id="tab-lookup">
+    <div class="tab-panel" id="tab-lookup" role="tabpanel" aria-labelledby="tabbtn-lookup">
       <div id="lookup-content"></div>
     </div>
 
     <!-- STAGING -->
-    <div class="tab-panel" id="tab-staging">
+    <div class="tab-panel" id="tab-staging" role="tabpanel" aria-labelledby="tabbtn-staging">
       <div id="staging-content">
         <div id="staging-form">
           <div id="variant-wrap" class="variant-row" style="display:none">
-            <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variante/Istotipo:</label>
+            <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px" for="variant-sel">Variante/Istotipo:</label>
             <select id="variant-sel" onchange="updateDropdowns()"></select>
           </div>
           <div id="stg-ln-row" style="display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap">
             <div class="form-group" style="display:inline-block;width:180px;margin-right:14px">
-              <label>LN esaminati</label>
+              <label for="stg-ln-tot">LN esaminati</label>
               <input type="number" id="stg-ln-tot" placeholder="es. 24" min="0" oninput="onTNMChange();syncStgToRef();lnCrossCheck()">
             </div>
             <div class="form-group" style="display:inline-block;width:180px">
-              <label>LN positivi → auto-calcola N ↓</label>
+              <label for="stg-ln-pos">LN positivi → auto-calcola N ↓</label>
               <input type="number" id="stg-ln-pos" placeholder="es. 3" min="0" oninput="onTNMChange();syncStgToRef();autoCalcN();lnCrossCheck();autoCalcNDim()">
             </div>
             <div class="form-group" id="stg-ln-dim-wrap" style="display:none;width:180px">
-              <label>Dim. LN maggiore (mm) → auto-N ↓</label>
+              <label for="stg-ln-dim">Dim. LN maggiore (mm) → auto-N ↓</label>
               <input type="number" id="stg-ln-dim" placeholder="es. 18" min="0" step="0.1" oninput="autoCalcNDim()">
             </div>
             <div class="form-group" id="stg-ln-ene-wrap" style="display:none;width:160px">
-              <label>ENE (gh. salivari)</label>
+              <label for="stg-ln-ene">ENE (gh. salivari)</label>
               <select id="stg-ln-ene" onchange="autoCalcNDim()">
                 <option value="neg">ENE− (assente)</option>
                 <option value="pos">ENE+ (presente)</option>
@@ -304,23 +321,23 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
           </div>
           <div class="form-grid">
             <div class="form-group">
-              <label>T — Tumore primitivo</label>
+              <label for="sel-T">T — Tumore primitivo</label>
               <select id="sel-T" onchange="onTNMChange()"></select>
             </div>
             <div class="form-group">
-              <label>N — Linfonodi regionali</label>
+              <label for="sel-N">N — Linfonodi regionali</label>
               <select id="sel-N" onchange="onTNMChange();document.getElementById('n-auto-badge')&&(document.getElementById('n-auto-badge').textContent='')"></select>
             </div>
             <div class="form-group">
-              <label>M — Metastasi a distanza</label>
+              <label for="sel-M">M — Metastasi a distanza</label>
               <select id="sel-M" onchange="onTNMChange()"></select>
             </div>
           </div>
           <div id="psg-toggle-wrap" style="display:none;margin:0 0 10px 0;padding:7px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text)"><input type="checkbox" id="psg-toggle" checked onchange="togglePSG()"><span>Includi <strong>PSG AJCC 8ª ed.</strong></span></label></div><div id="extra-selects"></div>
           <button id="calc-btn" onclick="computeStage()">Calcola Stadio</button>
         </div>
-        <div id="stage-validation"></div>
-        <div id="stage-result">
+        <div id="stage-validation" aria-live="polite"></div>
+        <div id="stage-result" aria-live="polite">
           <div id="stage-value">—</div>
           <div id="stage-label">Stadio (TNM 9ª Ed.)</div>
           <div id="stage-detail"></div>
@@ -337,10 +354,10 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
     </div>
 
     <!-- REFERTO -->
-    <div class="tab-panel" id="tab-referto">
+    <div class="tab-panel" id="tab-referto" role="tabpanel" aria-labelledby="tabbtn-referto">
       <div id="referto-form">
         <div id="variant-wrap2" class="variant-row" style="display:none">
-          <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Variante/Istotipo:</label>
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px" for="variant-sel2">Variante/Istotipo:</label>
           <select id="variant-sel2" onchange="updateDropdowns2()"></select>
         </div>
         <!-- Prefisso TNM + Fonte M -->
@@ -367,26 +384,26 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
         </div>
         <div class="ref-grid">
           <div class="form-group">
-            <label>T</label>
+            <label for="ref-T">T</label>
             <select id="ref-T"></select>
           </div>
           <div class="form-group">
-            <label>N</label>
+            <label for="ref-N">N</label>
             <select id="ref-N"></select>
           </div>
           <div class="form-group">
-            <label>M</label>
+            <label for="ref-M">M</label>
             <select id="ref-M"></select>
           </div>
         </div>
         <div id="ref-extra-selects"></div>
         <div class="ref-extras">
           <div class="form-group">
-            <label>Linfonodi esaminati</label>
+            <label for="ref-ln-tot">Linfonodi esaminati</label>
             <input type="number" id="ref-ln-tot" placeholder="es. 24" min="0" oninput="refLnCrossCheck()">
           </div>
           <div class="form-group">
-            <label>Linfonodi positivi</label>
+            <label for="ref-ln-pos">Linfonodi positivi</label>
             <input type="number" id="ref-ln-pos" placeholder="es. 3" min="0" oninput="refLnCrossCheck()">
           </div>
         </div>
@@ -401,7 +418,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
             <div class="form-group">
-              <label>LVI — Invasione linfovascolare</label>
+              <label for="ref-lvi">LVI — Invasione linfovascolare</label>
               <select id="ref-lvi">
                 <option value="">— non indicato —</option>
                 <option value="LVI presente">Presente</option>
@@ -410,7 +427,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
               </select>
             </div>
             <div class="form-group">
-              <label>PNI — Invasione perineurale</label>
+              <label for="ref-pni">PNI — Invasione perineurale</label>
               <select id="ref-pni">
                 <option value="">— non indicato —</option>
                 <option value="PNI presente">Presente</option>
@@ -428,7 +445,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
               </select>
             </div>
             <div class="form-group">
-              <label>Margini di resezione</label>
+              <label for="ref-margins">Margini di resezione</label>
               <select id="ref-margins">
                 <option value="">— non indicato —</option>
                 <option value="R0 (margini liberi)">R0 — liberi</option>
@@ -438,7 +455,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
               </select>
             </div>
             <div class="form-group">
-              <label>Regressione post-neoadiuvante</label>
+              <label for="ref-regression">Regressione post-neoadiuvante</label>
               <select id="ref-regression">
                 <option value="">— non indicato —</option>
                 <option value="Ryan 0 — risposta completa (no tumore residuo)">Ryan 0 — completa</option>
@@ -448,7 +465,7 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
               </select>
             </div>
             <div class="form-group">
-              <label>Perforazione</label>
+              <label for="ref-perforation">Perforazione</label>
               <select id="ref-perforation">
                 <option value="">— non indicato —</option>
                 <option value="Perforazione assente">Assente</option>
@@ -459,8 +476,8 @@ input[type=text]:focus,input[type=number]:focus,textarea:focus{outline:none;bord
         </div>
         <button id="gen-btn" onclick="generateReferto()">Genera Referto</button>
       </div>
-      <div id="referto-output"></div>
-      <button id="copy-btn" onclick="copyReferto()">📋 Copia negli Appunti</button>
+      <div id="referto-output" aria-live="polite"></div>
+      <button id="copy-btn" onclick="copyReferto()" aria-live="polite">📋 Copia negli Appunti</button>
     </div>
   </div>
 
@@ -477,8 +494,10 @@ const PARENTS={
   T1:['T1','T1mi','T1a','T1b','T1c'],T2:['T2','T2a','T2b','T2c'],
   T3:['T3','T3a','T3b','T3c'],T4:['T4','T4a','T4b','T4c','T4d'],
   Tis:['Tis','Tis (DCIS)','Tis (LCIS)','Tis (Paget)','Tis (LAMN)'],
-  N1:['N1','N1a','N1b','N1c'],N2:['N2','N2a','N2b','N2c'],
+  N0:['N0','N0(i-)','N0(i+)','N0(mol-)','N0(mol+)'],
+  N1:['N1','N1a','N1b','N1c','N1a(sn)'],N2:['N2','N2a','N2b','N2c'],
   N3:['N3','N3a','N3b','N3c'],M1:['M1','M1a','M1b','M1c','M1d'],
+  M0:['M0','M0(i+)'],
   cN1:['cN1'],cN2:['cN2','cN2a','cN2b','cN2c'],cN3:['cN3','cN3a','cN3b'],
   pN1:['pN1'],pN2:['pN2'],
 };
@@ -492,6 +511,15 @@ const STAGE_ORD={'0':0,'0a':0.1,'0is':0.2,
 function stripPfx(c){
   if(!c)return'';
   return c.replace(/^(yp|yc|rp|p|c|r|y)/,'');
+}
+// Alcuni codici M (es. cM0(i+), cM1, pM1) incorporano già il prefisso c/p nella
+// stringa del codice stesso (definito così nei siti prostata/intestino_tenue).
+// mCode evita di anteporre un secondo prefisso in questi casi (bug doppio-prefisso,
+// es. "ccM0(i+)" o "cpM1").
+function mCode(pfx,M){
+  if(!M)return(pfx||'')+M;
+  if(/^(yp|yc|rp|p|c|r|y)M/.test(M))return M;
+  return(pfx||'')+M;
 }
 
 function codeMatch(ruleCode,sel){
@@ -1223,7 +1251,7 @@ staging_variants:{
 }},
 
 {id:'mammella',name:'Mammella',icd:'C50',cat:'breast',completeness:'complete',staging_type:'combined',staging_type_label:'UICC V9 (≡ TNM 8) + PSG AJCC 8ª ed.',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},badges:[{cls:'badge-div',txt:'UICC≠AJCC (LCIS)'},{cls:'badge-complete',txt:'PSG AJCC 8ª ed.'}],
-note:'≥6 linfonodi per pN0 (livello I ascellare). pN basato sul componente invasivo; il DCIS non conta ai fini della classificazione N. ITC (≤0.2 mm o ≤200 cellule) = N0(i+): non modificano lo stadio. Distinguere sempre cN (clinico/imaging) da pN (patologico): cN1 ≠ pN1 per implicazioni terapeutiche. Includere sempre il modificatore (sn) se la classificazione N deriva dal solo sentinella. AJCC esclude Tis(LCIS). Prognostic Stage Group AJCC 8ª ed.: richiede ER, PR, HER2 (IHC + ISH se 2+), Grado Nottingham. HER2-low (IHC 1+ o IHC 2+/ISH−) riportato nel referto. Verificare con AJCC Cancer Staging Manual v9.',
+note:'≥6 linfonodi per pN0 (livello I ascellare). pN basato sul componente invasivo; il DCIS non conta ai fini della classificazione N. ITC (≤0.2 mm o ≤200 cellule) = N0(i+): non modificano lo stadio. Distinguere sempre cN (clinico/imaging) da pN (patologico): cN1 ≠ pN1 per implicazioni terapeutiche. Includere sempre il modificatore (sn) se la classificazione N deriva dal solo sentinella. AJCC esclude Tis(LCIS). Prognostic Stage Group AJCC 8ª ed.: richiede ER, PR, HER2 (IHC + ISH se 2+), Grado Nottingham. HER2-low (IHC 1+ o IHC 2+/ISH−) riportato nel referto. Verificare con AJCC Cancer Staging Manual v9. NOTA METODOLOGICA: la fonte primaria AJCC 8ª ed. tabula N1mi esplicitamente solo per T0/T1 (Stadio IB); l\'assegnazione qui implementata per T2/T3/T4+N1mi (IIB/IIIA/IIIB) è un\'estrapolazione per analogia (N1mi trattato come N1), non una riga tabulata esplicitamente nella fonte.',
 extra:[{id:'ER',label:'ER',options:['—','ER+ (≥1%)','ER− (<1%)']},{id:'PR',label:'PR',options:['—','PR+ (≥1%)','PR− (<1%)']},{id:'HER2_IHC',label:'HER2 IHC score',options:['—','0','1+','2+','3+']},{id:'HER2_ISH',label:'HER2 ISH/FISH (se IHC 2+)',options:['—','Amplificato (ratio ≥2.0 o ≥6 copie)','Non amplificato']},{id:'G',label:'Grado Nottingham',options:['—','G1','G2','G3']},{id:'Ki67',label:'Ki67 (%)',type:'text',placeholder:'es. 25'},],
 T:[
   {c:'TX',d:'Tumore primitivo non valutabile'},
@@ -1266,11 +1294,11 @@ staging:[
   {stage:'IB',T:['T0','T1'],N:'N1mi',M:'M0'},
   {stage:'IIA',T:['T0','T1'],N:'N1',M:'M0'},
   {stage:'IIA',T:'T2',N:'N0',M:'M0'},
-  {stage:'IIB',T:'T2',N:'N1',M:'M0'},
+  {stage:'IIB',T:'T2',N:['N1','N1mi'],M:'M0'},
   {stage:'IIB',T:'T3',N:'N0',M:'M0'},
   {stage:'IIIA',T:['T0','T1','T2'],N:'N2',M:'M0'},
-  {stage:'IIIA',T:'T3',N:['N1','N2'],M:'M0'},
-  {stage:'IIIB',T:'T4',N:['N0','N1','N2'],M:'M0'},
+  {stage:'IIIA',T:'T3',N:['N1','N1mi','N2'],M:'M0'},
+  {stage:'IIIB',T:'T4',N:['N0','N1','N1mi','N2'],M:'M0'},
   {stage:'IIIC',T:'any',N:'N3',M:'M0'},
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
@@ -1846,6 +1874,9 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
   if(site.id==='mammella'&&(stripPfx(M)==='cM0(i+)'||stripPfx(N)==='N0(i+)'||stripPfx(N)==='N0(mol+)')){
     warnings.push('Mammella: N0(i+)/N0(mol+)/cM0(i+) non modificano il raggruppamento di stadio (rimane N0/M0 per le regole di staging). Riportare nel referto come dato biologico aggiuntivo.');
   }
+  if(site.id==='mammella'&&nCode==='N1mi'&&['T2','T3','T4'].includes(tCode)){
+    warnings.push('Nota metodologica: la tabella AJCC 8ª ed. tabula esplicitamente N1mi solo per T0/T1 (Stadio IB). Per T2-T4 lo stadio qui assegnato (rispettivamente IIB/IIIA/IIIB) è un\'estrapolazione basata sul principio per cui N1mi è trattato come sottoinsieme di N1 in assenza di un\'eccezione esplicita — non corrisponde a una riga tabulata riga-per-riga nella fonte primaria.');
+  }
   if(site.id==='mammella'&&stripPfx(T)==='Tis (LCIS)'){
     warnings.push('Tis(LCIS) — divergenza UICC/AJCC: UICC TNM 9ª ed. include questa categoria nello Stadio 0; AJCC Cancer Staging Manual, 8ª ed. / Version 9 la esclude. Staging mostrato: UICC. Non classificabile formalmente secondo AJCC.');
   }
@@ -1919,7 +1950,12 @@ function buildSiteList(){
       const el=document.createElement('div');
       el.className='site-item';el.textContent=s.name;
       el.dataset.id=s.id;
+      el.setAttribute('role','option');
+      el.setAttribute('tabindex','0');
       el.addEventListener('click',()=>selectSite(s.id));
+      el.addEventListener('keydown',(ev)=>{
+        if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();selectSite(s.id);}
+      });
       list.appendChild(el);
     });
   });
@@ -1948,7 +1984,11 @@ function selectSite(id){
     document.getElementById('sidebar-overlay').classList.remove('mob-show');
   }
   currentSite=SITES.find(s=>s.id===id);
-  document.querySelectorAll('.site-item').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
+  document.querySelectorAll('.site-item').forEach(el=>{
+    const isActive=el.dataset.id===id;
+    el.classList.toggle('active',isActive);
+    el.setAttribute('aria-selected',isActive?'true':'false');
+  });
   document.getElementById('site-title').textContent=currentSite.name;
   document.getElementById('site-icd').textContent='ICD-O-4: '+currentSite.icd;
   renderSiteBadges(currentSite);
@@ -1977,7 +2017,9 @@ function selectSite(id){
 
 function showTab(id){
   document.querySelectorAll('.tab-btn').forEach(b=>{
-    b.classList.toggle('active',b.getAttribute('onclick')===`showTab('${id}')`);
+    const isActive=b.getAttribute('onclick')===`showTab('${id}')`;
+    b.classList.toggle('active',isActive);
+    b.setAttribute('aria-selected',isActive?'true':'false');
   });
   document.querySelectorAll('.tab-panel').forEach(p=>{
     p.style.display='none';
@@ -2305,8 +2347,8 @@ function updateDropdowns(){
   const s=currentSite;if(!s)return;
   const vs=document.getElementById('variant-sel');
   if(vs.options.length)currentVariant=vs.value;
-  populateSelect('sel-T',s.T,'T');
-  populateSelect('sel-N',s.N,'N');
+  populateSelect('sel-T',filterByVariant(s,'T',s.T,currentVariant),'T');
+  populateSelect('sel-N',filterByVariant(s,'N',s.N,currentVariant),'N');
   populateSelect('sel-M',s.M,'M');
   const ex=document.getElementById('extra-selects');
   ex.innerHTML='';
@@ -2338,8 +2380,8 @@ function updateDropdowns2(){
   const s=currentSite;if(!s)return;
   const vs=document.getElementById('variant-sel2');
   if(vs.options.length)currentVariant2=vs.value;
-  populateSelect('ref-T',s.T,'T');
-  populateSelect('ref-N',s.N,'N');
+  populateSelect('ref-T',filterByVariant(s,'T',s.T,currentVariant2),'T');
+  populateSelect('ref-N',filterByVariant(s,'N',s.N,currentVariant2),'N');
   populateSelect('ref-M',s.M,'M');
   const ex=document.getElementById('ref-extra-selects');
   ex.innerHTML='';
@@ -2382,6 +2424,28 @@ function renderReferto(){
 function populateSelect(id,arr,type){
   const sel=document.getElementById(id);if(!sel)return;
   sel.innerHTML=arr.map(x=>`<option value="${x.c}">${x.c} — ${x.d.substring(0,65)}${x.d.length>65?'…':''}</option>`).join('');
+}
+// Alcuni siti hanno codici T/N specifici per variante (es. uretra: T2M/T2F per sesso;
+// gh_salivari: pN1/pN2 vs cN1/cN2x/cN3x per stadiazione patologica/clinica). Senza
+// filtro l'utente può selezionare un codice incompatibile con la variante scelta,
+// ottenendo silenziosamente "Non determinabile". filterByVariant restringe le opzioni
+// mostrate nel menu alla variante corrente, lasciando invariati i codici comuni
+// (TX,T0,N0,ecc.).
+function filterByVariant(s,field,arr,variant){
+  if(!variant||!arr)return arr;
+  if(s.id==='uretra'&&field==='T'){
+    if(variant==='maschile')return arr.filter(x=>!/F$/.test(x.c));
+    if(variant==='femminile')return arr.filter(x=>!/M$/.test(x.c));
+  }
+  if(s.id==='gh_salivari'&&field==='N'){
+    if(variant==='path')return arr.filter(x=>!/^c/.test(x.c));
+    if(variant==='clinical')return arr.filter(x=>!/^p/.test(x.c));
+  }
+  if(s.id==='prostata'&&field==='T'&&variant==='path'){
+    // Nessun pT1: il T1 clinico non ha corrispettivo patologico chirurgico (nota del sito)
+    return arr.filter(x=>!/^T1[abc]?$/.test(x.c));
+  }
+  return arr;
 }
 
 function nuovoCaso(){
@@ -2494,7 +2558,7 @@ function computeStage(){
   const md=s.M.find(x=>x.c===M)||{d:''};
   let detail=`<div class="stage-row"><span class="stage-code">${pfx.T}${T}</span><span>${td.d}</span></div>`;
   detail+=`<div class="stage-row"><span class="stage-code">${pfx.N}${N}</span><span>${nd.d}</span></div>`;
-  detail+=`<div class="stage-row"><span class="stage-code">${pfx.M}${M}</span><span>${md.d}</span></div>`;
+  detail+=`<div class="stage-row"><span class="stage-code">${mCode(pfx.M,M)}</span><span>${md.d}</span></div>`;
   if(Object.keys(extra).length){
     for(const k in extra){if(extra[k]&&extra[k]!=='—')detail+=`<div class="stage-row"><span class="stage-code">${k}: ${extra[k]}</span></div>`;}
   }
@@ -2740,7 +2804,7 @@ function generateReferto(){
   // ── Sezione 1: Classificazione TNM ──
   txt+='\n── CLASSIFICAZIONE TNM ──────────────────────────────────\n';
   const nRatioStr=(nTotN>0&&nPosN>=0)?` (${nPosN}/${nTotN})`:'';
-  txt+=`${pfx.T}${T}  ${pfx.N}${N}${nRatioStr}  ${mPfx}${M}\n`;
+  txt+=`${pfx.T}${T}  ${pfx.N}${N}${nRatioStr}  ${mCode(mPfx,M)}\n`;
   txt+=`\n`;
   txt+=`${pfx.T}${T} — ${td.d}\n`;
   let nLine=`${pfx.N}${N} — ${nd.d}`;
@@ -2753,7 +2817,7 @@ function generateReferto(){
     mFullCode='M non assegnabile';
     mDesc='metastasi a distanza non documentata nel materiale disponibile';
   }else{
-    mFullCode=mPfx+M;
+    mFullCode=mCode(mPfx,M);
     mDesc=md.d;
   }
   txt+=`${mFullCode} — ${mDesc}\n`;
