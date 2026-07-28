@@ -360,8 +360,8 @@ R += [
 R += [
   ("incomplete.push('T non valutabile (TX): lo stadio non può essere assegnato. Rivalutare il campione o indicare il motivo della non valutabilità.');",
    "incomplete.push('T not assessable (TX): stage cannot be assigned. Re-evaluate the specimen or document the reason for non-assessability.');"),
-  ("incomplete.push('N non valutabile (NX): lo stadio non può essere assegnato. Specificare il numero di linfonodi esaminati o il motivo della non valutabilità.');",
-   "incomplete.push('N not assessable (NX): stage cannot be assigned. Specify the number of examined lymph nodes or document the reason for non-assessability.');"),
+  # NX message translations moved earlier (N_PATTERNS, before the generic
+  # "linfonodi regionali"/"linfonodi" substitutions) to avoid a mixed-language result.
   ("errors.push('Tis con '+N+': combinazione biologicamente incongruente. Verificare la classificazione T o la presenza di un secondo focolaio invasivo.');",
    "errors.push('Tis with '+N+': biologically inconsistent combination. Verify T classification or presence of a second invasive focus.');"),
   ("errors.push('N0 è incompatibile con '+nPos+' linfonodi positivi dichiarati.');",
@@ -867,6 +867,13 @@ N_PATTERNS = [
    "[cN] Metastasis in any lymph node with overt clinical ENE (fixation, invasion of adjacent structures, cranial nerve deficit, skin edema)"),
   # Testis N
   ("Metastasi nei linfonodi retroperitoneali","Metastasis in retroperitoneal lymph nodes"),
+  # NX validation messages (validateCase) — must run before the generic
+  # "linfonodi regionali"/"linfonodi" substitutions below, otherwise those eat
+  # into these sentences first and leave a mixed-language result.
+  ("'N non valutabile (NX): lo stadio non può essere assegnato. Specificare il motivo della non valutabilità dei linfonodi regionali (es. non prelevati, campione insufficiente).'",
+   "'N not assessable (NX): stage cannot be assigned. Document the reason regional lymph nodes could not be assessed (e.g. not sampled, inadequate specimen).'"),
+  ("'N non valutabile (NX): lo stadio non può essere assegnato. Specificare il numero di linfonodi esaminati o il motivo della non valutabilità.'",
+   "'N not assessable (NX): stage cannot be assigned. Specify the number of lymph nodes examined or the reason for non-assessability.'"),
   # Common terms
   ("linfonodi regionali",          "regional lymph nodes"),
   ("linfonodi ascellari",          "axillary lymph nodes"),

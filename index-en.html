@@ -1823,8 +1823,8 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
     if(!nxRes.nxResolved){
       const lnProvided=(lnTot!==''&&lnTot!==null&&lnTot!==undefined);
       incomplete.push(lnProvided
-        ?'N non valutabile (NX): lo stadio non può essere assegnato. Specificare il motivo della non valutabilità dei regional lymph nodes (es. non prelevati, campione insufficiente).'
-        :'N non valutabile (NX): lo stadio non può essere assegnato. Specificare il numero di lymph nodes esaminati o il motivo della non valutabilità.');
+        ?'N not assessable (NX): stage cannot be assigned. Document the reason regional lymph nodes could not be assessed (e.g. not sampled, inadequate specimen).'
+        :'N not assessable (NX): stage cannot be assigned. Specify the number of lymph nodes examined or the reason for non-assessability.');
     }
   }
   if(tCode==='Tis'&&nCode!=='N0'&&nCode!=='NX'){
