@@ -12,7 +12,7 @@ export const ROOT = join(__dirname, '..');
 // Simboli del motore che vogliamo testare (devono esistere in index.html).
 const EXPORTS = [
   'SITES', 'STAGE_ORD', 'PARENTS',
-  'stripPfx', 'codeMatch', 'ruleMatches', 'computeBestStage',
+  'stripPfx', 'codeMatch', 'ruleMatches', 'computeBestStage', 'resolveNX',
   'getStagingRules', 'getVariants', 'validateCase', 'getPfx',
   'computePrognosticStage_prostata', 'computePrognosticStage_mammella',
 ];

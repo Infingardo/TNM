@@ -555,6 +555,26 @@ function computeBestStage(rules,T,N,M,extra){
   return{stage:distinctStages[0],ambiguous:false,matchCount:matches.length,allStages:distinctStages};
 }
 
+// N not evaluable (NX) must not block staging if, for the current T/M/extra,
+// every possible concrete N value still collapses onto the same stage (e.g.
+// any T with M1 when Stage IV depends only on M). If N=NX, try every concrete
+// N category for the site and check whether they collapse to a single stage;
+// otherwise the ambiguity is real and must be flagged (stage:null).
+function resolveNX(rules,site,T,N,M,extra){
+  if(stripPfx(N)!=='NX')return computeBestStage(rules,T,N,M,extra);
+  const stages=new Set();
+  for(const n of (site.N||[])){
+    if(n.c==='NX')continue;
+    const r=computeBestStage(rules,T,n.c,M,extra);
+    if(!r.ambiguous&&r.stage!=null)stages.add(r.stage);
+  }
+  if(stages.size===1){
+    const stage=[...stages][0];
+    return{stage,ambiguous:false,matchCount:1,allStages:[stage],nxResolved:true};
+  }
+  return{stage:null,ambiguous:false,matchCount:0,allStages:[...stages],nxResolved:false};
+}
+
 // ======================================================
 // TNM DATA
 // ======================================================
@@ -1798,7 +1818,14 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
     incomplete.push('T not assessable (TX): stage cannot be assigned. Re-evaluate the specimen or document the reason for non-assessability.');
   }
   if(nCode==='NX'){
-    incomplete.push('N non valutabile (NX): lo stadio non può essere assegnato. Specificare il numero di lymph nodes esaminati o il motivo della non valutabilità.');
+    const nxRules=getStagingRules(site,variant);
+    const nxRes=resolveNX(nxRules,site,T,N,M,extra);
+    if(!nxRes.nxResolved){
+      const lnProvided=(lnTot!==''&&lnTot!==null&&lnTot!==undefined);
+      incomplete.push(lnProvided
+        ?'N not assessable (NX): stage cannot be assigned. Document the reason regional lymph nodes could not be assessed (e.g. not sampled, inadequate specimen).'
+        :'N not assessable (NX): stage cannot be assigned. Specify the number of lymph nodes examined or the reason for non-assessability.');
+    }
   }
   if(tCode==='Tis'&&nCode!=='N0'&&nCode!=='NX'){
     errors.push('Tis with '+N+': biologically inconsistent combination. Verify T classification or presence of a second invasive focus.');
@@ -2525,7 +2552,7 @@ function computeStage(){
   const lnPos=document.getElementById('stg-ln-pos')?.value??'';
 
   const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
-  const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:computeBestStage(rules,T,N,M,extra);
+  const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:resolveNX(rules,s,T,N,M,extra);
 
   if(result.ambiguous){
     v.errors.push('Dataset ambiguity: stages '+result.allStages.join(' / ')+' simultaneously compatible — staging not assignable. Please report the bug.');
@@ -2772,7 +2799,7 @@ function generateReferto(){
   // Override M prefix from fonte M selector
   const mPfx=mSource==='pM'?'p':mSource==='ycM'?'yc':mSource==='ypM'?'yp':mSource==='MX'?'':'c';
   const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
-  const result=v.errors.length?{stage:null,ambiguous:false}:computeBestStage(rules,T,N,M,extra);
+  const result=v.errors.length?{stage:null,ambiguous:false}:resolveNX(rules,s,T,N,M,extra);
   if(result.ambiguous){
     v.errors.push('Dataset ambiguity: stages '+result.allStages.join(' / ')+' simultaneously compatible — staging not assignable. Please report the bug.');
   }
