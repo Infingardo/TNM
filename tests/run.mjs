@@ -6,7 +6,7 @@ import { loadEngine, readFile } from './harness.mjs';
 const eng = loadEngine();
 const {
   SITES, STAGE_ORD, getStagingRules, getVariants,
-  computeBestStage, validateCase, getPfx,
+  computeBestStage, resolveNX, validateCase, getPfx,
   computePrognosticStage_prostata, computePrognosticStage_mammella,
 } = eng;
 
@@ -103,6 +103,41 @@ ok('NX blocca lo staging',
    blocks(validateCase(colon, 'T2', 'NX', 'M0', {}, '', '', pfx, null)));
 ok('T2/N0/M0 valido NON è bloccato',
    !blocks(validateCase(colon, 'T2', 'N0', 'M0', {}, '12', '0', pfx, null)));
+
+// ── 5b. NX blocca SOLO se N è realmente discriminante a parità di T/M ──
+section('NX condizionato: blocca solo in caso di reale ambiguità di stadio residua');
+const prostata = SITES.find(s => s.id === 'prostata');
+const canaleAnale = SITES.find(s => s.id === 'canale_anale');
+
+// pT3b NX M0 (prostata, stadio patologico): N0→III, N1→IVA — N è discriminante → blocca.
+ok('pT3b NX M0 (prostata/path) blocca lo staging (N discriminante: N0→III vs N1→IVA)',
+   blocks(validateCase(prostata, 'T3b', 'NX', 'M0', {}, '', '', pfx, 'path')));
+
+// T2 NX M1 (canale anale): qualunque N con M1 → Stadio IV — N NON è discriminante → assegna.
+const rulesCA = getStagingRules(canaleAnale, null);
+const vT2NXM1 = validateCase(canaleAnale, 'T2', 'NX', 'M1', {}, '', '', pfx, null);
+ok('T2 NX M1 (canale anale) NON blocca (M1 ⇒ Stadio IV indipendentemente da N)',
+   !blocks(vT2NXM1));
+ok('T2 NX M1 (canale anale) risolve a Stadio IV',
+   resolveNX(rulesCA, canaleAnale, 'T2', 'NX', 'M1', {}).stage === 'IV');
+
+// Tis NX M0 (colon): l'unica riga di tabella per Tis richiede N0 → Stadio 0 — N non discriminante.
+const rulesColon = getStagingRules(colon, null);
+const vTisNXM0 = validateCase(colon, 'Tis', 'NX', 'M0', {}, '', '', pfx, null);
+ok('Tis NX M0 (colon) NON blocca (unica riga di tabella per Tis è N0 → Stadio 0)',
+   !blocks(vTisNXM0));
+ok('Tis NX M0 (colon) risolve a Stadio 0',
+   resolveNX(rulesColon, colon, 'Tis', 'NX', 'M0', {}).stage === '0');
+
+// ── 5c. Messaggio di validazione coerente con "0 linfonodi esaminati" ──
+section('Messaggio NX coerente con LN esaminati = 0 (valore valido, non campo vuoto)');
+const vNXNoCount = validateCase(prostata, 'T3b', 'NX', 'M0', {}, '', '', pfx, 'path');
+ok('NX senza LN esaminati: il messaggio chiede il numero di linfonodi',
+   vNXNoCount.incomplete.some(m => m.includes('numero di linfonodi esaminati')));
+const vNXZeroCount = validateCase(prostata, 'T3b', 'NX', 'M0', {}, '0', '', pfx, 'path');
+ok('NX con LN esaminati = 0: il messaggio NON richiede di nuovo il numero (già fornito)',
+   vNXZeroCount.incomplete.length > 0 &&
+   !vNXZeroCount.incomplete.some(m => m.includes('numero di linfonodi esaminati')));
 
 // ── 6. N0 incompatibile con LN positivi dichiarati ───────────────────
 section('Cross-check linfonodi');

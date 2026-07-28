@@ -555,6 +555,26 @@ function computeBestStage(rules,T,N,M,extra){
   return{stage:distinctStages[0],ambiguous:false,matchCount:matches.length,allStages:distinctStages};
 }
 
+// N non valutabile (NX) non deve bloccare lo staging se, a parità di T/M/extra
+// correnti, ogni possibile valore concreto di N ricade comunque sullo stesso
+// stadio (es. qualsiasi T con M1 quando lo stadio IV dipende solo da M). Se
+// N=NX, prova ogni categoria N concreta della sede e verifica se collassano
+// su un unico stadio; altrimenti l'ambiguità è reale e va segnalata (stage:null).
+function resolveNX(rules,site,T,N,M,extra){
+  if(stripPfx(N)!=='NX')return computeBestStage(rules,T,N,M,extra);
+  const stages=new Set();
+  for(const n of (site.N||[])){
+    if(n.c==='NX')continue;
+    const r=computeBestStage(rules,T,n.c,M,extra);
+    if(!r.ambiguous&&r.stage!=null)stages.add(r.stage);
+  }
+  if(stages.size===1){
+    const stage=[...stages][0];
+    return{stage,ambiguous:false,matchCount:1,allStages:[stage],nxResolved:true};
+  }
+  return{stage:null,ambiguous:false,matchCount:0,allStages:[...stages],nxResolved:false};
+}
+
 // ======================================================
 // TNM DATA
 // ======================================================
@@ -1798,7 +1818,14 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
     incomplete.push('T non valutabile (TX): lo stadio non può essere assegnato. Rivalutare il campione o indicare il motivo della non valutabilità.');
   }
   if(nCode==='NX'){
-    incomplete.push('N non valutabile (NX): lo stadio non può essere assegnato. Specificare il numero di linfonodi esaminati o il motivo della non valutabilità.');
+    const nxRules=getStagingRules(site,variant);
+    const nxRes=resolveNX(nxRules,site,T,N,M,extra);
+    if(!nxRes.nxResolved){
+      const lnProvided=(lnTot!==''&&lnTot!==null&&lnTot!==undefined);
+      incomplete.push(lnProvided
+        ?'N non valutabile (NX): lo stadio non può essere assegnato. Specificare il motivo della non valutabilità dei linfonodi regionali (es. non prelevati, campione insufficiente).'
+        :'N non valutabile (NX): lo stadio non può essere assegnato. Specificare il numero di linfonodi esaminati o il motivo della non valutabilità.');
+    }
   }
   if(tCode==='Tis'&&nCode!=='N0'&&nCode!=='NX'){
     errors.push('Tis con '+N+': combinazione biologicamente incongruente. Verificare la classificazione T o la presenza di un secondo focolaio invasivo.');
@@ -2525,7 +2552,7 @@ function computeStage(){
   const lnPos=document.getElementById('stg-ln-pos')?.value??'';
 
   const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
-  const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:computeBestStage(rules,T,N,M,extra);
+  const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:resolveNX(rules,s,T,N,M,extra);
 
   if(result.ambiguous){
     v.errors.push('Ambiguità dataset: stadi '+result.allStages.join(' / ')+' compatibili simultaneamente — staging non assegnabile. Segnalare il bug.');
@@ -2772,7 +2799,7 @@ function generateReferto(){
   // Override M prefix from fonte M selector
   const mPfx=mSource==='pM'?'p':mSource==='ycM'?'yc':mSource==='ypM'?'yp':mSource==='MX'?'':'c';
   const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
-  const result=v.errors.length?{stage:null,ambiguous:false}:computeBestStage(rules,T,N,M,extra);
+  const result=v.errors.length?{stage:null,ambiguous:false}:resolveNX(rules,s,T,N,M,extra);
   if(result.ambiguous){
     v.errors.push('Ambiguità dataset: stadi '+result.allStages.join(' / ')+' compatibili simultaneamente — staging non assegnabile. Segnalare il bug.');
   }
