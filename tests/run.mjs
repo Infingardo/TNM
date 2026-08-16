@@ -6,7 +6,7 @@ import { loadEngine, readFile } from './harness.mjs';
 const eng = loadEngine();
 const {
   SITES, STAGE_ORD, getStagingRules, getVariants,
-  computeBestStage, resolveNX, validateCase, getPfx,
+  computeBestStage, resolveNX, resolveNonEvaluable, validateCase, getPfx,
   computePrognosticStage_prostata, computePrognosticStage_mammella,
 } = eng;
 
@@ -139,6 +139,73 @@ ok('NX con LN esaminati = 0: il messaggio NON richiede di nuovo il numero (già 
    vNXZeroCount.incomplete.length > 0 &&
    !vNXZeroCount.incomplete.some(m => m.includes('numero di linfonodi esaminati')));
 
+// ── 5d. TX blocca sempre lo staging ───────────────────────────────────
+// Regressione del bug "con TX viene comunque dato Stadio IV": il pannello di
+// validazione diceva «lo stadio non può essere assegnato» mentre il box
+// risultato stampava «Stadio IVA (assegnato)», perché le righe "Any T" facevano
+// match. T non valutabile ⇒ nessuno stadio, senza eccezioni.
+section('TX blocca sempre lo staging (nessuna eccezione per le righe "Any T")');
+const tiroide = SITES.find(s => s.id === 'tiroide');
+const bare = c => c.replace(/^(yp|yc|rp|p|c|r|y)/, '');
+const resolveIn = (site, T, N, M, variant = null) =>
+  resolveNonEvaluable(getStagingRules(site, variant), site, T, N, M, {});
+
+// Casi in cui la tabella da sola produrrebbe uno stadio: deve comunque bloccare.
+const txCases = [
+  [colon, 'TX', 'NX', 'M1a', null, 'IVA', 'riga Any T/Any N con M1a'],
+  [colon, 'TX', 'N0', 'M1b', null, 'IVB', 'M1b documentato'],
+  [prostata, 'TX', 'N1', 'M0', 'path', 'IVA', 'riga Any T, N1, M0'],
+  [tiroide, 'TX', 'NX', 'M0', 'diff_young', 'I', 'riga Any T, Any N, M0'],
+];
+for (const [site, T, N, M, variant, tableStage, why] of txCases) {
+  const tag = `${site.id}${variant ? '/' + variant : ''} ${T}/${N}/${M}`;
+  ok(`${tag}: la tabella da sola darebbe ${tableStage} (${why})`,
+     computeBestStage(getStagingRules(site, variant), T, N, M, {}).stage === tableStage);
+  const r = resolveIn(site, T, N, M, variant);
+  ok(`${tag}: non assegnabile`, r.resolved === false && r.stage === null,
+     'stage=' + r.stage);
+  ok(`${tag}: la validazione blocca`,
+     blocks(validateCase(site, T, N, M, {}, '', '', pfx, variant)));
+}
+
+// Nessun impatto sui casi ordinari.
+{
+  const rules = getStagingRules(colon, null);
+  ok('T3/N1a/M0 invariato rispetto a computeBestStage',
+     resolveNonEvaluable(rules, colon, 'T3', 'N1a', 'M0', {}).stage ===
+     computeBestStage(rules, 'T3', 'N1a', 'M0', {}).stage);
+}
+
+// Invarianti globali su tutte le sedi/varianti:
+//  a) nessun TX produce mai uno stadio;
+//  b) messaggio e stadio non si contraddicono mai.
+let txWithStage = [], neBad = [], nxResolvedCount = 0;
+for (const s of SITES) {
+  for (const variant of variantsOf(s)) {
+    const rules = getStagingRules(s, variant);
+    if (!rules.length) continue;
+    for (const t of s.T) for (const n of s.N) for (const mm of s.M) {
+      const tX = bare(t.c) === 'TX', nX = bare(n.c) === 'NX';
+      if (!tX && !nX) continue;
+      const r = resolveNonEvaluable(rules, s, t.c, n.c, mm.c, {});
+      const tag = `${s.id}/${variant ?? '-'} ${t.c}/${n.c}/${mm.c}`;
+      if (tX && (r.stage != null || r.resolved)) txWithStage.push(tag + ' → ' + r.stage);
+      if (r.resolved) {
+        nxResolvedCount++;
+        if (r.stage == null) neBad.push(tag + ': resolved ma senza stadio');
+      } else if (r.stage != null) {
+        neBad.push(tag + ': non resolved ma con stadio');
+      }
+    }
+  }
+}
+ok('nessun TX produce uno stadio, in nessuna sede', txWithStage.length === 0,
+   txWithStage.slice(0, 6).join(' | ') + (txWithStage.length > 6 ? ` …(+${txWithStage.length - 6})` : ''));
+ok('nessuna combinazione TX/NX contraddittoria', neBad.length === 0,
+   neBad.slice(0, 6).join(' | ') + (neBad.length > 6 ? ` …(+${neBad.length - 6})` : ''));
+ok('NX resta assegnabile quando non è discriminante (PR #1 invariato)',
+   nxResolvedCount > 0, 'trovati ' + nxResolvedCount);
+
 // ── 6. N0 incompatibile con LN positivi dichiarati ───────────────────
 section('Cross-check linfonodi');
 ok('N0 con LN+ > 0 genera errore',
@@ -202,6 +269,13 @@ if (!engEn) {
         const a = computeBestStage(rIt, t.c, n.c, mm.c, {});
         const b = engEn.computeBestStage(rEn, t.c, n.c, mm.c, {});
         if (a.stage !== b.stage) mismatch.push(`${s.id}/${variant ?? '-'} ${t.c}/${n.c}/${mm.c}: IT ${a.stage} ≠ EN ${b.stage}`);
+        // Il meccanismo TX/NX deve risolvere allo stesso modo nei due build.
+        if (t.c === 'TX' || n.c === 'NX') {
+          const ra = resolveNonEvaluable(rIt, s, t.c, n.c, mm.c, {});
+          const rb = engEn.resolveNonEvaluable(rEn, sEn, t.c, n.c, mm.c, {});
+          if (ra.stage !== rb.stage || ra.resolved !== rb.resolved)
+            mismatch.push(`${s.id}/${variant ?? '-'} ${t.c}/${n.c}/${mm.c}: TX/NX IT ${ra.stage}/${ra.resolved} ≠ EN ${rb.stage}/${rb.resolved}`);
+        }
       }
     }
   }

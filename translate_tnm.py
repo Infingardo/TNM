@@ -255,13 +255,13 @@ R += [
 # 10. JS: generateReferto strings
 # ════════════════════════════════════════════════════════════════════════════
 R += [
-  # TX/NX block messages
-  ("if(stripPfx(_T)==='TX')_which.push('T non valutabile (TX)');",
-   "if(stripPfx(_T)==='TX')_which.push('T not assessable (TX)');"),
-  ("if(stripPfx(_N)==='NX')_which.push('N non valutabile (NX)');",
-   "if(stripPfx(_N)==='NX')_which.push('N not assessable (NX)');"),
-  ("_out2.textContent='⚠️ REFERTO NON GENERATO\\n\\n'+_which.join('\\n')+'\\n\\nLo stadio non può essere assegnato con parametri non valutabili.';",
-   "_out2.textContent='⚠️ REPORT NOT GENERATED\\n\\n'+_which.join('\\n')+'\\n\\nStage cannot be assigned with non-assessable parameters.';"),
+  # TX/NX block message (emesso solo quando l'asse non valutabile è discriminante)
+  ("    _out2.textContent='⚠️ REFERTO NON GENERATO\\n\\n'",
+   "    _out2.textContent='⚠️ REPORT NOT GENERATED\\n\\n'"),
+  ("      +result.axes.map(a=>a==='T'?'T non valutabile (TX)':'N non valutabile (NX)').join('\\n')",
+   "      +result.axes.map(a=>a==='T'?'T not assessable (TX)':'N not assessable (NX)').join('\\n')"),
+  ("      +'\\n\\nLo stadio non può essere assegnato: nessun altro parametro documentato lo determina.';",
+   "      +'\\n\\nStage cannot be assigned: no other documented parameter determines it.';"),
   # LN incongruent
   ("out.textContent='⚠️ REFERTO NON GENERATO\\n\\nDato incongruente: linfonodi positivi ('+_refPos+') > linfonodi esaminati ('+_refTot+').\\nCorreggere i dati prima di generare il referto.';",
    "out.textContent='⚠️ REPORT NOT GENERATED\\n\\nInconsistent data: positive lymph nodes ('+_refPos+') > examined lymph nodes ('+_refTot+').\\nCorrect the data before generating the report.';"),
@@ -874,6 +874,9 @@ N_PATTERNS = [
    "'N not assessable (NX): stage cannot be assigned. Document the reason regional lymph nodes could not be assessed (e.g. not sampled, inadequate specimen).'"),
   ("'N non valutabile (NX): lo stadio non può essere assegnato. Specificare il numero di linfonodi esaminati o il motivo della non valutabilità.'",
    "'N not assessable (NX): stage cannot be assigned. Specify the number of lymph nodes examined or the reason for non-assessability.'"),
+  # Nota emessa quando NX non è discriminante (stadio assegnato lo stesso)
+  ("'N non valutabile ('+nCode+'): dato non determinante per il raggruppamento — a parità degli altri parametri ogni categoria N possibile ricade sullo stesso stadio. Documentare comunque il motivo della non valutabilità nel referto.'",
+   "'N not assessable ('+nCode+'): not determinant for this stage group — with the other parameters unchanged, every possible N category falls into the same stage. Document the reason for non-assessability in the report anyway.'"),
   # Common terms
   ("linfonodi regionali",          "regional lymph nodes"),
   ("linfonodi ascellari",          "axillary lymph nodes"),

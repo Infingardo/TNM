@@ -555,24 +555,43 @@ function computeBestStage(rules,T,N,M,extra){
   return{stage:distinctStages[0],ambiguous:false,matchCount:matches.length,allStages:distinctStages};
 }
 
-// N non valutabile (NX) non deve bloccare lo staging se, a parità di T/M/extra
-// correnti, ogni possibile valore concreto di N ricade comunque sullo stesso
-// stadio (es. any T con M1 quando lo stadio IV dipende solo da M). Se
-// N=NX, prova ogni categoria N concreta della site e verifica se collassano
-// su un unico stadio; altrimenti l'ambiguità è reale e va segnalata (stage:null).
-function resolveNX(rules,site,T,N,M,extra){
-  if(stripPfx(N)!=='NX')return computeBestStage(rules,T,N,M,extra);
+// Politica per i parametri non valutabili. I due assi NON sono simmetrici.
+//
+// T=TX: lo stadio non è assegnabile, punto. Il raggruppamento TNM è ancorato
+// all'estensione del tumor primitivo; se il primitivo non è valutabile su
+// questo materiale, il gruppo non è documentabile — anche dove la tabella
+// prevede righe "Any T" che tecnicamente farebbero match (tipicamente con M1).
+// Assegnare uno stadio in quel caso sarebbe un atto di stadiazione clinica,
+// non patologica, e non compete a un referto costruito su questo campione.
+//
+// N=NX: blocca solo se N è realmente discriminante. A parità di T/M/extra si
+// prova ogni categoria N concreta della site: se collassano su un unico stadio,
+// N non sposta nulla e lo stadio si assegna. Le combinazioni che non trovano
+// alcuna riga non contribuiscono — non sono possibilità cliniche, sono caselle
+// vuote della tabella.
+function resolveNonEvaluable(rules,site,T,N,M,extra){
+  const tX=stripPfx(T)==='TX',nX=stripPfx(N)==='NX';
+  if(!tX&&!nX)return computeBestStage(rules,T,N,M,extra);
+  const axes=[];
+  if(tX)axes.push('T');
+  if(nX)axes.push('N');
+  const base={ambiguous:false,axes};
+  if(tX)return Object.assign(base,{stage:null,matchCount:0,allStages:[],resolved:false,reason:'tx'});
   const stages=new Set();
   for(const n of (site.N||[])){
-    if(n.c==='NX')continue;
+    if(stripPfx(n.c)==='NX')continue;
     const r=computeBestStage(rules,T,n.c,M,extra);
     if(!r.ambiguous&&r.stage!=null)stages.add(r.stage);
   }
   if(stages.size===1){
     const stage=[...stages][0];
-    return{stage,ambiguous:false,matchCount:1,allStages:[stage],nxResolved:true};
+    return Object.assign(base,{stage,matchCount:1,allStages:[stage],resolved:true,reason:'n-not-discriminant'});
   }
-  return{stage:null,ambiguous:false,matchCount:0,allStages:[...stages],nxResolved:false};
+  return Object.assign(base,{stage:null,matchCount:0,allStages:[...stages],resolved:false,reason:'n-discriminant'});
+}
+// Punto d'ingresso storico (solo asse N): mantenuto per compatibilità.
+function resolveNX(rules,site,T,N,M,extra){
+  return resolveNonEvaluable(rules,site,T,N,M,extra);
 }
 
 // ======================================================
@@ -1814,18 +1833,28 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
 
   const tCode=stripPfx(T);
   const nCode=stripPfx(N);
+  // TX blocca sempre; NX solo se discriminante. L'avvertenza deve corrispondere
+  // a ciò che il box risultato mostra davvero, altrimenti le due uscite si
+  // contraddicono (era il caso di TX con una riga "Any T": messaggio «non
+  // assegnabile» e «Stadio IV (assegnato)» insieme).
+  const neRes=(tCode==='TX'||nCode==='NX')
+    ?resolveNonEvaluable(getStagingRules(site,variant),site,T,N,M,extra)
+    :null;
   if(tCode==='TX'){
     incomplete.push('T not assessable (TX): stage cannot be assigned. Re-evaluate the specimen or document the reason for non-assessability.');
   }
   if(nCode==='NX'){
-    const nxRules=getStagingRules(site,variant);
-    const nxRes=resolveNX(nxRules,site,T,N,M,extra);
-    if(!nxRes.nxResolved){
+    if(!neRes.resolved){
       const lnProvided=(lnTot!==''&&lnTot!==null&&lnTot!==undefined);
       incomplete.push(lnProvided
         ?'N not assessable (NX): stage cannot be assigned. Document the reason regional lymph nodes could not be assessed (e.g. not sampled, inadequate specimen).'
         :'N not assessable (NX): stage cannot be assigned. Specify the number of lymph nodes examined or the reason for non-assessability.');
     }
+  }
+  // N non valutabile ma non discriminante: lo stadio è assegnato, la non
+  // valutabilità va comunque documentata nel referto.
+  if(neRes&&neRes.resolved){
+    warnings.push('N not assessable ('+nCode+'): not determinant for this stage group — with the other parameters unchanged, every possible N category falls into the same stage. Document the reason for non-assessability in the report anyway.');
   }
   if(tCode==='Tis'&&nCode!=='N0'&&nCode!=='NX'){
     errors.push('Tis with '+N+': biologically inconsistent combination. Verify T classification or presence of a second invasive focus.');
@@ -2552,7 +2581,7 @@ function computeStage(){
   const lnPos=document.getElementById('stg-ln-pos')?.value??'';
 
   const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
-  const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:resolveNX(rules,s,T,N,M,extra);
+  const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:resolveNonEvaluable(rules,s,T,N,M,extra);
 
   if(result.ambiguous){
     v.errors.push('Dataset ambiguity: stages '+result.allStages.join(' / ')+' simultaneously compatible — staging not assignable. Please report the bug.');
@@ -2749,18 +2778,8 @@ function refLnCrossCheck(){
 
 function generateReferto(){
   const s=currentSite;if(!s)return;
-  // Block se TX o NX
-  const _T=document.getElementById('ref-T').value;
-  const _N=document.getElementById('ref-N').value;
-  if(stripPfx(_T)==='TX'||stripPfx(_N)==='NX'){
-    const _out2=document.getElementById('referto-output');
-    const _which=[];
-    if(stripPfx(_T)==='TX')_which.push('T not assessable (TX)');
-    if(stripPfx(_N)==='NX')_which.push('N not assessable (NX)');
-    _out2.textContent='⚠️ REPORT NOT GENERATED\n\n'+_which.join('\n')+'\n\nStage cannot be assigned with non-assessable parameters.';
-    _out2.style.display='block';_out2.style.borderColor='#e08040';_out2.style.background='#fff8f0';
-    document.getElementById('copy-btn').style.display='none';return;
-  }
+  // TX/NX non bloccano più a priori: il blocco avviene dopo il calcolo e solo se
+  // l'asse non valutabile è realmente discriminante, come nel calcolatore.
   // Block if LN incongruent
   const _refTot=parseInt(document.getElementById('ref-ln-tot').value)||0;
   const _refPos=parseInt(document.getElementById('ref-ln-pos').value)||0;
@@ -2799,9 +2818,18 @@ function generateReferto(){
   // Override M prefix from fonte M selector
   const mPfx=mSource==='pM'?'p':mSource==='ycM'?'yc':mSource==='ypM'?'yp':mSource==='MX'?'':'c';
   const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
-  const result=v.errors.length?{stage:null,ambiguous:false}:resolveNX(rules,s,T,N,M,extra);
+  const result=v.errors.length?{stage:null,ambiguous:false}:resolveNonEvaluable(rules,s,T,N,M,extra);
   if(result.ambiguous){
     v.errors.push('Dataset ambiguity: stages '+result.allStages.join(' / ')+' simultaneously compatible — staging not assignable. Please report the bug.');
+  }
+  // Blocco tardivo: solo quando la non valutabilità impedisce davvero l'assegnazione.
+  if(result.axes&&!result.resolved&&!v.errors.length){
+    const _out2=document.getElementById('referto-output');
+    _out2.textContent='⚠️ REPORT NOT GENERATED\n\n'
+      +result.axes.map(a=>a==='T'?'T not assessable (TX)':'N not assessable (NX)').join('\n')
+      +'\n\nStage cannot be assigned: no other documented parameter determines it.';
+    _out2.style.display='block';_out2.style.borderColor='#e08040';_out2.style.background='#fff8f0';
+    document.getElementById('copy-btn').style.display='none';return;
   }
   if(mSource==='MX'){
     result.stage=null;
