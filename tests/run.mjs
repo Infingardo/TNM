@@ -230,9 +230,149 @@ ok('ritorna uno stadio noto o null (no crash/typo)', psgB === null || (psgB in S
    'valore: ' + psgB);
 
 // ── 8b. Parità motore su index-en.html (logica identica alla IT) ─────
+section('Soglia pN0 e tipo di campione linfonodale');
+{
+  const { PN0_MIN, SN_SITES, LN_DIM_RULES, N_AUTO_RULES } = eng;
+  const pfx = { T:'p', N:'p', M:'c' };
+  const S = id => SITES.find(x => x.id === id);
+  const warn = (id, T, N, tot, pos, opts={}) => {
+    const s = S(id);
+    return validateCase(s, T, N, 'M0', {}, tot, pos, pfx, s.variants ? s.variants[0].id : null, opts)
+      .warnings.filter(w => /inadegua|sentinella|minimo/i.test(w));
+  };
+
+  // L'INVARIANTE che avrebbe pescato il difetto: dove il campione nodale standard e'
+  // il sentinella, la soglia — se esiste — vale per lo svuotamento, e il sentinella
+  // negativo non puo' mai uscire come campionamento inadeguato.
+  for (const id of Object.keys(SN_SITES)) {
+    const s = SITES.find(x => x.id === id);
+    const w = validateCase(s, s.T[4].c, 'N0', 'M0', {}, 1, 0, pfx,
+                           s.variants ? s.variants[0].id : null, { lnType: 'sn' });
+    ok(`${id}: un sentinella negativo non e mai "campionamento inadeguato"`,
+       !w.warnings.some(x => /inadegua/i.test(x)), w.warnings.join(' | '));
+  }
+  ok('melanoma non ha piu una soglia pN0', PN0_MIN.melanoma === undefined,
+     'PN0_MIN.melanoma = ' + PN0_MIN.melanoma);
+  ok('merkel non ha piu una soglia pN0', PN0_MIN.merkel === undefined,
+     'PN0_MIN.merkel = ' + PN0_MIN.merkel);
+  ok('mammella, melanoma e merkel sono dichiarate sedi a sentinella',
+     ['mammella','melanoma','merkel'].every(id => !!SN_SITES[id]));
+
+  // Comportamento: il sentinella negativo non viene messo in riserva.
+  for (const id of ['melanoma','merkel','mammella']) {
+    const w = warn(id, id==='mammella'?'T1c':(id==='merkel'?'T1':'T3a'), 'N0', 2, 0, { lnType:'sn' });
+    ok(`${id}: sentinella negativo → nessuna riserva sul numero`,
+       w.length === 1 && /adeguato per definizione/.test(w[0]), w[0] || '(nessun warning)');
+  }
+  // Con lo svuotamento la soglia resta dov'e' prevista.
+  ok('mammella: svuotamento con 2 LN → riserva mantenuta',
+     /inadeguato/.test(warn('mammella','T1c','N0',2,0,{ lnType:'dissezione' })[0] || ''));
+  ok('mammella: svuotamento con 12 LN → nessuna riserva',
+     warn('mammella','T1c','N0',12,0,{ lnType:'dissezione' }).length === 0);
+  // Sede senza pratica del sentinella: comportamento invariato.
+  ok('colon: 8 LN → riserva (soglia 12, invariata)',
+     /inadeguato/.test(warn('colon_retto','T3','N0',8,0,{})[0] || ''));
+  ok('colon: 14 LN → nessuna riserva', warn('colon_retto','T3','N0',14,0,{}).length === 0);
+  // Tipo non specificato: si chiede il dato, non si accusa il campione.
+  ok('melanoma senza tipo di campione: chiede il tipo, non dichiara inadeguatezza',
+     !/inadeguato/.test(warn('melanoma','T3a','N0',2,0,{})[0] || ''),
+     warn('melanoma','T3a','N0',2,0,{})[0]);
+
+  // La dimensione arriva come parametro: validateCase non legge piu il DOM.
+  const vDim = validateCase(S('mammella'),'T1c','N0','M0',{},2,0,pfx,null,{ lnDim:'0.15' });
+  ok('mammella: ITC segnalata dalla dimensione passata come parametro',
+     vDim.warnings.some(w => /ITC/.test(w)));
+  ok('validateCase non legge il DOM',
+     !/getElementById/.test(readFile('index.html').split('function validateCase')[1].split('\nfunction ')[0]));
+}
+
+section('Congruenza N: solo dove il conteggio la determina');
+{
+  const { LN_DIM_RULES, N_AUTO_RULES } = eng;
+  const pfx = { T:'p', N:'p', M:'c' };
+  const S = id => SITES.find(x => x.id === id);
+  // Dove la categoria dipende da dimensione o ENE, il conteggio da solo non decide.
+  ok('nessuna sede ha insieme LN_DIM_RULES e il controllo per conteggio attivo',
+     Object.keys(LN_DIM_RULES).every(id => {
+       const v = validateCase(S(id), S(id).T[3].c, S(id).N[2].c, 'M0', {}, 10, 3, pfx,
+                              S(id).variants ? S(id).variants[0].id : null, {});
+       return !v.errors.some(e => /Categoria N incongruente/.test(e));
+     }));
+  // Ghiandole salivari: la rete esiste ed e' ENE-aware.
+  const gs = S('gh_salivari');
+  const err = (n, pos, ene) => validateCase(gs,'T2',n,'M0',{},12,pos,pfx,'path',{ lnEne:ene })
+                                 .errors.filter(e => /incongruente/.test(e));
+  ok('pENE+ con 2 LN+ → pN2 accettato', err('pN2',2,'pos').length === 0);
+  ok('pENE+ con 2 LN+ → pN1 respinto',  err('pN1',2,'pos').length === 1);
+  ok('pENE− con 5 LN+ → pN2 accettato', err('pN2',5,'neg').length === 0);
+  ok('pENE− con 5 LN+ → pN1 respinto',  err('pN1',5,'neg').length === 1);
+  ok('pENE− con 2 LN+ → pN1 accettato', err('pN1',2,'neg').length === 0);
+  ok('senza ENE non si accusa nulla',   err('pN2',2,'').length === 0);
+}
+
+section('Etichetta di edizione: dalla sede, non dal renderer');
+{
+  const html = readFile('index.html');
+  const { editionLabel, editionRef } = eng;
+  ok('editionLabel esiste', typeof editionLabel === 'function');
+  ok('il canale anale non e attribuito a UICC', editionLabel('canale_anale') !== eng.EDITION_DEFAULT
+     && /^AJCC/.test(editionLabel('canale_anale')), editionLabel('canale_anale'));
+  ok('e dichiara la divergenza nel cartello', /divergenza/i.test(editionLabel('canale_anale')));
+  ok('il riferimento del referto del canale anale dichiara la divergenza',
+     /divergenza|esclusi/i.test(editionRef('canale_anale')));
+  ok('il melanoma dichiara i criteri invariati', /invariat/i.test(editionLabel('melanoma')));
+  ok('le altre sedi restano sulla 9ª ed. UICC', /UICC/.test(editionLabel('colon_retto')));
+  // niente etichetta cablata nel renderer
+  const codice = html.replace(/^\s*\/\/.*$/gm, '');
+  ok("nessuna etichetta di edizione cablata in stage-label",
+     !/stage-label'\)\.textContent='TNM/.test(codice));
+  ok('il referto prende il riferimento dalla sede', /editionRef\(s\.id\)/.test(codice));
+}
+
+section('Metadati di completezza coerenti con i dati');
+{
+  const contraddizioni = SITES.filter(s =>
+    s.completeness === 'complete' &&
+    Object.values(s.coverage || {}).some(v => v === 'missing'));
+  ok("nessuna sede 'complete' con una copertura dichiarata mancante",
+     contraddizioni.length === 0, contraddizioni.map(s => s.id).join(', '));
+  const { PN0_MIN } = eng;
+  const incoerenti = SITES.filter(s => s.coverage?.soglia_pN0 === 'na' && PN0_MIN[s.id]);
+  ok("nessuna sede dichiara 'soglia non definita' e poi ne applica una",
+     incoerenti.length === 0, incoerenti.map(s => s.id + '=' + PN0_MIN[s.id]).join(', '));
+  const mancanti = SITES.filter(s => s.coverage?.soglia_pN0 === 'ok'
+    && !PN0_MIN[s.id] && !eng.PN0_MIN_SPECIAL?.[s.id] && !eng.SN_SITES[s.id]);
+  ok("nessuna sede dichiara 'soglia documentata' senza averla",
+     mancanti.length === 0, mancanti.map(s => s.id).join(', '));
+}
+
+section('Versione: una sola, in tutti i punti');
+{
+  const html = readFile('index.html');
+  const pkg = JSON.parse(readFile('package.json'));
+  const meta = (html.match(/version:'([\d.]+)'/) || [])[1];
+  ok('TOOL_META.version === package.json', meta === pkg.version, `${meta} vs ${pkg.version}`);
+  ok('la versione compare nel titolo', html.includes(`v${pkg.version} —`), pkg.version);
+  ok('la versione compare nel disclaimer', html.includes(`casi borderline · v${pkg.version}`));
+  const vecchie = [...html.matchAll(/v(\d+\.\d+\.\d+)/g)].map(m => m[1]).filter(v => v !== pkg.version);
+  ok('nessuna versione vecchia rimasta in pagina', vecchie.length === 0, [...new Set(vecchie)].join(', '));
+  // Il README dichiara la versione corrente in tre punti: e' la prima cosa che
+  // resta indietro, e nessun test la guardava.
+  const readme = readFile('README.md');
+  ok('il README dichiara la versione corrente', readme.includes('v' + pkg.version));
+  const vecchieRm = [...readme.matchAll(/\*\*Versione:\*\* v(\d+\.\d+\.\d+)/g)].map(m => m[1]);
+  ok('l intestazione del README e allineata', vecchieRm.every(v => v === pkg.version),
+     vecchieRm.join(', '));
+}
+
 section('Parità struttura/logica — index-en.html');
-let engEn = null;
-try { engEn = loadEngine('index-en.html'); } catch (e) { /* file assente: skip */ }
+let engEn = null, enExists = true, enErr = '';
+try { engEn = loadEngine('index-en.html'); }
+catch (e) { enErr = e.message; try { readFile('index-en.html'); } catch { enExists = false; } }
+// v1.1.0: prima questa sezione veniva saltata in silenzio se il build EN non si
+// caricava — cioe' proprio quando era rimasto indietro rispetto a index.html.
+ok('index-en.html si carica (o e assente del tutto)', !!engEn || !enExists,
+   'index-en.html presente ma non caricabile: ' + enErr);
 if (!engEn) {
   console.log('  (index-en.html non presente — sezione saltata)');
 } else {
@@ -284,6 +424,18 @@ if (!engEn) {
   // PSG prostata (codici non tradotti)
   ok('EN: PSG prostata cM1/N0 → IVB',
      engEn.computePrognosticStage_prostata('T2', 'N0', 'cM1', '<10 ng/mL', 1) === 'IVB');
+
+  // I messaggi che l'utente legge devono essere davvero tradotti. La parita'
+  // strutturale non lo vede: le tabelle possono essere identiche e i testi italiani.
+  const enHtml = readFile('index-en.html');
+  const SPIE = ['linfonodi','sentinella','esaminati','selezionata','inadeguato','incongruente',
+                'campione','raccomandato','soglia','stadio non','non valutabile'];
+  const messaggi = [...enHtml.matchAll(/(?:warnings|errors|incomplete)\.push\('((?:[^'\\]|\\.)*)'/g)]
+    .map(m => m[1]);
+  const nonTradotti = messaggi.filter(t => SPIE.some(w => t.toLowerCase().includes(w)));
+  ok(`EN: nessun messaggio rimasto in italiano (${messaggi.length} messaggi)`,
+     nonTradotti.length === 0,
+     nonTradotti.slice(0, 3).map(t => t.slice(0, 70)).join(' | '));
 }
 
 // ── 9. Service worker: path relativi (punto 3) ───────────────────────

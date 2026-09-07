@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="TNM AP">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>TNM 9ª Ed. v1.0.1 — Anatomia Patologica · 29 sedi</title>
+<title>TNM 9ª Ed. v1.1.0 — Anatomia Patologica · 29 sedi</title>
 <style>
 :root{
   --bg:#f0f2f5;--panel:#ffffff;--border:#d4d9e2;--accent:#2563a8;--accent2:#1a7a6e;
@@ -307,6 +307,14 @@ button:focus-visible,.tab-btn:focus-visible,select:focus-visible,input:focus-vis
               <label for="stg-ln-pos">LN positivi → auto-calcola N ↓</label>
               <input type="number" id="stg-ln-pos" placeholder="es. 3" min="0" oninput="onTNMChange();syncStgToRef();autoCalcN();lnCrossCheck();autoCalcNDim()">
             </div>
+            <div class="form-group" id="stg-ln-type-wrap" style="display:none;width:210px">
+              <label for="stg-ln-type">Tipo di campione linfonodale</label>
+              <select id="stg-ln-type" onchange="onTNMChange()">
+                <option value="">— non specificato</option>
+                <option value="sn">Linfonodo sentinella</option>
+                <option value="dissezione">Svuotamento / dissezione</option>
+              </select>
+            </div>
             <div class="form-group" id="stg-ln-dim-wrap" style="display:none;width:180px">
               <label for="stg-ln-dim">Dim. LN maggiore (mm) → auto-N ↓</label>
               <input type="number" id="stg-ln-dim" placeholder="es. 18" min="0" step="0.1" oninput="autoCalcNDim()">
@@ -482,7 +490,7 @@ button:focus-visible,.tab-btn:focus-visible,select:focus-visible,input:focus-vis
   </div>
 
   <div id="disclaimer">
-    ⚠️ Uso esclusivo anatomia patologica · UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Non sostituisce la valutazione clinico-patologica · Verificare fonte primaria per casi borderline · v1.0.1
+    ⚠️ Uso esclusivo anatomia patologica · UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Non sostituisce la valutazione clinico-patologica · Verificare fonte primaria per casi borderline · v1.1.0
 </div>
 </div>
 
@@ -1099,7 +1107,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'net_stomaco',name:'NET GI — Stomaco',icd:'C16',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+{id:'net_stomaco',name:'NET GI — Stomaco',icd:'C16',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'na',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
 note:'Solo NET ben differenziati (G1-G3). NEC (small cell, large cell) → staging come carcinoma gastrico. Grading WHO: G1 (<2 mitosi/2mm², Ki67 <3%), G2 (2-20 mitosi/2mm², Ki67 3-20%), G3 (>20 mitosi/2mm², Ki67 >20%). Grado determinato dal parametro più alto tra mitosi e Ki67.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1127,7 +1135,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'net_coloretto',name:'NET GI — Colon-Retto',icd:'C18-C20',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+{id:'net_coloretto',name:'NET GI — Colon-Retto',icd:'C18-C20',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'na',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
 note:'Solo NET ben differenziati (G1-G3). Grading WHO identico agli altri NET GI.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1156,7 +1164,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'net_pancreas',name:'NET GI — Pancreas',icd:'C25',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
+{id:'net_pancreas',name:'NET GI — Pancreas',icd:'C25',cat:'gi_net',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico WHO/AJCC — NET G1-G3',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'na',confini_anatomici:'ok'},badges:[{cls:'badge-net',txt:'NET G1-G3'}],
 note:'AJCC Version 9. Solo NET ben differenziati pancreatici (funzionanti e non). NEC pancreatici → staging come adenocarcinoma pancreatico. V9 introduce biomarcatori prognostici: DAXX/ATRX (loss IHC = meccanismo ALT, prognosi peggiore anche in G1/G2), ARX (marker alfa-cellulare), PDX1 (marker beta-cellulare) — non modificano T/N/M ma orientano comportamento biologico e follow-up.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1342,7 +1350,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'prostata',name:'Prostata',icd:'C61.9',cat:'uro',completeness:'complete',staging_type:'combined',staging_type_label:'UICC V9 + PSG AJCC 8ª ed.',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-complete',txt:'PSG AJCC 8ª ed.'}],
+{id:'prostata',name:'Prostata',icd:'C61.9',cat:'uro',completeness:'complete',staging_type:'combined',staging_type_label:'UICC V9 + PSG AJCC 8ª ed.',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'na',confini_anatomici:'ok'},badges:[{cls:'badge-complete',txt:'PSG AJCC 8ª ed.'}],
 note:'PSG AJCC 8ª ed.: richiede PSA (ng/mL) e Grade Group (1–5). Esclusi i carcinomi uroteliali della prostata (staging ureterale). Nessun pT1. Suffix MRI: (mr); PSMA-PET: (PET) da indicare in referto.',
 extra:[
   {id:'PSA',label:'PSA (ng/mL)',options:['—','<10 ng/mL','10–19 ng/mL','≥20 ng/mL','Non dosato']},
@@ -1390,7 +1398,7 @@ staging_variants:{
   ]
 }},
 
-{id:'vescica',name:'Vescica',icd:'C67',cat:'uro',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
+{id:'vescica',name:'Vescica',icd:'C67',cat:'uro',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'na',confini_anatomici:'ok'},
 note:'Esclude papilloma e PUNLMP. Suffisso (m): tumori multipli; suffisso (is): CIS associato. Staging corrisponde sia a c che pTNM.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1428,7 +1436,7 @@ staging:[
   {stage:'IVB',T:'any',N:'any',M:'M1b'},
 ]},
 
-{id:'rene',name:'Rene (RCC)',icd:'C64',cat:'uro',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC — solo RCC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
+{id:'rene',name:'Rene (RCC)',icd:'C64',cat:'uro',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC — solo RCC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'na',confini_anatomici:'ok'},
 note:'Solo per carcinoma a cellule renali. Il nefroblastoma è classificato nel capitolo pediatrico.',
 T:[
   {c:'TX',d:'Non valutabile'},{c:'T0',d:'Nessun tumore'},
@@ -1455,7 +1463,7 @@ staging:[
   {stage:'IV',T:'any',N:'any',M:'M1'},
 ]},
 
-{id:'testicolo',name:'Testicolo',icd:'C62',cat:'uro',completeness:'complete',staging_type:'markers',staging_type_label:'Richiede marcatori sierici S (AFP/hCG/LDH)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},badges:[{cls:'badge-uicc',txt:'Richiede marcatori S'}],
+{id:'testicolo',name:'Testicolo',icd:'C62',cat:'uro',completeness:'complete',staging_type:'markers',staging_type_label:'Richiede marcatori sierici S (AFP/hCG/LDH)',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'na',confini_anatomici:'ok'},badges:[{cls:'badge-uicc',txt:'Richiede marcatori S'}],
 note:'Solo tumori a cellule germinali. Lo staging richiede l\'orchidectomia radicale (eccetto pTis e pT4). La classificazione S (marcatori sierici) si basa sui valori nadir post-orchidectomia. S: AFP (emivita 7gg), hCG (emivita 3gg), LDH. Includere sempre S nel referto.',
 T:[
   {c:'TX',d:'Non valutabile (in assenza di orchidectomia radicale)'},
@@ -1503,7 +1511,7 @@ staging:[
   {stage:'IIIC',T:'any',N:'any',M:'M1b'},
 ]},
 
-{id:'melanoma',name:'Melanoma cutaneo',icd:'C44',cat:'skin',completeness:'complete',staging_type:'histotype',staging_type_label:'UICC 8ª ed. — Varianti clinico/patologico',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'missing',confini_anatomici:'ok'},
+{id:'melanoma',name:'Melanoma cutaneo',icd:'C44',cat:'skin',completeness:'complete',staging_type:'histotype',staging_type_label:'Criteri melanoma invariati dalla 8ª ed. — varianti clinico/patologico',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'na',confini_anatomici:'ok'},
 note:'Il T clinico viene classificato dopo escissione (vedi pT). Spessore misurato in mm, arrotondato al decimo più vicino. Suffissi LDH: (0)=LDH normale; (1)=LDH elevata; nessun suffisso se LDH non registrata.',
 extra:[
   {id:'LDH',label:'LDH sierico',options:['—','Nella norma (LDH 0)','Elevato (LDH 1)','Non dosato']},
@@ -1579,7 +1587,7 @@ staging_variants:{
   ]
 }},
 
-{id:'carcinoma_cute',name:'Carcinoma della cute (SCC/BCC)',icd:'C44.0/.2-.4/.9 (escl. C44.1 palpebra)',cat:'skin',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'ok',confini_anatomici:'ok'},
+{id:'carcinoma_cute',name:'Carcinoma della cute (SCC/BCC)',icd:'C44.0/.2-.4/.9 (escl. C44.1 palpebra)',cat:'skin',completeness:'complete',staging_type:'anatomic',staging_type_label:'Stadio anatomico UICC',coverage:{T:'ok',N:'ok',M:'ok',stage:'ok',note_eccezioni:'ok',soglia_pN0:'na',confini_anatomici:'ok'},
 note:'Ambito: cute non testa-collo (C44, escluse C44.1x palpebra e sedi H&N con staging dedicato); esclude perianale, vulva, pene, Merkel. PNI e deep invasion (>6 mm o oltre il grasso sottocutaneo) innalzano a T3. ≥6 linfonodi per pN0.',
 T:[
   {c:'TX',d:'Non identificabile'},{c:'T0',d:'Nessun tumore'},
@@ -1784,16 +1792,39 @@ staging_variants:{
 // CATEGORIES
 // ======================================================
 const TOOL_META={
-  version:'1.0.1',
+  version:'1.1.0',
   dataset:'UICC TNM Classification of Malignant Tumours, 9ª ed. (2025)',
   ajcc:'AJCC Cancer Staging Manual, Version 9 (2023)',
   sedi:29,
-  data_rilascio:'2026-06-16',
+  data_rilascio:'2026-09-07',
   data_audit:'2026-06-02',
-  validazione_automatica:'60 test automatici riproducibili PASS (coerenza motore + casi-ancora) — vedi cartella tests/',
-  validazione_manuale:'Audit interno 29/29 sedi. Verifica vs fonte primaria completata per colon e mammella; altre sedi: coerenza interna verificata, correttezza vs manuale da confermare.',
+  validazione_automatica:'npm test: 54 test di coerenza del motore · npm run test:anchors: 29 casi-ancora vs fonte primaria — vedi cartella tests/',
+  validazione_manuale:'Audit interno 29/29 sedi. Verifica vs fonte primaria completata per colon e mammella; altre sedi: coerenza interna verificata, correttezza vs manuale da confermare. v1.1.0: rivisti soglia pN0 (tipo di campione linfonodale), etichetta di edizione per sede, congruenza N nelle sedi dimensionali/ENE.',
   responsabile:'F.M.D. Bianchi, SC Anatomia Patologica, ASST FBF-Sacco Milano',
 };
+// L'edizione di riferimento non e' la stessa per tutte le sedi: la 9ª ed. UICC
+// rivede un sottoinsieme di capitoli, e per il canale anale questo strumento segue
+// deliberatamente AJCC v9 CONTRO UICC V9 (Tis/Stadio 0 esclusi — vedi nota di sede).
+// Prima l'etichetta era cablata nel renderer e nel referto come "UICC 2025" per
+// tutte e 29 le sedi: uno stadio prodotto con le regole AJCC usciva firmato UICC.
+const EDITION_DEFAULT='TNM 9ª Ed. · UICC 2025';
+const EDITION_BY_SITE={
+  canale_anale:'AJCC Cancer Staging Manual v9 — divergenza da UICC V9',
+  melanoma:'TNM 9ª Ed. · UICC 2025 (criteri melanoma invariati dalla 8ª ed.)',
+};
+const EDITION_REF_DEFAULT='UICC TNM Classification of Malignant Tumours, 9ª ed. (2025) / AJCC Cancer Staging Manual, Version 9';
+// Sedi in cui la soglia pN0 dipende dal bacino di drenaggio e non e' un numero
+// unico: documentata qui, applicata da un controllo dedicato.
+const PN0_MIN_SPECIAL={
+  canale_anale:'≥12 linfonodi per la dissezione perirettale/pelvica · ≥6 per la inguinale',
+};
+const EDITION_REF_BY_SITE={
+  canale_anale:'AJCC Cancer Staging Manual, Version 9 — Tis/Stadio 0 esclusi. UICC TNM 9ª ed. (2025) li mantiene: divergenza esplicita, schema applicato AJCC',
+  melanoma:'UICC TNM Classification of Malignant Tumours, 9ª ed. (2025) — criteri del melanoma invariati rispetto alla 8ª ed. / AJCC Cancer Staging Manual, Version 9',
+};
+function editionLabel(siteId){ return EDITION_BY_SITE[siteId]||EDITION_DEFAULT; }
+function editionRef(siteId){ return EDITION_REF_BY_SITE[siteId]||EDITION_REF_DEFAULT; }
+
 const CATS={
   gi:{label:'Apparato digerente',order:0},
   gi_net:{label:'NET Gastrointestinali',order:1},
@@ -1826,7 +1857,12 @@ function onPrefixChange(ctx){ onTNMChange(); }
 // ======================================================
 const N1C_TD_SITES=['colon_retto','appendice'];
 
-function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
+// `opts` raccoglie i dati del campionamento che non stanno nel TNM: tipo di campione
+// linfonodale (sentinella / svuotamento), dimensione della metastasi maggiore, ENE.
+// Prima alcuni di questi venivano letti direttamente dal DOM dentro questa funzione.
+function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant, opts){
+  opts=opts||{};
+  const lnType=opts.lnType||'', lnDim=opts.lnDim, lnEne=opts.lnEne||'';
   const errors=[];
   const incomplete=[];
   const warnings=[];
@@ -1875,14 +1911,34 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
     errors.push('Il numero di linfonodi positivi ('+nPos+') supera il totale esaminato ('+nTot+'). Dati incongruenti.');
   }
   const lnPosProvided=(lnPos!==''&&lnPos!==null&&lnPos!==undefined);
-  const nAutoRule=N_AUTO_RULES[site.id];
+  // v1.1.0: dove la categoria N dipende da dimensione o da ENE (LN_DIM_RULES) il
+  // solo numero di linfonodi positivi non la determina. Attivando la rete di
+  // sicurezza sulle ghiandole salivari senza questa guardia, un pN2 corretto per
+  // pENE con 1-3 linfonodi veniva respinto come "incongruente" — cioe' proprio il
+  // caso che la V9 ha introdotto, e che la nota di sede descrive.
+  const nAutoRule=LN_DIM_RULES[site.id]?null:N_AUTO_RULES[site.id];
   if(lnPosProvided&&nAutoRule){
     const nPosVal=parseInt(lnPos)||0;
     const expectedN=nAutoRule(nPosVal);
+    // v1.1.0: il confronto usava nCode gia' passato per stripPfx mentre la regola
+    // delle ghiandole salivari restituisce 'pN1'/'pN2' grezzi — quindi per l'unica
+    // sede in cui V9 ha riscritto il pN questa rete di sicurezza non scattava mai.
     const autoOutputs=new Set();
-    for(let i=0;i<=30;i++)autoOutputs.add(nAutoRule(i));
-    if(autoOutputs.has(nCode)&&nCode!==expectedN){
-      errors.push('Categoria N incongruente: con '+nPosVal+' LN+ attesa '+expectedN+', selezionata '+nCode+'. Correggere o usare l\'auto-calcolo LN+.');
+    for(let i=0;i<=30;i++)autoOutputs.add(stripPfx(nAutoRule(i)));
+    const expectedCode=stripPfx(expectedN);
+    if(autoOutputs.has(nCode)&&nCode!==expectedCode){
+      errors.push('Categoria N incongruente: con '+nPosVal+' LN+ attesa '+expectedN+', selezionata '+N+'. Correggere o usare l\'auto-calcolo LN+.');
+    }
+  }
+
+  // Ghiandole salivari: la categoria pN dipende da numero E da pENE. Il controllo
+  // generico basato sul solo conteggio non si applica (vedi guardia LN_DIM_RULES);
+  // qui la congruenza si verifica con la stessa regola che alimenta l'auto-calcolo,
+  // cosi' la rete esiste senza respingere il caso che la V9 ha introdotto.
+  if(site.id==='gh_salivari'&&lnPosProvided&&variant==='path'&&lnEne){
+    const attesa=LN_DIM_RULES.gh_salivari(null,parseInt(lnPos)||0,lnEne);
+    if(attesa&&stripPfx(attesa)!==nCode){
+      errors.push('Categoria pN incongruente: con '+(parseInt(lnPos)||0)+' LN+ e ENE '+(lnEne==='pos'?'presente':'assente')+' attesa '+attesa+', selezionata '+N+'. In V9 il pENE su 1–3 linfonodi porta a pN2.');
     }
   }
 
@@ -1890,10 +1946,22 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
   if(nCode!=='NX'&&nCode!=='N0'&&nTot===0){
     warnings.push('Categoria pN selezionata senza numero di linfonodi esaminati documentato.');
   }
-  // pN0 adeguatezza
+  // pN0 adeguatezza — dipende dal TIPO di campione, non solo dal numero
   const minLN=PN0_MIN[site.id];
-  if(minLN&&nCode.startsWith('N0')&&nTot>0&&nTot<minLN){
-    warnings.push('pN0 con campionamento potenzialmente inadeguato: '+nTot+' linfonodi esaminati (minimo raccomandato per questa sede: '+minLN+'). Riportare il numero; la categoria rimane pN0 con riserva.');
+  const snLabel=SN_SITES[site.id];
+  const isSn=lnType==='sn', isDissezione=lnType==='dissezione';
+  if(nCode.startsWith('N0')&&nTot>0){
+    if(snLabel&&isSn){
+      warnings.push('Linfonodo sentinella negativo: pN0 adeguato per definizione — AJCC/UICC non pongono un numero minimo di linfonodi per il pN0 di questa sede. Riportare la categoria con il modificatore: '+snLabel+'.');
+    }else if(minLN&&nTot<minLN){
+      if(snLabel&&!isDissezione){
+        warnings.push('Il minimo di '+minLN+' linfonodi vale per lo SVUOTAMENTO, non per il sentinella: con '+nTot+' linfonodi esaminati, se si tratta di un sentinella negativo il pN0 e\' adeguato ('+snLabel+'). Specificare il tipo di campione linfonodale per togliere questa riserva.');
+      }else{
+        warnings.push('pN0 con campionamento potenzialmente inadeguato: '+nTot+' linfonodi esaminati (minimo raccomandato per lo svuotamento in questa sede: '+minLN+'). Riportare il numero; la categoria rimane pN0 con riserva.');
+      }
+    }else if(snLabel&&!minLN&&!isDissezione){
+      warnings.push('Per questa sede AJCC/UICC non definiscono un numero minimo di linfonodi per il pN0. Se il campione e\' un sentinella negativo, riportare '+snLabel+'; specificare il tipo di campione linfonodale.');
+    }
   }
   if(site.id==='canale_anale'&&nCode.startsWith('N0')&&nTot>0&&nTot<12){
     warnings.push('Canale anale pN0: il minimo raccomandato è ≥12 LN per la dissezione perirettale/pelvica e ≥6 LN per la dissezione inguinale. Con '+nTot+' LN esaminati verificare il territorio di dissezione.');
@@ -1944,10 +2012,12 @@ function validateCase(site, T, N, M, extra, lnTot, lnPos, pfxObj, variant){
     warnings.push('Uretra: staging usa codici T differenziati per sesso (T2M/T3M/T4M per maschile; T2F/T3F/T4F per femminile). Verificare che la variante selezionata corrisponda al sesso del paziente.');
   }
   // Mammella: ITC warning se dim ≤0.2mm
+  // v1.1.0: la dimensione arriva come parametro. Prima validateCase leggeva
+  // direttamente il DOM, quindi non era una funzione pura e questo ramo non era
+  // testabile: sotto lo stub del harness lanciava.
   if(site.id==='mammella'){
-    const dimEl=document.getElementById('stg-ln-dim');
-    if(dimEl&&dimEl.value!==''){
-      const dimVal=parseFloat(dimEl.value);
+    if(lnDim!==''&&lnDim!==null&&lnDim!==undefined){
+      const dimVal=parseFloat(lnDim);
       if(dimVal>0&&dimVal<=0.2&&nCode==='N0'){
         warnings.push('Dimensione metastasi ≤0.2 mm: classificare come N0(i+) — ITC (cellule tumorali isolate). Non equivale a N1mi (≤0.2–2 mm). Indicare esplicitamente nel referto.');
       }
@@ -2126,8 +2196,12 @@ function renderLookup(){
       stage:'Stage grouping',note_eccezioni:'Note/eccezioni',
       soglia_pN0:'Soglia pN0',confini_anatomici:'Confini anatomici'
     };
-    const COV_ICONS={ok:'✓ completo',partial:'◑ parziale',missing:'— non documentato'};
-    const COV_CLS={ok:'cov-ok',partial:'cov-partial',missing:'cov-missing'};
+    // v1.1.0: 'na' distingue "la classificazione non lo definisce" da "noi non
+    // l'abbiamo documentato". Otto sedi erano marcate 'missing' per la soglia pN0,
+    // che per rene, prostata, testicolo, vescica, melanoma e NET semplicemente non
+    // esiste in TNM: era una lacuna dichiarata dove non c'era nulla da dichiarare.
+    const COV_ICONS={ok:'✓ completo',partial:'◑ parziale',missing:'— non documentato',na:'n/d — non definita dalla classificazione'};
+    const COV_CLS={ok:'cov-ok',partial:'cov-partial',missing:'cov-missing',na:'cov-partial'};
     html+='<div style="margin-top:16px"><div class="section-title">Copertura del modello</div>';
     html+='<table class="coverage-table"><thead><tr><th>Campo</th><th>Stato</th></tr></thead><tbody>';
     for(const [k,v] of Object.entries(s.coverage)){
@@ -2396,6 +2470,8 @@ function renderStaging(){
   const dimWrap=document.getElementById('stg-ln-dim-wrap');
   const eneWrap=document.getElementById('stg-ln-ene-wrap');
   if(dimWrap)dimWrap.style.display=LN_DIM_SITES[s.id]?'inline-block':'none';
+  const typeWrap=document.getElementById('stg-ln-type-wrap');
+  if(typeWrap)typeWrap.style.display=SN_SITES[s.id]?'inline-block':'none';
   if(eneWrap)eneWrap.style.display=(s.id==='gh_salivari')?'inline-block':'none';
 }
 
@@ -2579,8 +2655,11 @@ function computeStage(){
   const pfx=getPfx('stg');
   const lnTot=document.getElementById('stg-ln-tot')?.value??'';
   const lnPos=document.getElementById('stg-ln-pos')?.value??'';
+  const lnType=document.getElementById('stg-ln-type')?.value??'';
+  const lnDim=document.getElementById('stg-ln-dim')?.value??'';
 
-  const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant);
+  const lnEne=document.getElementById('stg-ln-ene')?.value??'';
+  const v=validateCase(s,T,N,M,extra,lnTot,lnPos,pfx,variant,{lnType,lnDim,lnEne});
   const result=(v.errors.length)?{stage:null,ambiguous:false,matchCount:0,allStages:[]}:resolveNonEvaluable(rules,s,T,N,M,extra);
 
   if(result.ambiguous){
@@ -2598,7 +2677,12 @@ function computeStage(){
   }else if(!result.stage&&v.incomplete.length){
     stageLabel='Parametri incompleti — staging non assegnabile';
   }else if(!result.stage){
-    stageLabel='Non determinabile (caso fuori modello)';
+    // v1.1.0: distinzione. Se la combinazione e' selezionabile ma nessuna riga della
+    // tabella la copre (es. vescica Ta N1 M0), la lacuna e' della classificazione,
+    // non del tool: dirlo "fuori modello" fa pensare a un limite dello strumento.
+    stageLabel=(result.matchCount===0&&!result.axes?.length)
+      ?'Nessuno stadio previsto dalla tabella per questa combinazione'
+      :'Non determinabile (caso fuori modello)';
   }else{
     stageLabel=stageHeader+' '+result.stage;
     stageQuality=v.warnings.length?' (con riserva)':' (assegnato)';
@@ -2607,7 +2691,7 @@ function computeStage(){
   const res=document.getElementById('stage-result');
   res.style.display='block';
   document.getElementById('stage-value').textContent=stageLabel;
-  document.getElementById('stage-label').textContent='TNM 9ª Ed. · UICC 2025'+stageQuality;
+  document.getElementById('stage-label').textContent=editionLabel(s.id)+stageQuality;
 
   const td=s.T.find(x=>x.c===T)||{d:''};
   const nd=s.N.find(x=>x.c===N)||{d:''};
@@ -2736,12 +2820,26 @@ function renderStagingTable(){
 // ======================================================
 // REFERTO
 // ======================================================
+// Sedi in cui il campione nodale standard e' il linfonodo sentinella. Un sentinella
+// negativo E' un pN0 adeguato per definizione, qualunque sia il numero di linfonodi:
+// AJCC/UICC non definiscono un minimo per il pN0 di queste sedi. Le soglie qui sotto
+// valgono per lo SVUOTAMENTO, non per il sentinella.
+//
+// v1.1.0 — prima la soglia si applicava a prescindere dal tipo di campione: un
+// sentinella negativo con 2 linfonodi usciva "campionamento potenzialmente
+// inadeguato", cioe' il referto veniva messo in riserva sul campione nodale piu'
+// frequente che esista per melanoma, Merkel e mammella.
+const SN_SITES={ mammella:'pN0(sn)', melanoma:'pN0(sn)', merkel:'pN0(sn)' };
+
+// Numero minimo di linfonodi per un pN0 adeguato NELLO SVUOTAMENTO.
+// melanoma e merkel non compaiono: AJCC 8ª ed. non definisce alcun minimo per il
+// loro pN0, e per la dissezione il numero atteso dipende dal bacino (ascella, inguine,
+// collo) — un valore unico sarebbe inventato.
 const PN0_MIN={
   colon_retto:12, stomaco:16, esofago:7, intestino_tenue:6,
   appendice:12, fegato_hcc:3, bile_intrahep:6,
   colecisti:6, bile_perihilar:15, bile_distale:12, ampolla:12,
   pancreas:12, mammella:6, tiroide:6, gh_salivari:10, // V9: min 10 (selettiva) o 15 (radicale)
-  melanoma:6, merkel:6,
   pelvi_renale:8,
   uretere:8,
   uretra:6,
@@ -2842,7 +2940,7 @@ function generateReferto(){
   const md=s.M.find(x=>x.c===M)||{d:'—'};
 
   let txt=`CLASSIFICAZIONE TNM\n`;
-  txt+=`Riferimento: UICC TNM Classification of Malignant Tumours, 9ª ed. (2025) / AJCC Cancer Staging Manual, Version 9\n`;
+  txt+=`Riferimento: ${editionRef(s.id)}\n`;
   txt+=`Sede: ${s.name} (ICD-O-4: ${s.icd})\n`;
   if(variant){
     const varLabel=getVariants(s)?.find(vv=>vv.id===variant)?.label||variant;

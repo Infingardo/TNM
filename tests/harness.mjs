@@ -15,6 +15,7 @@ const EXPORTS = [
   'stripPfx', 'codeMatch', 'ruleMatches', 'computeBestStage', 'resolveNX', 'resolveNonEvaluable',
   'getStagingRules', 'getVariants', 'validateCase', 'getPfx',
   'computePrognosticStage_prostata', 'computePrognosticStage_mammella',
+  'PN0_MIN', 'PN0_MIN_SPECIAL', 'SN_SITES', 'LN_DIM_RULES', 'N_AUTO_RULES', 'editionLabel', 'editionRef', 'EDITION_DEFAULT',
 ];
 
 // Proxy "assorbente": qualsiasi accesso/chiamata/property-set non rompe l'init.

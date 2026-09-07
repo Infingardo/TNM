@@ -4,9 +4,13 @@ Strumento HTML/JS autonomo per la classificazione TNM dei tumori maligni secondo
 
 > *"Tu non stai automatizzando la diagnosi. Stai automatizzando la prudenza."*
 
-**Versione:** v1.0.1 · Dataset: UICC TNM 9ª ed. 2025 · Test automatici riproducibili: **60 PASS** (coerenza motore + casi-ancora) · Verifica vs fonte primaria: **colon + mammella**
+**Versione:** v1.1.0 · Dataset: UICC TNM 9ª ed. 2025 · Test automatici riproducibili: **94 PASS** (`npm test`) + **29 casi-ancora** (`npm run test:anchors`) · Verifica vs fonte primaria: **colon + mammella**
 
 ---
+
+## Novità — v1.1.0 (2026-09-07)
+
+Vedi [`CHANGELOG.md`](CHANGELOG.md). In sintesi: la soglia pN0 non si applica più al linfonodo sentinella; l'etichetta di edizione viene dalla sede e non dal renderer (il canale anale segue AJCC v9 e non è più attribuito a UICC); la rete di congruenza N è ora ENE-aware per le ghiandole salivari; `validateCase` non legge più il DOM; il build inglese non può più restare indietro in silenzio.
 
 ## Novità — v1.0.1 (2026-06-16)
 
@@ -159,7 +163,7 @@ Strumento per la validazione manuale riga per riga con il manuale UICC in mano.
 - Stato salvato in localStorage (persistente tra sessioni)
 - Export CSV ricco (site_id, section, code, definition, audit_status, reviewer, date, source_ref, esito, note)
 
-**Stato attuale: v1.0.1 — 60 test riproducibili PASS (CI verde); verifica vs fonte primaria: colon + mammella**
+**Stato attuale: v1.1.0 — 94 + 29 test riproducibili PASS (CI verde); verifica vs fonte primaria: colon + mammella**
 
 ---
 
@@ -221,7 +225,7 @@ index.html
 - **WHO Classification of Tumours** (5ª ed., varie sedi) — per grading NET GI
 - **ITBCC 2016** — per grading budding tumorale
 
-> Questo tool è sviluppato per uso esclusivo in anatomia patologica da personale medico qualificato. Non sostituisce la valutazione clinico-patologica né la consultazione della fonte primaria. La v1.0.1 supera 60 test automatici riproducibili (CI verde); la verifica contro la fonte primaria è completata per **colon e mammella**, mentre per le altre sedi è garantita la sola coerenza interna. La validazione manuale riga per riga prosegue tramite `audit.html`.
+> Questo tool è sviluppato per uso esclusivo in anatomia patologica da personale medico qualificato. Non sostituisce la valutazione clinico-patologica né la consultazione della fonte primaria. La v1.1.0 supera 94 test di coerenza del motore e 29 casi-ancora (CI verde); la verifica contro la fonte primaria è completata per **colon e mammella**, mentre per le altre sedi è garantita la sola coerenza interna. La validazione manuale riga per riga prosegue tramite `audit.html`.
 
 ---
 

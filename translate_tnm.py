@@ -17,8 +17,8 @@ R = []
 # ════════════════════════════════════════════════════════════════════════════
 R += [
   ('<html lang="it">', '<html lang="en">'),
-  ('TNM 9ª Ed. v1.0.1 — Anatomia Patologica · 29 sedi',
-   'TNM 9th Ed. v1.0.1 — Surgical Pathology · 29 sites'),
+  ('TNM 9ª Ed. v1.1.0 — Anatomia Patologica · 29 sedi',
+   'TNM 9th Ed. v1.1.0 — Surgical Pathology · 29 sites'),
 ]
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -169,8 +169,8 @@ R += [
 # 6. DISCLAIMER
 # ════════════════════════════════════════════════════════════════════════════
 R += [
-  ('⚠️ Uso esclusivo anatomia patologica · UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Non sostituisce la valutazione clinico-patologica · Verificare fonte primaria per casi borderline · v1.0.1',
-   '⚠️ For use in surgical pathology only · UICC TNM 9th ed. 2025 / AJCC Cancer Staging Manual Version 9 · Does not replace clinicopathological assessment · Always verify borderline cases against the primary source · v1.0.1'),
+  ('⚠️ Uso esclusivo anatomia patologica · UICC TNM 9ª ed. 2025 / AJCC Cancer Staging Manual Version 9 · Non sostituisce la valutazione clinico-patologica · Verificare fonte primaria per casi borderline · v1.1.0',
+   '⚠️ For use in surgical pathology only · UICC TNM 9th ed. 2025 / AJCC Cancer Staging Manual Version 9 · Does not replace clinicopathological assessment · Always verify borderline cases against the primary source · v1.1.0'),
 ]
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -370,13 +370,9 @@ R += [
    "errors.push('N1c at this site ('+site.name+') indicates tumor deposits without lymph node metastases; incompatible with '+nPos+' declared positive lymph nodes. Re-evaluate N category.');"),
   ("errors.push('Il numero di linfonodi positivi ('+nPos+') supera il totale esaminato ('+nTot+'). Dati incongruenti.');",
    "errors.push('Number of positive lymph nodes ('+nPos+') exceeds total examined ('+nTot+'). Inconsistent data.');"),
-  ("errors.push('Categoria N incongruente: con '+nPosVal+' LN+ attesa '+expectedN+', selezionata '+nCode+'. Correggere o usare l\\'auto-calcolo LN+.');",
-   "errors.push('Inconsistent N category: with '+nPosVal+' LN+ expected '+expectedN+', selected '+nCode+'. Correct or use the LN+ auto-calculation.');"),
   ("warnings.push('Categoria pN selezionata senza numero di linfonodi esaminati documentato.');",
    "warnings.push('pN category selected without documented number of examined lymph nodes.');"),
-  ("warnings.push('pN0 con campionamento potenzialmente inadeguato: '+nTot+' linfonodi esaminati (minimo raccomandato per questa sede: '+minLN+'). Riportare il numero; la categoria rimane pN0 con riserva.');",
-   "warnings.push('pN0 with potentially inadequate sampling: '+nTot+' lymph nodes examined (recommended minimum for this site: '+minLN+'). Report the number; category remains pN0 with caveat.');"),
-  ("warnings.push('Canale anale pN0: il minimo raccomandato è ≥12 LN per la dissezione perirettale/pelvica e ≥6 LN per la dissezione inguinale. Con '+nTot+' LN esaminati verificare il territorio di dissezione.');",
+("warnings.push('Canale anale pN0: il minimo raccomandato è ≥12 LN per la dissezione perirettale/pelvica e ≥6 LN per la dissezione inguinale. Con '+nTot+' LN esaminati verificare il territorio di dissezione.');",
    "warnings.push('Anal canal pN0: recommended minimum is ≥12 LN for perirectal/pelvic dissection and ≥6 LN for inguinal dissection. With '+nTot+' LN examined, verify the dissection territory.');"),
   ("warnings.push('Prostata: lo stadio mostrato è il raggruppamento anatomico (T/N/M). Il gruppo prognostico formale richiede anche PSA e Grade Group (Gleason). Per la documentazione clinica includere entrambi.');",
    "warnings.push('Prostate: stage shown is anatomic grouping (T/N/M). Formal prognostic group also requires PSA and Grade Group (Gleason). Include both for clinical documentation.');"),
@@ -949,6 +945,53 @@ M_PATTERNS = [
   ("Metastasi nel sistema nervoso centrale con o senza coinvolgimento di altre sedi",
    "Metastasis in the central nervous system with or without involvement of other sites"),
 ]
+
+# ── v1.1.0 ────────────────────────────────────────────────────────────────
+# Applicate PRIMA delle sostituzioni di frase: quelle riscrivono "linfonodi",
+# "sede" ecc. dentro queste stringhe e romperebbero l'ancoraggio esatto.
+R_PRE = [
+  ("errors.push('Categoria N incongruente: con '+nPosVal+' LN+ attesa '+expectedN+', selezionata '+N+'. Correggere o usare l\\'auto-calcolo LN+.');",
+   "errors.push('Inconsistent N category: with '+nPosVal+' LN+ expected '+expectedN+', selected '+N+'. Correct or use the LN+ auto-calculation.');"),
+  ("warnings.push('Categoria pN selezionata senza numero di linfonodi esaminati documentato.');",
+   "warnings.push('pN category selected without a documented number of examined lymph nodes.');"),
+  ("v.incomplete.push('Fonte M = MX: categoria M non documentata nel materiale disponibile — stadio non assegnabile finché M non è classificato (cM/pM).');",
+   "errors.push('Source M = MX: M category not documented in the available material - stage not assignable until M is classified (cM/pM).');"),
+  # v1.1.0 — soglia pN0 e tipo di campione linfonodale
+  ("warnings.push('Linfonodo sentinella negativo: pN0 adeguato per definizione — AJCC/UICC non pongono un numero minimo di linfonodi per il pN0 di questa sede. Riportare la categoria con il modificatore: '+snLabel+'.');",
+   "warnings.push('Negative sentinel lymph node: pN0 adequate by definition — AJCC/UICC set no minimum node count for pN0 at this site. Report the category with the modifier: '+snLabel+'.');"),
+  ("warnings.push('Il minimo di '+minLN+' linfonodi vale per lo SVUOTAMENTO, non per il sentinella: con '+nTot+' linfonodi esaminati, se si tratta di un sentinella negativo il pN0 e\\' adeguato ('+snLabel+'). Specificare il tipo di campione linfonodale per togliere questa riserva.');",
+   "warnings.push('The minimum of '+minLN+' nodes applies to LYMPHADENECTOMY, not to a sentinel node: with '+nTot+' nodes examined, if this is a negative sentinel node the pN0 is adequate ('+snLabel+'). Specify the nodal specimen type to remove this caveat.');"),
+  ("warnings.push('pN0 con campionamento potenzialmente inadeguato: '+nTot+' linfonodi esaminati (minimo raccomandato per lo svuotamento in questa sede: '+minLN+'). Riportare il numero; la categoria rimane pN0 con riserva.');",
+   "warnings.push('pN0 with potentially inadequate sampling: '+nTot+' lymph nodes examined (recommended minimum for lymphadenectomy at this site: '+minLN+'). Report the number; category remains pN0 with caveat.');"),
+  ("warnings.push('Per questa sede AJCC/UICC non definiscono un numero minimo di linfonodi per il pN0. Se il campione e\\' un sentinella negativo, riportare '+snLabel+'; specificare il tipo di campione linfonodale.');",
+   "warnings.push('For this site AJCC/UICC define no minimum node count for pN0. If the specimen is a negative sentinel node, report '+snLabel+'; specify the nodal specimen type.');"),
+  ("errors.push('Categoria pN incongruente: con '+(parseInt(lnPos)||0)+' LN+ e ENE '+(lnEne==='pos'?'presente':'assente')+' attesa '+attesa+', selezionata '+N+'. In V9 il pENE su 1–3 linfonodi porta a pN2.');",
+   "errors.push('Inconsistent pN category: with '+(parseInt(lnPos)||0)+' LN+ and ENE '+(lnEne==='pos'?'present':'absent')+' expected '+attesa+', selected '+N+'. In V9, pENE on 1-3 nodes upgrades to pN2.');"),
+  ("<label for=\"stg-ln-type\">Tipo di campione linfonodale</label>",
+   "<label for=\"stg-ln-type\">Nodal specimen type</label>"),
+  ("<option value=\"\">— non specificato</option>", "<option value=\"\">— not specified</option>"),
+  ("<option value=\"sn\">Linfonodo sentinella</option>", "<option value=\"sn\">Sentinel lymph node</option>"),
+  ("<option value=\"dissezione\">Svuotamento / dissezione</option>", "<option value=\"dissezione\">Lymphadenectomy / dissection</option>"),
+  ("?'Nessuno stadio previsto dalla tabella per questa combinazione'",
+   "?'No stage provided by the table for this combination'"),
+  ("na:'n/d — non definita dalla classificazione'", "na:'n/a — not defined by the classification'"),
+  ("canale_anale:'AJCC Cancer Staging Manual v9 — divergenza da UICC V9',",
+   "canale_anale:'AJCC Cancer Staging Manual v9 - divergence from UICC V9',"),
+  ("melanoma:'TNM 9ª Ed. · UICC 2025 (criteri melanoma invariati dalla 8ª ed.)',",
+   "melanoma:'TNM 9th Ed. · UICC 2025 (melanoma criteria unchanged from 8th ed.)',"),
+  ("const EDITION_DEFAULT='TNM 9ª Ed. · UICC 2025';", "const EDITION_DEFAULT='TNM 9th Ed. · UICC 2025';"),
+  ("canale_anale:'AJCC Cancer Staging Manual, Version 9 — Tis/Stadio 0 esclusi. UICC TNM 9ª ed. (2025) li mantiene: divergenza esplicita, schema applicato AJCC',",
+   "canale_anale:'AJCC Cancer Staging Manual, Version 9 - Tis/Stage 0 excluded. UICC TNM 9th ed. (2025) retains them: explicit divergence, AJCC scheme applied',"),
+  ("melanoma:'UICC TNM Classification of Malignant Tumours, 9ª ed. (2025) — criteri del melanoma invariati rispetto alla 8ª ed. / AJCC Cancer Staging Manual, Version 9',",
+   "melanoma:'UICC TNM Classification of Malignant Tumours, 9th ed. (2025) - melanoma criteria unchanged from the 8th ed. / AJCC Cancer Staging Manual, Version 9',"),
+  ("const EDITION_REF_DEFAULT='UICC TNM Classification of Malignant Tumours, 9ª ed. (2025) / AJCC Cancer Staging Manual, Version 9';",
+   "const EDITION_REF_DEFAULT='UICC TNM Classification of Malignant Tumours, 9th ed. (2025) / AJCC Cancer Staging Manual, Version 9';"),
+  ("canale_anale:'≥12 linfonodi per la dissezione perirettale/pelvica · ≥6 per la inguinale',",
+   "canale_anale:'>=12 nodes for perirectal/pelvic dissection - >=6 for inguinal',"),
+  ]
+for it, en in R_PRE:
+    assert it in txt, 'ancora v1.1.0 non trovata: ' + it[:70]
+    txt = txt.replace(it, en)
 
 for it, en in T_PATTERNS + N_PATTERNS + M_PATTERNS:
     txt = txt.replace(it, en)

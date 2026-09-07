@@ -1,6 +1,6 @@
 {
   "name": "tnm-staging-tool",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Strumento di stadiazione TNM 9ª ed. per anatomia patologica — test del motore di staging",
   "private": true,
   "scripts": {
