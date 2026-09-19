@@ -1,5 +1,25 @@
 # Changelog — TNM 9ª Ed. · Anatomia Patologica
 
+## 20 settembre 2026 — escaping del campo Ki67 in stage-detail
+
+Il campo di testo libero Ki67 (unico campo `extra` non vincolato a un menu a
+tendina) veniva interpolato senza escaping in `stage-detail.innerHTML`: un
+valore HTML/script inserito nel campo veniva eseguito nel pannello di
+staging. Nessun vettore remoto, nessuna persistenza — richiedeva che
+l'utente digitasse il payload nel proprio stesso campo. Il referto finale
+non era interessato: usa già `out.textContent`, non `innerHTML`.
+
+**Correzione.** Aggiunta `escHtml()` e applicata all'unico punto di
+interpolazione non protetto. `index-en.html` rigenerato di conseguenza da
+`translate_tnm.py`.
+
+**Verifica.** Controllati tutti i campi extra del dataset: Ki67 è l'unico
+di tipo testo libero, gli altri sono `<select>` a opzioni fisse (non
+sfruttabili). Controllati tutti i 17 punti `innerHTML` del file: nessun
+altro sink riceve testo libero non escapato. Campo ricerca sede e note
+del referto non sono vettori (rispettivamente: mai renderizzati in
+innerHTML; renderizzati solo via textContent).
+
 ## v1.1.0 (7 settembre 2026) — la soglia pN0 non si applica al sentinella
 
 Revisione mirata su tre cose che i test di coerenza interna non potevano vedere:
