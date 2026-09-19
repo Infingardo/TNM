@@ -2643,6 +2643,10 @@ function onTNMChange(){
   syncStgToRef();
 }
 
+function escHtml(s){
+  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function computeStage(){
   const s=currentSite;if(!s)return;
   const T=document.getElementById('sel-T').value;
@@ -2700,7 +2704,7 @@ function computeStage(){
   detail+=`<div class="stage-row"><span class="stage-code">${pfx.N}${N}</span><span>${nd.d}</span></div>`;
   detail+=`<div class="stage-row"><span class="stage-code">${mCode(pfx.M,M)}</span><span>${md.d}</span></div>`;
   if(Object.keys(extra).length){
-    for(const k in extra){if(extra[k]&&extra[k]!=='—')detail+=`<div class="stage-row"><span class="stage-code">${k}: ${extra[k]}</span></div>`;}
+    for(const k in extra){if(extra[k]&&extra[k]!=='—')detail+=`<div class="stage-row"><span class="stage-code">${k}: ${escHtml(extra[k])}</span></div>`;}
   }
   document.getElementById('stage-detail').innerHTML=detail;
   // Show AJCC note in result box if applicable
