@@ -2,6 +2,7 @@
   "name": "TNM 9ª Ed. — Anatomia Patologica",
   "short_name": "TNM AP",
   "description": "Staging TNM UICC v9 — 29 sedi tumorali per Anatomia Patologica",
+  "id": "/TNM/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
